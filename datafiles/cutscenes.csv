@@ -1,0 +1,5 @@
+tipo,alvo,acao,param1,param2,param3
+CHARACTER,obj_player,walk_d,x,40,1
+WAIT,,time,100,,
+DIALOG,,,TesteCut,,
+WAIT,,time,1000,,

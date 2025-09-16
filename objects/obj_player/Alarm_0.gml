@@ -1,0 +1,1 @@
+descansar_espada = false

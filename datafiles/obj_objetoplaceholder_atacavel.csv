@@ -1,0 +1,5 @@
+attack,speed,amnt,param1,param2,param3
+side_bullets,1,1,1,,
+side_bullets,1,1,-1,,
+side_bullets,1,1,1,,
+ice_spikes,10,30,,,

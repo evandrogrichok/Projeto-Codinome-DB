@@ -1,0 +1,25 @@
+{
+  "$GMSound":"",
+  "%Name":"snd_text_default",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":0,
+  "bitRate":128,
+  "compression":0,
+  "conversionMode":0,
+  "duration":0.18793651,
+  "name":"snd_text_default",
+  "parent":{
+    "name":"Caixa de Texto",
+    "path":"folders/Caixa de Texto.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":5512,
+  "soundFile":"snd_text_default.wav",
+  "type":0,
+  "volume":0.33,
+}

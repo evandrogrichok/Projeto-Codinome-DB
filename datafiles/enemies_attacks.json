@@ -1,0 +1,8 @@
+{
+    "inimigo1_inimigo2":
+      {
+        "limit_box": "default_box",
+        "attacks": ["circle_and_falling_ice"]
+      }
+}
+  

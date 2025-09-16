@@ -1,0 +1,1 @@
+draw_sprite_ext(spr_black, 0, obj_player.x-200, obj_player.y-100, 30, 30, 0, c_black, transition_alpha)
