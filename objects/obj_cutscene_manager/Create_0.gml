@@ -1,7 +1,7 @@
 //criando uma db
 cutscene_id = "notdefined.csv";
 ready = false;
-roteiro = noone
+roteiro = undefined
 
 oldx = 0;
 //linha que esta lendo

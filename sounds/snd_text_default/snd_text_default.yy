@@ -12,8 +12,8 @@
   "duration":0.18793651,
   "name":"snd_text_default",
   "parent":{
-    "name":"Caixa de Texto",
-    "path":"folders/Caixa de Texto.yy",
+    "name":"Sons",
+    "path":"folders/Sons.yy",
   },
   "preload":false,
   "resourceType":"GMSound",

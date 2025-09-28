@@ -1,8 +1,10 @@
+
+
 // --------------------------------------------------------------
 //AJUSTES DE ENGINE
 
-depth = -bbox_bottom;
-
+depth = -y;
+	
 
 //desabilitando interpolação
 gpu_set_texfilter(false)
@@ -42,9 +44,9 @@ coll_dir= 0 // direcao para usar em funcoes de colisao
 cutscene_char = false;
 cutscene_player_y_dest = y;
 cutscene_player_x_dest = x;
-cutscene_y_vel_player = noone;
-cutscene_x_vel_player = noone;
-acao = noone;
+cutscene_y_vel_player = undefined;
+cutscene_x_vel_player = undefined;
+acao = undefined;
 
 
 
@@ -109,3 +111,5 @@ function move_player_towards_point(_x, _y, _spd){
 }
 
 
+global.sh_outline_texel_pointer = shader_get_uniform(sh_teste, "v_Texel");
+global.sh_outline_color_pointer = shader_get_uniform(sh_teste, "v_Color");

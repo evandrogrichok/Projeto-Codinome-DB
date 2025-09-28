@@ -8,8 +8,8 @@
   "name":"obj_objetoplaceholder",
   "overriddenProperties":[],
   "parent":{
-    "name":"Objetos",
-    "path":"folders/Objetos.yy",
+    "name":"objetos interativos",
+    "path":"folders/Objetos/objetos interativos.yy",
   },
   "parentObjectId":{
     "name":"obj_interativo",
@@ -33,8 +33,8 @@
   "resourceVersion":"2.0",
   "solid":true,
   "spriteId":{
-    "name":"spr_objetoplaceholder",
-    "path":"sprites/spr_objetoplaceholder/spr_objetoplaceholder.yy",
+    "name":"spr_objetoplaceholder_atacavel_pur",
+    "path":"sprites/spr_objetoplaceholder_atacavel_pur/spr_objetoplaceholder_atacavel_pur.yy",
   },
   "spriteMaskId":null,
   "visible":true,

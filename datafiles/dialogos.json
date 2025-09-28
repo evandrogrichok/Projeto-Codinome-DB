@@ -1,13 +1,28 @@
-{
+{   
+
+    "item_space_available":[
+      {
+        "type": "chat",
+        "text": "Você encontrou <item>! <item> foi adicionado ao seu inventário."
+      }
+    ],
+    
+    "item_space_full":[
+      {
+        "type": "chat",
+        "text": "Você encontrou <item>! Mas seu inventário estava cheio demais..."
+      }
+    ],
+    
     "dialogo1": [
       {
         "type": "chat",
         "text": "oi <wave>huaaaa<color>aa<shake>aa</color>aaaaaaaaaa</shake>aaaaaaaaaaaaaa</wave> :D",
         "textbox": "spr_textbox",
-        "sound": "default",
+        "sound": "snd_text_def123ault",
         "color": "c_red", 
         "font": "fnt_main",
-        "speaker": "noone",
+        "speaker": "spr_naoexiwsto",
         "location": 0
 
       },
@@ -15,17 +30,15 @@
         "type": "chat",
         "text": "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii é a minha caixinha de teeeexto ein",
         "textbox": "spr_textbox",
-        "sound": "default",
         "color": "c_white", 
         "font": "fnt_main",
-        "speaker": "spr_personagem1fala",
+        "speaker": "spr_naoexiwsto",
         "location": 1
       },
       {
         "type": "chat",
         "text": "essa é a minha caixinha de teeeexto ein",
         "textbox": "spr_textbox",
-        "sound": "default",
         "color": "c_white", 
         "font": "fnt_main",
         "speaker": "spr_personagem1fala",
@@ -35,19 +48,6 @@
         "type": "chat",
         "text": "abnle  <shake>foijasdojfioasjodifj</shake> asodjhfoiasj aeblaeba",
         "textbox": "spr_textbox",
-        "sound": "default",
-        "color": "c_white", 
-        "font": "fnt_main",
-        "speaker": "noone",
-        "location": 2
-      },
-      {
-        "type": "decision",
-        "options": ["nasdasdasdaao", "sim ele quer", "ele quer muito"],
-        "linkoption":["dialogo2", "dialogo3", "dialogo4"] ,
-        "text": "<wave>o eduardo quer doce?</wave>",
-        "textbox": "spr_textbox",
-        "sound": "default",
         "color": "c_white", 
         "font": "fnt_main",
         "speaker": "noone",
@@ -59,7 +59,6 @@
         "type": "chat",
         "text": "oi <wave>huaaaa<color>aa<shake>aa</color>aaaaaaaaaa</shake>aaaaaaaaaaaaaa</wave> :D",
         "textbox": "spr_textbox",
-        "sound": "default",
         "color": "c_red", 
         "font": "fnt_main",
         "speaker": "noone",
@@ -70,7 +69,6 @@
         "type": "chat",
         "text": "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii é a minha caixinha de teeeexto ein",
         "textbox": "spr_textbox",
-        "sound": "default",
         "color": "c_white", 
         "font": "fnt_main",
         "speaker": "spr_personagem1fala",
@@ -80,7 +78,6 @@
         "type": "chat",
         "text": "essa é a minha caixinha de teeeexto ein",
         "textbox": "spr_textbox",
-        "sound": "default",
         "color": "c_white", 
         "font": "fnt_main",
         "speaker": "spr_personagem1fala",
@@ -90,7 +87,6 @@
         "type": "chat",
         "text": "abnle  <shake>foijasdojfioasjodifj</shake> asodjhfoiasj aeblaeba",
         "textbox": "spr_textbox",
-        "sound": "default",
         "color": "c_white", 
         "font": "fnt_main",
         "speaker": "noone",
@@ -102,7 +98,6 @@
         "linkoption":["dialogo2", "dialogo3", "dialogo4"] ,
         "text": "<wave>o eduardo quer doce?</wave>",
         "textbox": "spr_textbox",
-        "sound": "default",
         "color": "c_white", 
         "font": "fnt_main",
         "speaker": "noone",

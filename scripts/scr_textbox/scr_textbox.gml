@@ -1,11 +1,11 @@
 
-function scr_open_textbox(_id){
+function scr_open_textbox(_id, _item_name = "ITEM_NÃO_DEFINIDO"){
+	
 	
     if !instance_exists(obj_textboxx){
     var _inst_vars = {
-        dialogo_id : _id
-        // Você pode adicionar outras variáveis aqui se precisar
-        // ex: speaker_id : "algum_speaker"
+        dialogo_id : _id,
+        item : _item_name
     };
 
 	instance_create_depth(0, 0, -99999, obj_textboxx, _inst_vars);

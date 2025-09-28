@@ -9,6 +9,11 @@ enum BATTLE_STATES{
 	wait_time,
 }
 
+max_focus_points = 100;
+focus_points = 0;
+focus_points_draw = 0;
+focus_points_amnt_incr = 0;
+focus_points_dest = 0;
 
 var file = file_text_open_read("attacks.json");
 var json_string = "";
@@ -55,9 +60,8 @@ file_text_close(file);
 data = json_parse(json_string);
 ataques_inimigos = data;
 
-
-
-
+duracao = 0;
+tempo_inicio = 0;
 state_num = 6;
 
 xyvar = [
@@ -98,7 +102,7 @@ dest_x_texto_acerto = 0;
 x_texto_acerto = 0;
 
 wait_timer = 0;
-next_state = noone;
+next_state = undefined;
 mostrar_limites_de_movimentacao = false;
 
 
@@ -115,6 +119,8 @@ scr_can_move_tweaker(-1);
 state = BATTLE_STATES.main_menu;
 
 opt = 0;
+last_opt = undefined;
+
 obj_camera.fixated_camera = true;
 
 global.lang = "pt"
@@ -185,16 +191,52 @@ alpha_barra_ini = 0;
 enemies_speed = array_create(quant_inimigos_combo, 1);
 enemies_index = array_create(quant_inimigos_combo, 0);
 enemies_index_atk = array_create(quant_inimigos_combo, 0);
+enemies_draw_defeat_state = array_create(quant_inimigos_combo, 0);
+draw_away = 0;
+fade_away = 2;
 seta_index = 0;
 seta_speed = 1;
 
 inimigos_vivos = [];
+
 atqs_chave = "";
 bullet_timer = 0;
 battle_timer = 0;
 
-caixa_mov_pat = "default_box";
+caixa_mov_pat = "";
 fade_in_alpha = 0;
+
+//part_system_stars = part_system_create(part_stars)
+//emitter = part_emitter_create(part_system_stars)
+
+
+part_system_stars = part_system_create();
+part_type_stars = part_type_create();
+
+part_type_sprite(part_type_stars, spr_part_star, true, true, false);
+part_type_size(part_type_stars, 1, 1, 0, 0);
+part_type_speed(part_type_stars, 1, 1, 0, 0);
+part_type_life(part_type_stars, 32, 32);
+part_type_blend(part_type_stars, true);
+part_type_direction(part_type_stars, 90,90,0, 0)
+part_type_alpha2(part_type_stars, 1, 0);
+
+part_emitter_stars = part_emitter_create(part_system_stars);
+
+
+
+
+
+//part_emitter_region(part_system_stars, part_emitter_stars, x_ini -10, x_ini +10, y_ini -10, y_ini +10, ps_shape_rectangle, ps_distr_linear);
+
+//part_emitter_region(part_system_stars, part_emitter_stars,  x_ini -10, x_ini +10, y_ini -10, y_ini +10, ps_shape_rectangle, ps_distr_linear);
+part_emitter_relative(part_system_stars, part_emitter_stars, true)
+
+
+
+
+
+
 caixa_valores = {
 	default_box: {
 			caixa_tamanho: 215,
@@ -206,7 +248,7 @@ caixa_valores = {
 	}
 }
 
-current_attack = noone;
+current_attack = undefined;
 //aqui eu vou ter que criar uma mascara de colisao invertida eu acho...
 //
 
@@ -238,6 +280,9 @@ function run_arrow_pattern(_attack){
 			vel_setas = attack_params.velocity;
 			arrow_timer = arrow_time;
 			state = BATTLE_STATES.select_enemy;
+			focus_points_amnt_incr = 10;
+			focus_points_dest = clamp(round(focus_points + (focus_points_amnt_incr)), 0, 100);
+			focus_points = focus_points_dest;
 		break;
 	}
 }
@@ -246,7 +291,7 @@ function load_enemy_attack(_chave){
 	var dados_ataques = variable_struct_get(ataques_inimigos, _chave);
 	var ataques = dados_ataques.attacks
 	var padrao_caixa = dados_ataques.limit_box
-	var chosen_attack = irandom_range(1, array_length(ataques)) - 1;
+	var chosen_attack = irandom_range(0, array_length(ataques) - 1);
 	
 
 	caixa_mov_pat = padrao_caixa;
@@ -254,3 +299,4 @@ function load_enemy_attack(_chave){
 
 	show_debug_message("DADOS_ATAQUES: " + string(dados_ataques) +" ATAQUES: " + string(ataques) +" PADRAO_CAIXA: " + string(padrao_caixa) + " CHOSEN_ATTACK: " + string(current_attack))
 }
+

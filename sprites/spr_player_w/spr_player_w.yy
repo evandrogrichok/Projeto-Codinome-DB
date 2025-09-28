@@ -23,7 +23,6 @@
   "HTile":false,
   "layers":[
     {"$GMImageLayer":"","%Name":"312dc144-2e10-4380-825f-eb10c0c01d85","blendMode":0,"displayName":"default","isLocked":false,"name":"312dc144-2e10-4380-825f-eb10c0c01d85","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
-    {"$GMImageLayer":"","%Name":"75f86d96-c11c-4eb4-a6d2-48267d305572","blendMode":0,"displayName":"Layer 1","isLocked":false,"name":"75f86d96-c11c-4eb4-a6d2-48267d305572","opacity":30.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
   "name":"spr_player_w",
   "nineSlice":{
@@ -48,8 +47,8 @@
   },
   "origin":9,
   "parent":{
-    "name":"Sprites",
-    "path":"folders/Sprites.yy",
+    "name":"Player",
+    "path":"folders/Sprites/Player.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

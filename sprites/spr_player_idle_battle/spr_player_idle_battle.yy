@@ -26,7 +26,6 @@
   "HTile":false,
   "layers":[
     {"$GMImageLayer":"","%Name":"2d9cf6f8-d0ee-4dc4-9b3e-1525f0c71dc3","blendMode":0,"displayName":"default","isLocked":false,"name":"2d9cf6f8-d0ee-4dc4-9b3e-1525f0c71dc3","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
-    {"$GMImageLayer":"","%Name":"f2edb5be-2f5f-439c-a1ef-6fd31401c182","blendMode":0,"displayName":"Layer 1","isLocked":false,"name":"f2edb5be-2f5f-439c-a1ef-6fd31401c182","opacity":30.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
   "name":"spr_player_idle_battle",
   "nineSlice":{
@@ -51,8 +50,8 @@
   },
   "origin":9,
   "parent":{
-    "name":"Sprites",
-    "path":"folders/Sprites.yy",
+    "name":"Player",
+    "path":"folders/Sprites/Player.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",
@@ -90,7 +89,7 @@
     "resourceType":"GMSequence",
     "resourceVersion":"2.0",
     "seqHeight":32.0,
-    "seqWidth":29.0,
+    "seqWidth":31.0,
     "showBackdrop":true,
     "showBackdropImage":false,
     "timeUnits":1,
@@ -121,7 +120,7 @@
     ],
     "visibleRange":null,
     "volume":1.0,
-    "xorigin":4,
+    "xorigin":5,
     "yorigin":28,
   },
   "swatchColours":null,
@@ -132,5 +131,5 @@
   },
   "type":0,
   "VTile":false,
-  "width":29,
+  "width":31,
 }

@@ -3,6 +3,7 @@ var r_keys = keyboard_check_pressed(vk_left) or keyboard_check_pressed(ord("A"))
 var u_keys = keyboard_check_pressed(vk_up) or keyboard_check_pressed(ord("W"));
 var d_keys = keyboard_check_pressed(vk_down) or keyboard_check_pressed(ord("S"));
 var accept_key = keyboard_check_pressed(vk_enter) or keyboard_check_pressed(ord("Z"));
+var deny_key = keyboard_check_pressed(vk_shift) or keyboard_check_pressed(ord("X"));
 var inst_player = obj_player;
 var _opt_changer =  (l_keys) - (r_keys);
 var _opt_changer_v = (d_keys) - (u_keys) ;
@@ -10,6 +11,14 @@ var _quant_opc = array_length(options);
 
 var _inst_player = obj_player;
 
+if focus_points_draw < focus_points {
+	focus_points_draw = lerp(focus_points_draw, focus_points, 0.25);
+} else if focus_points_draw > focus_points{
+	focus_points_draw = lerp(focus_points_draw, focus_points, 0.25);
+}
+
+//show_debug_message(focus_points);
+//show_debug_message(focus_points_draw);
 
 //tamanho do visor da camera
 var _cam_w = camera_get_view_width(view_camera[0]);
@@ -25,8 +34,11 @@ var aumentar_alvo = 0;
 
 //inimigos
 var quant_inimigos = array_length(inimigos_combo);
+var quant_inimigos_vivos = array_length(inimigos_vivos);
 
 //show_debug_message(global.can_move)
+
+
 
 
 
@@ -59,12 +71,67 @@ switch (state){
 	break;
 	
 	case (BATTLE_STATES.select_enemy):
-		opt += _opt_changer_v;
-		opt = (opt + quant_inimigos) mod quant_inimigos;
+	
+	if hp_inimigos[opt] <= 0{
+			var tentativas = 0; 
+			var prox_ini = opt; // um apontador para procurar pelo prox inimigo, como se fosse um opt temporario falso
+			
+			do{
+			   prox_ini = (prox_ini + 1) % quant_inimigos; 
+			   tentativas ++; 
+			   
+			   if (hp_inimigos[prox_ini] > 0){
+				   opt = prox_ini;
+				   break; 
+				   }
+			
+				} until (tentativas >=  quant_inimigos); // isso continua ate a quantidade de tentativas ser igual a quant inimigos
+			}
+
+		if d_keys{
+			var tentativas = 0; // contador para ver quantas vezes ele ja procurou por um inimigo com vida
+			var prox_ini = opt; // um apontador para procurar pelo prox inimigo, como se fosse um opt temporario falso
+			
+			do{
+			   prox_ini = (prox_ini + 1) % quant_inimigos; // procura pelo proximo inimigo com vida
+			   tentativas ++; //quando ele procurar por um ele aumenta a quantidade de tentativas 
+			   
+			   if (hp_inimigos[prox_ini] > 0){
+				   opt = prox_ini;
+				   break; // se ele achar, quebra e dai atribui o opt temporario para opt e quebra o loop
+			   }
+			
+			} until (tentativas >=  quant_inimigos); // isso continua ate a quantidade de tentativas ser igual a quant inimigos
+			
+		}
+		if u_keys{
+			
+			var tentativas = 0;
+			var prox_ini = opt;
+			
+			do{
+			   prox_ini = (prox_ini - 1 + quant_inimigos) % quant_inimigos;
+			   tentativas ++;
+			   
+			   if (hp_inimigos[prox_ini] > 0){
+				   opt = prox_ini;
+				   break;
+			   }
+			
+			} until (tentativas >=  quant_inimigos);
+
+		}
+		
+
 	
 		if accept_key{
 		next_enemy_to_attack = opt;
 		state = BATTLE_STATES.arrow_pattern;
+		}
+		
+		if deny_key{
+			focus_points -= focus_points_amnt_incr
+			state = BATTLE_STATES.main_menu;
 		}
 	
 	break;
@@ -177,7 +244,9 @@ switch (state){
 			text_to_draw = [string(dmg),"dano_no_inimigo",""]
 			x_texto_acerto = x_inimigo[opt] + range_text;
 			dest_x_texto_acerto = x_inimigo[opt] - range_text;
-			shake_level = 3
+			if hp_inimigos[opt] > 0{
+				shake_level = 3
+			}
 			wait_timer = 120;
 			sin_t = 0;
 			state = BATTLE_STATES.wait_time;
@@ -187,12 +256,12 @@ switch (state){
 			//ATUALIZANDO ARRAY DE INIMIGOS VIVOS
 		
 			//deleta os inimigos que tinha antes
-			array_delete(inimigos_vivos,0,array_length(inimigos_vivos));
+			array_delete(inimigos_vivos, 0,array_length(inimigos_vivos));
 			//percorre adicionando os inimigos se eles estiverem com mais que 0 de vida
 			for (var e = 0; e < quant_inimigos; e++){
 				if hp_inimigos[e] > 0{
 					array_push(inimigos_vivos, inimigos_combo[e])
-				}
+				} 
 			}
 			//array recebe ele mesmo, mas ordenado por script bubble sort;
 			inimigos_vivos = scr_ordenar_alf_array(inimigos_vivos);
@@ -210,6 +279,7 @@ switch (state){
 			//guardamos numa chave o nome dos inimigos ordenados separados por "_" SEMPRE em lowercase.
 			atqs_chave = string_lower(string_array_ini_vivos);
 			show_debug_message(atqs_chave);
+			load_enemy_attack(atqs_chave);
 		}
 
 	break;
@@ -225,17 +295,24 @@ switch (state){
 			global.can_move += 1;
 			inst_player.facing_x = 1
 			fade_in_alpha = 0;
-			load_enemy_attack(atqs_chave);
-			battle_timer = irandom_range(60*14, 60*20)
+
+			battle_timer = irandom_range(60*1, 60*1)
 		}
 	} else
 	if (next_state == BATTLE_STATES.main_menu){
 		if wait_timer <= 0{
 			state = next_state
 			inst_player_tweak = false;
+			tempo_inicio = 0;
+			duracao = 0;
+			opt = 0;
 		} else {
 			wait_timer--;
-			inst_player.move_player_towards_point(position_player[0][0], position_player[0][1], 0.5);
+			var t = clamp((current_time - tempo_inicio) / duracao, 0, 1);
+			inst_player.move_player_towards_point(position_player[0][0], position_player[0][1], t);
+			if t == 1{
+				wait_timer = 0;
+			}
 		}
 	}
 	
@@ -243,13 +320,19 @@ switch (state){
 	
 	case BATTLE_STATES.enemy_turn:
 	if battle_timer > 0{
-		inimigo1_inimigo2();
+		var attack = asset_get_index(current_attack);
+		show_debug_message(current_attack);
+		script_execute(attack);
 		battle_timer --;
 	} else {
 		wait_timer = 60;
 		state = BATTLE_STATES.wait_time;
 		next_state = BATTLE_STATES.main_menu;
 		mostrar_limites_de_movimentacao = false
+		
+		tempo_inicio = current_time;
+		duracao = 500;
+		
 		global.can_move -=1;
 		inst_player.sprite_index = spr_player_idle_battle;
 	}

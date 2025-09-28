@@ -9,8 +9,8 @@
   "name":"obj_textbox_opener",
   "overriddenProperties":[],
   "parent":{
-    "name":"Caixa de Texto",
-    "path":"folders/Caixa de Texto.yy",
+    "name":"Caixa de Texto minha",
+    "path":"folders/Caixa de Texto minha.yy",
   },
   "parentObjectId":null,
   "persistent":false,

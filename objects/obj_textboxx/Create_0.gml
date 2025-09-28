@@ -9,16 +9,12 @@ file_text_close(file);
 
 var data = json_parse(json_string);
 
-// REMOVA ESTA LINHA! O valor correto agora vem do opener.
-// dialogo_id = "dialogo"; 
 
-// Esta linha agora vai usar o dialogo_id correto ("dialogo1") que foi passado pelo opener.
 dialogo = variable_struct_get(data, dialogo_id); 
 
-
+show_debug_message("oi");
 options = [""];
 option_pos = 0;
-
 
 
 for (var p = 0; p < array_length(dialogo); p++){
@@ -70,12 +66,33 @@ draw_char = 0;
 vel_escrita = 1;
 page = 0;
 
+
+current_location = 0;
+current_sound = "snd_text_default";
+current_textbox = "spr_textbox";
+current_speaker = "noone";
+current_color = "c_white";
+current_page = 0;
+current_type = "text";
+
+
+
+defaults = {
+	current_location : 0,
+	current_sound : "snd_text_default",
+	current_textbox : "spr_textbox",
+	current_speaker : "noone",
+	current_color : "c_white"
+}
+runned_every_page = false;
+
 colors = ds_map_create();
 colors[? "c_red"] = c_red;
 colors[? "c_yellow"] = c_yellow;
 colors[? "c_blue"] = c_blue;
 colors[? "c_black"] = c_black;
 colors[? "c_white"] = c_white;
+colors[? "c_yellow_main"] = #FFD44C;
 
 function check_pause(_char) {
     var pontos = [".", ",", "!"];
@@ -92,10 +109,10 @@ function find_offset_by_location(_location){
 			return 100;
 	}
 }
-function play_text_sound(_snd = snd_text_default){
-	if (asset_get_index(_snd) == -1){
-		_snd = snd_text_default
-	}
+
+
+function play_text_sound(_snd){
+	_snd = asset_get_index(_snd)
 	
 	if (sound_delay <= 0){
 		audio_play_sound(_snd, 3, 0)
@@ -106,7 +123,61 @@ function play_text_sound(_snd = snd_text_default){
 }
 
 
+function setup_page_variables(){
+	current_page = dialogo[page];
+	current_type = current_page.type;
+	
+	var properties_to_check = ["sound", "textbox", "location", "color", "speaker"];
+	
+	
+	for(var i = 0; i < array_length(properties_to_check); i++){
+		var key = properties_to_check[i];
+		var value = undefined;
+		if (variable_struct_exists(current_page, key)){
+			value = variable_struct_get(current_page, key);
+		} else {
+			value = variable_struct_get(defaults, "current_" + key);
+		}
+		
+		switch(key){
+			case "sound":
+				if asset_get_index(value) == -1{
+					value = variable_struct_get(defaults, "current_" + key);
+				}
+				current_sound = value;
+			break;
+			case "textbox":
+				if asset_get_index(value) == -1{
+					value = variable_struct_get(defaults, "current_" + key);
+				}
+				current_textbox = value;
+			break;
+			case "location":
+				current_location = value;
+			break;
+			case "color":
+				current_color = value;
+			break;
+			case "speaker":
+				if value != "noone"{
+					if asset_get_index(value) == -1{
+						value = variable_struct_get(defaults, "current_" + key);
+					}
+				}
+				current_speaker = value;
+			break;
+		}
+	}
+	runned_every_page = true;
+}
 
+
+//function return_valid_index(_value, _key){
+//	var val = asset_get_index(_value);
+	
+//	if key = 
+
+//}
 
 
 
@@ -171,6 +242,17 @@ for (var p = 0; p < array_length(dialogo); p++){
 			continue;
 		}
 
+		if (string_copy(raw_text[p], i, 6) == "<item>"){
+			i += 5;
+			current_text[p] += string(item);
+			for (var d = 0; d < string_length(item); d++){
+			array_push(char_effects[p], ["item"])
+			}
+			continue;
+		}
+		
+		
+
 		//show_debug_message("Letra: " + string(c) + "PAGINA: " + string(p) + string(effect_flag))
 
 
@@ -181,6 +263,7 @@ for (var p = 0; p < array_length(dialogo); p++){
 		var _effect_copy = []; 
 		array_copy(_effect_copy, 0, effect_flag, 0, array_length(effect_flag));
 	    array_push(char_effects[p], _effect_copy);
+		
 	    interpreter_setted_up = true;
 		
 		}
@@ -236,3 +319,4 @@ linebreaks_setted_up = true;
 
 }
 
+show_debug_message(" criei")

@@ -10,3 +10,5 @@ if y <= final_y-10{
 } else {
 	draw_sprite_ext(sprite_index, image_index, x, y, 1, 1, 0, c_white, fade_in_alpha)
 }
+
+draw_text_transformed(x-25, y, depth,0.3,0.3,0);

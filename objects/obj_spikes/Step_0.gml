@@ -4,8 +4,8 @@ if y <= final_y-10{
 	depth = -16000
 	
 } else {
-	mask_index = spr_spikes
-	depth = -bbox_bottom;
+	mask_index = spr_spikes;
+	depth = -y;
 	if fade_in_alpha < 1{
 		fade_in_alpha += 0.1
 	}
@@ -40,7 +40,7 @@ if place_meeting(x, y, _inst) && _inst.cooldown <= 0{
 	audio_play_sound(snd_dmg, 3, 0, 1);
 	_inst.values.hp -= bullet_damage;
 	_inst.cooldown = 15
+	
 }
 
-show_debug_message(mask_index)
 

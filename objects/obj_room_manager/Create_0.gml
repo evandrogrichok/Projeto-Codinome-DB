@@ -1,4 +1,4 @@
-last_room = noone;
+last_room = undefined;
 transition_alpha = 0;
 ready_to_go = false;
 inst_player = obj_player

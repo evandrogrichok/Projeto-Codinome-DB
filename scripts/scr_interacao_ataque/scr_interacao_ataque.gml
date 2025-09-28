@@ -24,24 +24,10 @@ interact_params = [
 	[x - 1,      y - _range, _vx -2,        _vy + _range],
 	[x - _range, y,          _vx + _range,  _vy         ]
 ];
-
-
-_range = 15;
-_distance = 25
-_vx = x + lengthdir_x(_distance, coll_dir)
-_vy = y + lengthdir_y(_distance, coll_dir)
-
-attack_params = [
-	[x,          y - _range, _vx,           _vy + _range],
-	[x - 1,      y - _range, _vx -2,        _vy + _range],
-	[x - _range, y - 1,      _vx + _range,  _vy - 2     ],
-	[x - _range, y,          _vx + _range,  _vy         ]
-];
-
 	
 	var _detected_instance = scr_identificar_obj(obj_interativo, interact_params);
 	
-	if (_detected_instance != noone && !ativar_ataque){
+	if (_detected_instance != noone){
 		_detected_instance.ativarinteracao()
 	} //else {
 	//	_detected_instance = scr_identificar_obj(obj_atacavel, attack_params);

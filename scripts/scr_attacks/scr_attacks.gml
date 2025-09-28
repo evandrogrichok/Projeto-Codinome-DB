@@ -1,5 +1,5 @@
 
-function inimigo1_inimigo2(){
+function circle_and_falling_ice(){
 	var inst_manager = obj_batalhaturno_manager;
 	var caixas_valores = inst_manager.caixa_valores
 	var caixa_atual_valores = caixas_valores.default_box

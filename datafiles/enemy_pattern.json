@@ -1,7 +1,7 @@
 {
     "combo1":
       {
-        "enemies": ["inimigo1", "inimigo2"]
+        "enemies": ["inimigo1", "inimigo2", "inimigo2"]
       }
 }
   

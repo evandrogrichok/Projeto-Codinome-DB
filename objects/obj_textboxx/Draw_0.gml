@@ -2,14 +2,22 @@ draw_set_font(fnt_main);
 draw_set_valign(fa_top);
 draw_set_halign(fa_left);
 var portrait_x_offset = 0;
-var current_page = dialogo[page];
-var current_type = current_page.type;
-var current_speaker = current_page.speaker;
-var current_color = current_page.color;
-var current_location = current_page.location;
-var current_textbox = current_page.textbox;
-var current_sound = asset_get_index(current_page.sound);
+
+
+
+if !runned_every_page{
+	setup_page_variables();
+}
+show_debug_message(current_sound)
+show_debug_message(current_textbox)
+show_debug_message(current_location)
+show_debug_message(current_color)
+show_debug_message(current_speaker)
+
+
 var tecla_confirmar = keyboard_check_pressed(vk_enter) || keyboard_check_pressed(ord("Z"));
+
+
 //pegando os breaks de cada linha e guardando em um subarray de array
 
 
@@ -23,6 +31,9 @@ if textbox_heigth < textbox_heigth_lim[page]{
 if !interpreter_setted_up{
 	text_interpreter();
 }
+show_debug_message(current_text[page])
+show_debug_message(char_effects[page])
+
 
 if (draw_char < string_length(current_text[page])){
 	var check_char = (string_char_at(current_text[page], draw_char));
@@ -33,9 +44,9 @@ if (draw_char < string_length(current_text[page])){
 	
 	if (text_pause_timer <= 0){
 		draw_char += vel_escrita;
-	
+     	
 		play_text_sound(current_sound);
-		
+				
 		if  (check_pause(check_char) && text_pause_timer <= 0){
 		text_pause_timer = text_pause_time;
 		
@@ -50,6 +61,7 @@ if (draw_char < string_length(current_text[page])){
 } else if (draw_char >= string_length(current_text[page]) && tecla_confirmar){
 	page++;
 	draw_char = 0;
+	runned_every_page = false;
 	
 	if current_type == "decision"{
 		instance_destroy();
@@ -89,6 +101,7 @@ var y_options = y_textbox + top_offset + option_offset;
 if (current_speaker != "noone"){
 	portrait_x_offset = 74;
 	left_offset = 18;
+
 	draw_sprite_stretched_ext(asset_get_index(current_textbox), 0, x_textbox + left_offset, y_textbox + top_offset, portraitbox_size, portraitbox_size, c_white,1)
 	draw_sprite_stretched_ext(asset_get_index(current_speaker), 0, x_textbox + left_offset, y_textbox + top_offset, portraitbox_size, portraitbox_size, c_white,1)
 }
@@ -210,6 +223,9 @@ for (var i = 0; i < array_length(page_breaks); i++){
 			my_color = current_color;
         }
 		
+        if (array_contains(char_effects[page][c-1], "item")){ 
+			my_color = "c_yellow_main";
+        }
 		
         draw_text_color(x_text + left_offset + portrait_x_offset + text_x_offset + x_off,
                   y_text + top_offset + y_off + wave_y,
@@ -226,5 +242,8 @@ for (var i = 0; i < array_length(page_breaks); i++){
 }
 
 if !runned_once{
-runned_once = true;
+runned_once = true
+
 }
+
+

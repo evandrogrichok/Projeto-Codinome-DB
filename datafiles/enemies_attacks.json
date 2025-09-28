@@ -3,6 +3,30 @@
       {
         "limit_box": "default_box",
         "attacks": ["circle_and_falling_ice"]
+      },
+
+    "inimigo1_inimigo2_inimigo2":
+      {
+        "limit_box": "default_box",
+        "attacks": ["circle_and_falling_ice"]
+      },
+
+      "inimigo2":
+      {
+        "limit_box": "default_box",
+        "attacks": ["circle_and_falling_ice"]
+      },
+
+      "inimigo1":
+      {
+        "limit_box": "default_box",
+        "attacks": ["circle_and_falling_ice"]
+      },
+      "inimigo2_inimigo2":
+      {
+        "limit_box": "default_box",
+        "attacks": ["circle_and_falling_ice"]
       }
+      
 }
   

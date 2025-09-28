@@ -6,8 +6,8 @@ y = obj_playerhope_hb.y
 cutscene_dest_x_cam = x;
 cutscene_dest_y_cam = y;
 
-cutscene_y_vel_cam = noone;
-cutscene_x_vel_cam = noone;
+cutscene_y_vel_cam = undefined;
+cutscene_x_vel_cam = undefined;
 
 move_speed = 0;
 

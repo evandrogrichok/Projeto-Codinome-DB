@@ -16,15 +16,24 @@
 //	}	 
 	
 //} else {
-	if !instance_exists(obj_batalhaturno_manager) or obj_batalhaturno_manager.state != BATTLE_STATES.enemy_turn{
+	//if !instance_exists(obj_batalhaturno_manager) or obj_batalhaturno_manager.state != BATTLE_STATES.enemy_turn{
 
-			draw_self();
+	//		draw_self();
 
-	}
+	//} else {
+		
+	//}
 //}
 
 
+scr_shader_outline(sprite_index, image_index, 255, 255, 255, 1.0)
 
+scr_desenhar_player();
+
+shader_reset();
+
+
+draw_text_transformed(x-25, y, depth,0.3,0.3,0);
 
 if debug_mode_aa {
 

@@ -6,8 +6,8 @@
   "name":"obj_interativo",
   "overriddenProperties":[],
   "parent":{
-    "name":"Objetos",
-    "path":"folders/Objetos.yy",
+    "name":"objetos interativos",
+    "path":"folders/Objetos/objetos interativos.yy",
   },
   "parentObjectId":null,
   "persistent":false,

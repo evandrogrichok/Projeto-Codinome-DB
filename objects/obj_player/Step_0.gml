@@ -1,8 +1,5 @@
 global.deltatime =  delta_time / 16666
-depth = -bbox_bottom
-
-
-
+depth = -y
 
 if keyboard_check_pressed(ord("Y")){
 debug_mode_aa = !debug_mode_aa
@@ -193,6 +190,21 @@ if global.can_move > 0{
 //    }
 //}
 
+if instance_exists(obj_batalhaturno_manager) && obj_batalhaturno_manager.state == BATTLE_STATES.enemy_turn{
+	
+var inst_manager = obj_batalhaturno_manager;
+var caixas_valores = inst_manager.caixa_valores
+var caixa_atual_valores = caixas_valores.default_box
+var largura_caixa = caixa_atual_valores.caixa_tamanho 
+var altura_caixa = caixa_atual_valores.caixa_altura
+var x_caixa = caixa_atual_valores.caixa_posicao_x
+var y_caixa = caixa_atual_valores.caixa_posicao_y
+var w_bbox_p = sprite_get_bbox_right(sprite_index)  - sprite_get_bbox_left(sprite_index);
+var h_bbox_p = sprite_get_bbox_bottom(sprite_index) -  sprite_get_bbox_top(sprite_index);
+		
+x = clamp(x, x_caixa - largura_caixa/2 + w_bbox_p, x_caixa + largura_caixa/2 - w_bbox_p)
+y = clamp(y, y_caixa - altura_caixa/2 + h_bbox_p, y_caixa + altura_caixa/2 - h_bbox_p)
+}
 
 if (moving == false && !cutscene_char /*&& !ativar_ataque && !descansar_espada*/){
 	// para quando ele parar de andar ele nao ficar entre os pixels, pq a vel dele é um decimal

@@ -1,20 +1,22 @@
 {
     "inimigo1":
       {
-        "hp": 50,
+        "hp": 1,
         "enemy_name": "Boneco de Neve",
         "sprite": "spr_objetoplaceholder_atacavel",
         "sprite_dmg": "spr_objetoplaceholder_atacavel_dmg",
-        "sprite_atk": "spr_objetoplaceholder_atacavel_atk"
+        "sprite_atk": "spr_objetoplaceholder_atacavel_atk",
+        "sprite_pur": "spr_objetoplaceholder_atacavel_pur"
       },
 
     "inimigo2":
       {
-        "hp": 20,
+        "hp": 1,
         "enemy_name": "Suporte de Neve",
         "sprite": "spr_objetoplaceholder_atacavel",
         "sprite_dmg": "spr_objetoplaceholder_atacavel_dmg",
-        "sprite_atk": "spr_objetoplaceholder_atacavel_atk_1"
+        "sprite_atk": "spr_objetoplaceholder_atacavel_atk_1",
+        "sprite_pur": "spr_objetoplaceholder_atacavel_pur"
       }
 }
   

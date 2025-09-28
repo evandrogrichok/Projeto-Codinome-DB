@@ -121,7 +121,7 @@ function scr_text(_text){
 
 /// @param text_id
 
-function create_textbox(_text_id){
+function create_textbox(_text_id, _item_name){
 	if !instance_exists(obj_textbox){
 		with (instance_create_depth(0, 0, -9999, obj_textbox)){
 			scr_gametexts(_text_id)
