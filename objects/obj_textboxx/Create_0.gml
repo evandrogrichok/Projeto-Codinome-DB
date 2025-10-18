@@ -35,10 +35,18 @@ textbox_heigth = 70 //altura
 textbox_heigth_lim = array_create(array_length(dialogo), 0); //altura
 runned_once = false;
 
+
+
+//CONFIGURAÇÃO DE TAMANHO DE CAIXA DE DIÁLOGO
 for (var p = 0; p < array_length(dialogo); p++){
 	switch dialogo[p].type{
 		case "chat":
 		textbox_heigth_lim[p] = 70;
+		break;
+		case "battle":
+		textbox_heigth_lim[p] = 40;
+		textbox_heigth = 40
+		textbox_width = 320;
 		break;
 		case "decision":
 		textbox_heigth_lim[p] = 80;
@@ -101,6 +109,8 @@ function check_pause(_char) {
 
 function find_offset_by_location(_location){
 	switch (_location){
+		case 3:
+			return 140;
 		case 2:
 			return 10;
 		case 1: 

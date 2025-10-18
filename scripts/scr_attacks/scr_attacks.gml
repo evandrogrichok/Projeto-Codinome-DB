@@ -9,14 +9,8 @@ function circle_and_falling_ice(){
 	var y_caixa = caixa_atual_valores.caixa_posicao_y
 	var y_offset = obj_camera.x - camera_get_view_height(view_camera[0])/2 
 	
-	
-	var time_spikes = 20
-	
-	if inst_manager.bullet_timer <= 0{
-	instance_create_depth(irandom_range(x_caixa - compr_caixa/2, x_caixa + compr_caixa/2), y_offset, -1000, obj_spikes, {final_y : irandom_range(y_caixa - alt_caixa/2, y_caixa + alt_caixa/2) });
-	inst_manager.bullet_timer = 20;
-	} else {
-		inst_manager.bullet_timer--;
+	if inst_manager.enemy_attack_timer <= 0{
+	instance_create_depth(irandom_range(x_caixa - compr_caixa/2, x_caixa + compr_caixa/2), y_offset, -1000, obj_spikes, {final_y : irandom_range(y_caixa - alt_caixa/2, y_caixa + alt_caixa/2) });		
 	}
 	
 	if !instance_exists(obj_circle){

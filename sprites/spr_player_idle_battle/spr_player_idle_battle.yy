@@ -13,7 +13,7 @@
   "For3D":false,
   "frames":[
     {"$GMSpriteFrame":"","%Name":"90f2d31c-d267-4ab6-b593-5f36282e9898","name":"90f2d31c-d267-4ab6-b593-5f36282e9898","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"20ffc260-0038-4abb-8a70-f9220500748e","name":"20ffc260-0038-4abb-8a70-f9220500748e","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"","%Name":"b985d89f-d66a-4bda-bad9-6b3439edd3ee","name":"b985d89f-d66a-4bda-bad9-6b3439edd3ee","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
     {"$GMSpriteFrame":"","%Name":"db9cbc8a-e70f-441c-a2f7-1d8775f69da6","name":"db9cbc8a-e70f-441c-a2f7-1d8775f69da6","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
     {"$GMSpriteFrame":"","%Name":"1a33d4fa-6b5d-40bc-a2c5-6c5c1be00344","name":"1a33d4fa-6b5d-40bc-a2c5-6c5c1be00344","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
     {"$GMSpriteFrame":"","%Name":"73462ba8-6b09-418d-b49f-121f42baf8b8","name":"73462ba8-6b09-418d-b49f-121f42baf8b8","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
@@ -99,8 +99,8 @@
                 "0":{"$SpriteFrameKeyframe":"","Id":{"name":"90f2d31c-d267-4ab6-b593-5f36282e9898","path":"sprites/spr_player_idle_battle/spr_player_idle_battle.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
               },"Disabled":false,"id":"41bf25b4-0e81-442c-8d9e-3f61e76547ef","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
-                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"20ffc260-0038-4abb-8a70-f9220500748e","path":"sprites/spr_player_idle_battle/spr_player_idle_battle.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
-              },"Disabled":false,"id":"e7143d5b-9087-4a95-9309-a25ecb9170fa","IsCreationKey":false,"Key":1.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"b985d89f-d66a-4bda-bad9-6b3439edd3ee","path":"sprites/spr_player_idle_battle/spr_player_idle_battle.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"8d17be9e-1c1d-4e4e-9285-a816974887c6","IsCreationKey":false,"Key":1.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
                 "0":{"$SpriteFrameKeyframe":"","Id":{"name":"db9cbc8a-e70f-441c-a2f7-1d8775f69da6","path":"sprites/spr_player_idle_battle/spr_player_idle_battle.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
               },"Disabled":false,"id":"599021c6-3ae5-4670-8936-a31ff3477bca","IsCreationKey":false,"Key":2.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
@@ -126,8 +126,8 @@
   "swatchColours":null,
   "swfPrecision":0.5,
   "textureGroupId":{
-    "name":"Default",
-    "path":"texturegroups/Default",
+    "name":"outline",
+    "path":"texturegroups/outline",
   },
   "type":0,
   "VTile":false,

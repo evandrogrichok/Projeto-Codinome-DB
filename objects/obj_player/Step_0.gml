@@ -1,4 +1,7 @@
-global.deltatime =  delta_time / 16666
+
+
+
+
 depth = -y
 
 if keyboard_check_pressed(ord("Y")){
@@ -74,8 +77,8 @@ if cutscene_char{
 
 
 // sistema para identificar objeto interativo ou atacavel:
-if keyboard_check_pressed(ord("V")){
-	scr_interacao_ataque();
+if tecla_confirmar{
+	scr_interact();
 }
 
 
@@ -99,8 +102,8 @@ if global.can_move > 0{
 
 
 
-	if (keyboard_check(vk_shift)){vel_player = 1.5* global.deltatime} 
-	else {vel_player = 1* global.deltatime}
+	if (keyboard_check(vk_shift)){vel_player = 1.5} 
+	else {vel_player = 1}
 	
 	moving = false;
 
@@ -110,7 +113,7 @@ if global.can_move > 0{
 	
 		if ((keyboard_check(p[0]) or (keyboard_check(p[1]))) ){
 			var coll_checker_x = x + p[2] * vel_colisao
-			var coll_checker_y = y+ p[3] * vel_colisao
+			var coll_checker_y = y+ p[3] * vel_colisao 
 			facing_x = p[6];
 			facing_y = p[7];
 
@@ -124,8 +127,8 @@ if global.can_move > 0{
 				
 				moving = true;
 				coll_dir = p[5];
-				x += p[2] * vel_player
-				y += p[3] * vel_player
+				x += p[2] * vel_player 
+				y += p[3] * vel_player 
 				//descanso_contador = 0
 				//descansar_espada = false;
 			}
@@ -259,7 +262,7 @@ if (moving == false && !cutscene_char /*&& !ativar_ataque && !descansar_espada*/
 
 
 if cooldown > 0 {
-	cooldown -= 0.5	
+	cooldown -= 0.5
 }
 
 //if fog_timer > 0 {

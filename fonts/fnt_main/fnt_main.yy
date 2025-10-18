@@ -215,15 +215,15 @@
   "maintainGms1Font":false,
   "name":"fnt_main",
   "parent":{
-    "name":"Caixa de Texto",
-    "path":"folders/Caixa de Texto.yy",
+    "name":"Fontes",
+    "path":"folders/Fontes.yy",
   },
   "pointRounding":0,
   "ranges":[
     {"lower":32,"upper":255,},
     {"lower":9647,"upper":9647,},
   ],
-  "regenerateBitmap":false,
+  "regenerateBitmap":true,
   "resourceType":"GMFont",
   "resourceVersion":"2.0",
   "sampleText":"abcdef ABCDEF\n0123456789 .,<>\"'&!?\nthe quick brown fox jumps over the lazy dog\nTHE QUICK BROWN FOX JUMPS OVER THE LAZY DOG\nDefault character: ▯ (9647)",

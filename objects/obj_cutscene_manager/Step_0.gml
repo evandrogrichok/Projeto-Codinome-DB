@@ -33,7 +33,7 @@ switch _type{
 		esperando = true;
 		switch _action{
 			case "time":
-				wait_time = wait_time + 1 * global.deltatime;
+				wait_time = wait_time + 1;
 				if wait_time >= _param1{
 					esperando = false;
 					wait_time = 0;

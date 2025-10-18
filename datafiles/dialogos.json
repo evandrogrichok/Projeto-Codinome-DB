@@ -6,11 +6,27 @@
         "text": "Você encontrou <item>! <item> foi adicionado ao seu inventário."
       }
     ],
+    "battle1":[
+      {
+        "textbox": "spr_textbox_battle",
+        "location": 3,
+        "type": "battle",
+        "text": "<wave>O assovio do vento te causa arrepios...</wave>"
+      }
+    ],
     
     "item_space_full":[
       {
         "type": "chat",
         "text": "Você encontrou <item>! Mas seu inventário estava cheio demais..."
+      }
+    ],
+    "battle_won":[
+      {
+        "type": "chat",
+        "text": "<wave><color>VOCÊ VENCEU! Ganhou 9 milheos de xp e 91 bitcoins</color></wave>",
+        "color": "c_yellow",
+        "location": 1
       }
     ],
     

@@ -7,13 +7,12 @@ depth = -y;
 	
 
 //desabilitando interpolação
-gpu_set_texfilter(false)
+//gpu_set_texfilter(false)
 
 //VER LINHAS/COLISOES...
 debug_mode_aa = false
 
-//CORREÇÃO DE TEMPO
-global.deltatime =  delta_time / 16666
+
 
 
 
@@ -54,8 +53,13 @@ acao = undefined;
 //PARAMETROS DE BATALHA E ESTATISTICAS DO PERSONAGEM
 
 values = {
-	id_player: id,
-	hp: 30
+	max_hp: 30,
+	hp: 30,
+	defense: 0,
+	attack: 0,
+	level: 1,
+	xp: 0,
+	gold: 0
 	}
 
 //ativar_ataque = false; // se o player interagir com obj atacavel, ele ativa essa variavel;

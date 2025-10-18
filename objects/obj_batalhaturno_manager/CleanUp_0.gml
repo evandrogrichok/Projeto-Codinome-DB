@@ -1,2 +1,2 @@
-part_emitter_destroy(part_system_stars, emitter);
+part_emitter_destroy(part_system_stars, part_emitter_stars);
 part_system_destroy(part_system_stars);

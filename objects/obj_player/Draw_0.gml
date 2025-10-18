@@ -33,25 +33,25 @@ scr_desenhar_player();
 shader_reset();
 
 
-draw_text_transformed(x-25, y, depth,0.3,0.3,0);
+//draw_text_transformed(x-25, y, depth,0.3,0.3,0);
 
 if debug_mode_aa {
 
-    var _range = 15;
-    var _distance = 25;
+    var _range = 4;
+    var _distance = 12;
     var _vx = x + lengthdir_x(_distance, coll_dir);
     var _vy = y + lengthdir_y(_distance, coll_dir);
 
     if coll_dir == 0 {
-        draw_rectangle(x, y - _range, _vx, _vy + _range, true);
+        draw_rectangle(x+2, y - _range-1, _vx+2, _vy + _range, true);
     } 
 
-    if coll_dir == 180 {
-        draw_rectangle(x - 1, y - _range, _vx - 2, _vy + _range, true);
-    }
-
     if coll_dir == 90 {
-        draw_rectangle(x - _range, y - 1, _vx + _range, _vy - 2, true);
+        draw_rectangle(x - _range, y - 1, _vx + _range, _vy - 3, true);
+    }
+	
+	if coll_dir == 180 {
+        draw_rectangle(x - 1, y - _range-1, _vx - 3, _vy + _range, true);
     }
 
     if coll_dir == 270 {
@@ -66,7 +66,7 @@ if debug_mode_aa {
 
 }
 
-	draw_text_transformed(x, y-60, "x: " + string(x), 0.3, 0.3, 0)
-	draw_text_transformed(x, y-65, "y: " + string(y), 0.3, 0.3, 0)
+	//draw_text_transformed(x, y-60, "x: " + string(x), 0.3, 0.3, 0)
+	//draw_text_transformed(x, y-65, "y: " + string(y), 0.3, 0.3, 0)
 
 

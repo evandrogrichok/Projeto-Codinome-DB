@@ -19,6 +19,6 @@ if inst != noone && instint == noone{
 	}
 }
 
-if obj_batalhaturno_manager.battle_timer <= 0{
+if obj_batalhaturno_manager.enemy_attack_duration <= 0{
 	instance_destroy()
 }

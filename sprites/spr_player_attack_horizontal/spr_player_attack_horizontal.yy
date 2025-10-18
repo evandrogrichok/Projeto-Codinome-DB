@@ -139,8 +139,8 @@
   "swatchColours":null,
   "swfPrecision":0.5,
   "textureGroupId":{
-    "name":"Default",
-    "path":"texturegroups/Default",
+    "name":"outline",
+    "path":"texturegroups/outline",
   },
   "type":0,
   "VTile":false,

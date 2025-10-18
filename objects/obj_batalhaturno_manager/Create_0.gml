@@ -6,7 +6,8 @@ enum BATTLE_STATES{
 	arrow_pattern,
 	enemy_turn,
 	attacking,
-	wait_time,
+	battle_won,
+	wait_time
 }
 
 max_focus_points = 100;
@@ -14,6 +15,14 @@ focus_points = 0;
 focus_points_draw = 0;
 focus_points_amnt_incr = 0;
 focus_points_dest = 0;
+
+xp_gain_constant = 1;
+gold_gain_constant = 2;
+leveled_up = false;
+
+bonus_xp = 0;
+ 
+
 
 var file = file_text_open_read("attacks.json");
 var json_string = "";
@@ -132,6 +141,7 @@ options = [
 	["defend", asset_get_index("spr_button_defend_" + string(global.lang))]
 ]
 
+scr_open_textbox("battle1")
 show_debug_message(options[0][1])
 
 	
@@ -143,6 +153,7 @@ arrow_time = 60;
 arrow_to_draw_from = 0;
 arrow_feedback_draw = ["",0,0];
 alpha_feedback = 0;
+arrow_pattern_perfects = 0;
 myimage_speed = 1;
 myimage_index = 0;
 barrier_speed = 1;
@@ -199,12 +210,58 @@ seta_speed = 1;
 
 inimigos_vivos = [];
 
+
+available_enemies_attacks = [];
+var enemies_atks_keys = variable_struct_get_names(ataques_inimigos);
+var count_enemies_atks = array_length(enemies_atks_keys);
+
+	
+for (var i = 0; i < count_enemies_atks; i++){
+	var atk = variable_struct_get(ataques_inimigos, enemies_atks_keys[i]);
+	var atk_requirements = atk.requirements;
+
+	if(array_contains_ext(inimigos_combo, atk_requirements, true)){
+		array_push(available_enemies_attacks, atk);
+	}
+}
+
+
+function reload_enemies_attacks(){
+	
+	var attacks_count = array_length(available_enemies_attacks)
+	var enemies_alive = inimigos_vivos;
+
+	for (var i = 0; i < attacks_count; i++){
+		var atk = available_enemies_attacks[i];
+		var atk_requirements = atk.requirements;
+
+		if (!array_contains_ext(enemies_alive, atk_requirements, true)) {
+			array_delete(available_enemies_attacks, i, 1);
+		}
+	}
+}
+
+
 atqs_chave = "";
 bullet_timer = 0;
 battle_timer = 0;
 
 caixa_mov_pat = "";
 fade_in_alpha = 0;
+
+
+medium_alpha = 0.5;
+high_alpha = 0.8;
+max_alpha = 1;
+
+
+// player mini hud
+
+player_hud_height = sprite_get_height(spr_player_hud_inventory);
+player_hud_width = sprite_get_width(spr_player_hud_inventory);
+portrait_width = sprite_get_width(spr_player_portrait);
+
+highlight_color = #FFD44C;
 
 //part_system_stars = part_system_create(part_stars)
 //emitter = part_emitter_create(part_system_stars)
@@ -233,9 +290,27 @@ part_emitter_stars = part_emitter_create(part_system_stars);
 part_emitter_relative(part_system_stars, part_emitter_stars, true)
 
 
+attack_timer = undefined;
+runned_attack_action = false;
+item_draw_count = 4;
+enemy_attacking = false;
+draw_inventory_actions = false;
+
+selected_item = undefined;
+inventory_arrow_index = 0;
+inventory_arrow_speed = 1;
+
+can_use = true;
+inventory_options = ["Sim", "Não"]
 
 
+enum INVENTORY_DIRECTIONS {
+	down,
+	up
+}
 
+push_inventory_dir = INVENTORY_DIRECTIONS.up;
+inventory_draw_from = 0;
 
 caixa_valores = {
 	default_box: {
@@ -265,6 +340,12 @@ function run_command(_opt){
 //		state = BATTLE_STATES.arrow_pattern;
 		run_arrow_pattern("normal_attack");
 		break;
+		
+		case 2:
+			state = BATTLE_STATES.item_menu;
+		break;
+
+		
 	}
 	
 }
@@ -287,16 +368,178 @@ function run_arrow_pattern(_attack){
 	}
 }
 
-function load_enemy_attack(_chave){
-	var dados_ataques = variable_struct_get(ataques_inimigos, _chave);
-	var ataques = dados_ataques.attacks
-	var padrao_caixa = dados_ataques.limit_box
-	var chosen_attack = irandom_range(0, array_length(ataques) - 1);
+function load_enemy_attack(){
+	reload_enemies_attacks();
 	
+	var attacks = available_enemies_attacks;
+	var best_attack = undefined;
+	var priority = 0;
+	for (var i = 0; i < array_length(attacks); i++){
+		var atk = attacks[i]
+		
+		if (atk.priority > priority){
+			best_attack = atk;
+		}
+	}
+	
+	
+	caixa_mov_pat = best_attack.limit_box;
+	current_attack = best_attack;
 
-	caixa_mov_pat = padrao_caixa;
-	current_attack = ataques[chosen_attack];
-
-	show_debug_message("DADOS_ATAQUES: " + string(dados_ataques) +" ATAQUES: " + string(ataques) +" PADRAO_CAIXA: " + string(padrao_caixa) + " CHOSEN_ATTACK: " + string(current_attack))
+	
 }
 
+
+function check_level_up_player(){
+	var inst_player = obj_player;
+	
+	var current_level = inst_player.values.level;
+	var current_level_array_control = current_level-1;
+	
+	var exp_gain = power(current_level, xp_gain_constant);
+	var gold_gain = power(current_level, gold_gain_constant);
+
+	var current_xp = inst_player.values.xp; 
+	var exp_necessary_next_level = obj_game_manager.level_tiers[current_level_array_control+1];
+	
+	var level_up_calc = exp_gain + current_xp - exp_necessary_next_level[0];
+	
+	inst_player.values.gold += gold_gain
+	
+	if level_up_calc >= 0{
+		
+		inst_player.values.level++;
+		inst_player.values.xp = level_up_calc;
+	} else {
+		inst_player.values.xp += exp_gain;
+	}
+	
+}
+
+function setup_accuracy_text_draw(params, target_size, arrow_target_x){
+	var range_text = 5;
+	
+	cor_texto_acerto = params[1];
+	text_to_draw[0] = params[2]
+	text_to_draw[1] = "qualidade_acerto";
+	x_texto_acerto = arrow_target_x + range_text + target_size/2;
+	dest_x_texto_acerto = arrow_target_x - range_text + target_size/2;
+	alpha_txt_acerto = 1
+}
+
+function setup_accuracy_text_draw_values(dist_alvo){
+	arrow_feedback_draw = [arrow_pat[arrow_to_draw_from], dist_alvo, local_seta_mais_proxima]
+	alpha_feedback = 1
+}
+
+function search_for_param_accuracy(dist_alvo, target_size, arrow_target_x, is_missed_arrow = false){
+	if is_missed_arrow{
+		var params = param_acertar[array_length(param_acertar)-1];
+		setup_accuracy_text_draw(params, target_size, arrow_target_x)
+		return;
+	}
+	
+	
+	for(var i = 0; i < array_length(param_acertar)-1; i++){
+		var params = param_acertar[i];
+		if dist_alvo < params[0]{
+			setup_accuracy_text_draw(params, target_size, arrow_target_x)
+			break;
+		}
+	}
+}
+
+function reset_arrow_pattern_vars(arrow_count){
+		array_delete(player_arrow_pat,0,arrow_count);
+		spawn_setas = obj_camera.x +80;
+		arrow_to_draw_from = 0;
+}
+
+max_distance_arrow = 100;
+
+function calculate_damage(arrow_count){
+	var miss_amount = 0;
+	var max_dmg_porc = max_dmg/100;
+	var base_dmg = max_dmg
+	var total_distance = 0;
+	var tolerated_distance = 5
+	
+	var base_maximum_distance = 100;
+		
+	for (var i = 0; i < arrow_count; i++){
+		if player_arrow_pat[i][0] != arrow_pat[i]{
+			miss_amount++;
+		} 
+		
+		if player_arrow_pat[i][1] > tolerated_distance{
+			total_distance += player_arrow_pat[i][1];
+		}
+		
+	}
+	
+	show_debug_message(total_distance);
+	
+	total_distance = ((total_distance/arrow_count) / base_maximum_distance) * (max_dmg_porc * 30);
+	
+	var clamped_distance_discount = clamp(total_distance, 0, max_dmg_porc * 30);
+	var clamped_dmg_discount = clamp(max_dmg_porc * (10 * miss_amount), 0, max_dmg_porc * 50)
+	
+	return (round(base_dmg - clamped_distance_discount - clamped_dmg_discount));	
+}
+
+function reload_alive_enemies_array(enemy_count){
+			array_delete(inimigos_vivos, 0,array_length(inimigos_vivos));
+			//percorre adicionando os inimigos se eles estiverem com mais que 0 de vida
+			for (var e = 0; e < enemy_count; e++){
+				if hp_inimigos[e] > 0{
+					array_push(inimigos_vivos, inimigos_combo[e])
+				} 
+			}
+}
+
+//function setup_key_enemy_attack(){
+//	inimigos_vivos = scr_ordenar_alf_array(inimigos_vivos);
+				
+//	var string_array_alive_enemies = "";
+			
+//	for (var i = 0; i < array_length(inimigos_vivos); i++){
+//		string_array_alive_enemies += inimigos_vivos[i];
+//		if (i != array_length(inimigos_vivos) -1){
+//			string_array_alive_enemies += "_";
+//		}
+//	}
+			
+//	//guardamos numa chave o nome dos inimigos ordenados separados por "_" SEMPRE em lowercase.
+//	atqs_chave = string_lower(string_array_alive_enemies);
+//}
+
+enemy_attack_timer = 0;
+enemy_attack_type = undefined;
+enemy_attack_duration = undefined;
+enemy_attack_finished = false;
+setup_enemy_turn = false
+
+
+function setup_enemy_turn_settings(){
+	enemy_attack_type = current_attack.type;
+	
+	if enemy_attack_type == "time-repeat"{
+		enemy_attack_duration = current_attack.duration;
+		enemy_attack_timer = current_attack.repeat_frequency;
+	}
+	
+	setup_enemy_turn = true;
+}
+
+
+function go_to_wait_time_state(_next_state){
+	var wait_time = 60;
+	
+	if (_next_state == BATTLE_STATES.enemy_turn){
+		wait_time = 120;
+	}
+	
+	state = BATTLE_STATES.wait_time;
+	wait_timer = wait_time;
+	next_state = _next_state;
+}

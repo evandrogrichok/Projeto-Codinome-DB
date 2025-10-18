@@ -1,32 +1,14 @@
 {
-    "inimigo1_inimigo2":
+    "Circulo e Gelo":
       {
         "limit_box": "default_box",
-        "attacks": ["circle_and_falling_ice"]
-      },
-
-    "inimigo1_inimigo2_inimigo2":
-      {
-        "limit_box": "default_box",
-        "attacks": ["circle_and_falling_ice"]
-      },
-
-      "inimigo2":
-      {
-        "limit_box": "default_box",
-        "attacks": ["circle_and_falling_ice"]
-      },
-
-      "inimigo1":
-      {
-        "limit_box": "default_box",
-        "attacks": ["circle_and_falling_ice"]
-      },
-      "inimigo2_inimigo2":
-      {
-        "limit_box": "default_box",
-        "attacks": ["circle_and_falling_ice"]
-      }
+        "attack_script": "circle_and_falling_ice",
+        "requirements": ["inimigo1"],
+        "type": "time-repeat",
+        "repeat_frequency": 20,
+        "duration": 600,
+        "priority": 10
       
+      }
 }
   

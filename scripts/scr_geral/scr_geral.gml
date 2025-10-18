@@ -5,3 +5,7 @@ function scr_desenhar_player(){
 	var _inst_player = obj_player;
 	draw_sprite(_inst_player.sprite_index, _inst_player.image_index, _inst_player.x, _inst_player.y)
 }
+
+function scr_change_canmove(_number){
+	global.can_move = global.can_move + _number;
+}

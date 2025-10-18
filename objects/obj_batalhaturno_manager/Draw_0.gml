@@ -8,6 +8,8 @@ myimage_index = scr_animar_sprite(myimage_index, myimage_speed, spr_player_portr
 
 var _inst_player = obj_player;
 
+var height_textbox_battle = 40;
+
 //tamanho do visor da camera
 var _cam_w = camera_get_view_width(view_camera[0]);
 var _cam_h = camera_get_view_height(view_camera[0]);
@@ -48,22 +50,39 @@ var u_keys = keyboard_check_pressed(vk_up) or keyboard_check_pressed(ord("W"));
 var d_keys = keyboard_check_pressed(vk_down) or keyboard_check_pressed(ord("S"));
 var _opt_changer_v = (d_keys) - (u_keys) ;
 
+draw_set_font(fnt_tiny);
 
-draw_set_halign(fa_center);
-var padd = 0;
-draw_text(_cam_x, _cam_y -_cam_h/2 + 10*padd, "battle_state: " + string(state))
-padd++;
-draw_text(_cam_x, _cam_y -_cam_h/2 + 10*padd, "opt: " + string(opt))
-padd++;
-draw_text(_cam_x, _cam_y -_cam_h/2 + 10*padd, "last opt: " + string(last_opt))
-padd++;
-draw_text(_cam_x, _cam_y -_cam_h/2 + 10*padd, "shake_level: " + string(shake_level))
-padd++;
-draw_text(_cam_x, _cam_y -_cam_h/2 + 10*padd, "inis: " + string(inimigos_combo))
-padd++;
-draw_text(_cam_x, _cam_y -_cam_h/2 + 10*padd, "inis vivo: " + string(inimigos_vivos))
-padd++;
-draw_set_halign(fa_left);
+//var padd = 0;
+//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "battle_state: " + string(state))
+//padd++;
+//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "opt: " + string(opt))
+//padd++;
+//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "last opt: " + string(last_opt))
+//padd++;
+//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "shake_level: " + string(shake_level))
+//padd++;
+//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "inis: " + string(inimigos_combo))
+//padd++;
+//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "inis vivo: " + string(inimigos_vivos))
+//padd++;
+//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "wait timer: " + string(wait_timer))
+//padd++;
+//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "level: " + string(_inst_player.values.level))
+//padd++;
+//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "exp: " + string(_inst_player.values.xp))
+//padd++;
+//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "dist_seta: " + string(dist_seta_alvo))
+//padd++;
+//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "draw_from: " + string(inventory_draw_from))
+//padd++;
+//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "dir: " + string(push_inventory_dir))
+//padd++;
+//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "enemy_timer: " + string(enemy_attack_timer))
+//padd++;
+//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "enemy_duration: " + string(enemy_attack_duration))
+//padd++;
+
+
 draw_set_font(fnt_main);
 
 
@@ -73,10 +92,10 @@ draw_set_font(fnt_main);
 //draw_rectangle(local_seta_mais_proxima, 0, local_seta_mais_proxima+(sprite_get_width(spr_seta_up)), 300, 0)
 
 
-dist_seta_alvo = point_distance(x_alvo_setas, _cam_y, local_seta_mais_proxima, _cam_y)
+
 
 if state == BATTLE_STATES.arrow_pattern{
-		for(var k = 0; k < array_length(keys); k++){
+	for(var k = 0; k < array_length(keys); k++){
 		var key = keys[k]
 
 		if keyboard_check(key[0]){
@@ -132,18 +151,7 @@ if arrow_feedback_draw[0] != ""{
 
 //DESENHANDO O INIMIGO
 seta_index = scr_animar_sprite(seta_index, seta_speed, spr_selec_ini); 
-sin_t += 0.05
 for(var i = 0; i < quant_inimigos; i++){
-	
-		draw_text(_cam_x, _cam_y -_cam_h/2 + 10*padd, "i" + string(0 + abs(quant_inimigos_vivos-quant_inimigos)))
-		padd++;
-		
-
-		
-
-		
-	
-
 		
 		var max_hp = parametros_inimigos[i].hp
 		var nome = parametros_inimigos[i].enemy_name
@@ -170,9 +178,8 @@ for(var i = 0; i < quant_inimigos; i++){
 			var vel_draw_away = 5;
 			
 			var x_ini = x_inimigo[i] + vel_draw_away * draw_away
-			var y_ini = y_inimigo[i] - vel_draw_away - sin(sin_t) * 5
+			var y_ini = y_inimigo[i] - vel_draw_away - sin(sin_t*3.5) * 5
 			
-		
 			part_emitter_region(part_system_stars, part_emitter_stars, x_ini -10, x_ini +10, y_ini -10, y_ini +10, ps_shape_rectangle, ps_distr_linear);
 			part_emitter_burst(part_system_stars, part_emitter_stars, 0, 20);
 			
@@ -201,7 +208,7 @@ for(var i = 0; i < quant_inimigos; i++){
 	
 		if quant_inimigos == 1{
 		x_inimigo[i] = _cam_x + _cam_w/3
-		y_inimigo[i] = _cam_y 
+		y_inimigo[i] = _cam_y  
 		} else {
 		x_inimigo[i] = _cam_x + _cam_w/3
 		y_inimigo[i] = (_cam_y - _cam_h / 2 + ini_sprites_altura[i]/2) + (_cam_h / (quant_inimigos+1)) * (i + 1);
@@ -213,7 +220,7 @@ for(var i = 0; i < quant_inimigos; i++){
 		var altura_barra_hp = 3;
 		var altura_out_hp = altura_barra_hp+2;
 	
-		if (alpha_barra_ini>0 && state == BATTLE_STATES.enemy_turn){
+		if (alpha_barra_ini > 0){
 			alpha_barra_ini -= 0.01;
 	
 		}
@@ -237,10 +244,7 @@ for(var i = 0; i < quant_inimigos; i++){
 		} else {
 	
 		if state == BATTLE_STATES.select_enemy{
-		
-				if (_opt_changer_v != 0){
-				sin_t = pi/2;
-			}
+	
 		
 			if (i == opt){
 			scr_shader_outline(sprite_ini, enemies_index[i], 255, 219, 103, clamp(sin(sin_t*3)/5 + 0.8, 0, 1));
@@ -303,7 +307,6 @@ if text_to_draw[0] != ""{
 local_seta_mais_proxima = (spawn_setas + (sprite_get_width(spr_seta_up) + x_dist) * arrow_to_draw_from)-(sprite_get_width(spr_seta_up)/2)
 
 if (mostrar_limites_de_movimentacao){
-	sin_t += 0.05
 	if fade_in_alpha < 0.5{
 		fade_in_alpha += 0.05;
 	}
@@ -317,20 +320,16 @@ if (mostrar_limites_de_movimentacao){
 	var h_bbox_p = sprite_get_bbox_bottom(_inst_player.sprite_index) - sprite_get_bbox_top(_inst_player.sprite_index);
 	
 	if (state == BATTLE_STATES.wait_time){
-		sin_t += 0.05
 		
-		draw_sprite_stretched_ext(spr_barriers, 0, pos_x - largura_caixa/2, pos_y - altura_caixa/2, largura_caixa, altura_caixa, c_white, clamp(sin(sin_t)/2 + fade_in_alpha, 0, 1));
+		draw_sprite_stretched_ext(spr_barriers, 0, pos_x - largura_caixa/2, pos_y - altura_caixa/2, largura_caixa, altura_caixa, c_white, clamp(sin(sin_t * 3)/2 + fade_in_alpha, 0, 1));
 	
 	} else 
 	if (state == BATTLE_STATES.enemy_turn){
 		barrier_index = scr_animar_sprite(barrier_index, barrier_speed, spr_gradient_barriers);
 		
 		draw_sprite_stretched_ext(spr_barriers, 0, pos_x - largura_caixa/2, pos_y - altura_caixa/2, largura_caixa, altura_caixa, c_white, .8);
-		draw_sprite_stretched_ext(spr_gradient_barriers, barrier_index, pos_x - largura_caixa/2, pos_y - altura_caixa/2 - altura_gradiente +3, largura_caixa, altura_gradiente, c_white, fade_in_alpha*1.5);
 		
-
-		
-		
+		draw_sprite_stretched_ext(spr_gradient_barriers, barrier_index, pos_x - largura_caixa/2, pos_y - altura_caixa/2 - altura_gradiente +3, largura_caixa, altura_gradiente, c_white, fade_in_alpha*1.5);	
 		draw_sprite_stretched_ext(spr_gradient_barriers_bottom, barrier_index, pos_x - largura_caixa/2, pos_y + altura_caixa/2 - altura_gradiente, largura_caixa, altura_gradiente, c_white, fade_in_alpha*1.5);
 		
 	}
@@ -342,15 +341,177 @@ if (mostrar_limites_de_movimentacao){
 //desenhando vida 
 
 
-draw_sprite_ext(spr_player_hud, b_subimage[0], _cam_x - _cam_w/2 + _margin, _cam_y + _cam_h/2 - _sprite_h_hud - 5,1,1,0,c_white,1)
-draw_sprite(spr_player_portrait,myimage_index,portrait_x,portrait_y)
-draw_sprite_stretched(spr_healthbar,0,lifebar_x,lifebar_y, (_inst_player.values.hp / max_health)*43, 7)
+		draw_set_valign(fa_middle);
+		draw_set_halign(fa_left);
+		draw_set_font(fnt_tiny);
+		
+		var cam_x = obj_camera.x;
+		var cam_y = obj_camera.y;		
+	
+		var player_hud_x = cam_x - _cam_w/2 + _margin;
+		var player_hud_y = cam_y + _cam_h/2 - player_hud_height - _margin - height_textbox_battle;
+				
+		var hud_padding = 3;
+		var hud_margin_y = 2;
+				
+		var hp_x_offset = 16;
+		var hp_count_x_offset = hp_x_offset - 10;
+		var portrait_offset = 3;
+				
+		var hp_bar_size = 43;
+		var hp_bar_height = 7;
+				
+		var hp_bar_y_offset = 11
+		var hp_bar_x_correction = 1;
+			
+				
 
-draw_set_font(fnt_tiny)
-draw_text(portrait_x + 18, portrait_y-3,"Cael")
-draw_text_colour(portrait_x + sprite_get_width(spr_player_hud) - 23, portrait_y-3,"hp:",c_white,c_white,c_white,c_white,.5)
-draw_text_colour(portrait_x + sprite_get_width(spr_player_hud) - 13, portrait_y-3,string(_inst_player.values.hp),c_yellow,c_yellow,c_yellow,c_yellow,1)
-draw_set_font(fnt_main)
+		
+		draw_sprite(spr_player_hud, 0, player_hud_x, player_hud_y);
+		draw_sprite(spr_player_portrait, myimage_index, player_hud_x + portrait_offset, player_hud_y + portrait_offset);
+				
+				
+		draw_text(player_hud_x + portrait_offset + portrait_width + hud_padding, player_hud_y + portrait_offset + hud_margin_y, "Cael");
+		draw_text_color(player_hud_x - portrait_offset + player_hud_width - hp_x_offset, player_hud_y + portrait_offset + hud_margin_y, "hp:", c_white, c_white, c_white, c_white, medium_alpha);
+		draw_text_color(player_hud_x - portrait_offset + player_hud_width - hp_count_x_offset, player_hud_y + portrait_offset + hud_margin_y, string(obj_player.values.hp), highlight_color, highlight_color, highlight_color, highlight_color, 1);
+				
+		draw_sprite_stretched(spr_healthbar, 0, player_hud_x + portrait_width + portrait_offset + hud_padding + hp_bar_x_correction, player_hud_y + hp_bar_y_offset,(obj_player.values.hp / obj_player.values.max_hp)*hp_bar_size, hp_bar_height)
+				
+		draw_set_valign(fa_top);
+		draw_set_font(fnt_main);
+		
+
+//var hp_bar_size = 43;
+//var hp_bar_height = 7;
+
+//draw_sprite_ext(spr_player_hud, b_subimage[0], _cam_x - _cam_w/2 + _margin, _cam_y + _cam_h/2 - _sprite_h_hud - 5,1,1,0,c_white,1)
+//draw_sprite(spr_player_portrait,myimage_index,portrait_x,portrait_y)
+//draw_sprite_stretched(spr_healthbar,0,lifebar_x,lifebar_y, (_inst_player.values.hp / max_health)*hp_bar_size, hp_bar_height)
+
+//draw_set_font(fnt_tiny)
+//draw_text(portrait_x + 18, portrait_y-3,"Cael")
+//draw_text_colour(portrait_x + sprite_get_width(spr_player_hud) - 23, portrait_y-3,"hp:",c_white,c_white,c_white,c_white,.5)
+//draw_text_colour(portrait_x + sprite_get_width(spr_player_hud) - 13, portrait_y-3,string(_inst_player.values.hp),c_yellow,c_yellow,c_yellow,c_yellow,1)
+//draw_set_font(fnt_main)
+
+
+if state == BATTLE_STATES.item_menu {
+	
+	var inst_gm = obj_game_manager;
+	
+	var width_inventory = 100;
+	var height_inventory = 55;
+	
+	var opt_height = sprite_get_height(spr_button_item_pt)
+	
+	var padding_opt_inventory = 2;
+	var y_offset = _cam_h/2 - height_inventory - _margin - opt_height
+	var dist_item_center = 50;
+	
+	var x_inventory = cam_x + dist_item_center - width_inventory/2 
+	var y_inventory = cam_y + y_offset - padding_opt_inventory
+	
+	draw_sprite_stretched(spr_box, 0, x_inventory, y_inventory, width_inventory, height_inventory);
+	
+	var padding_text = 0;
+	var padding_text_increase = 10;
+	var margin_text = 2
+	
+	draw_set_font(fnt_tiny);
+	
+	var width_selection_box = width_inventory/2
+	var heigth_selection_box = 12
+	
+	var x_text =  x_inventory + margin_text * 2
+	var y_text_info = y_inventory + height_inventory / 2 
+	var y_text_options_question = y_inventory + (height_inventory / 5) * 2
+	var y_text_options = y_inventory + (height_inventory / 5) * 4
+	
+	
+	var items_total_height = 0;
+	var iteration_num = 0
+	var item_amount = array_length(inst_gm.inventory);
+	inventory_arrow_index = scr_animar_sprite(inventory_arrow_index, inventory_arrow_speed, spr_arrow_up);
+	
+	for (var i = 0 + inventory_draw_from; i < array_length(inst_gm.inventory); i++){
+		iteration_num++;
+		
+		var item = inst_gm.inventory[i]
+		var item_name = item.name;
+	
+		var y_text = y_inventory + padding_text + margin_text;
+		
+		var correction_x_selection = 1
+		var color_text = c_white
+		var alpha_text = 1;
+		if (inventory_draw_from > 0 && iteration_num == 1){	
+			draw_sprite(spr_arrow_up, inventory_arrow_index, x_text, y_text);
+			padding_text += padding_text_increase;
+			continue;
+		}
+		
+		if !draw_inventory_actions {
+			if (i - inventory_draw_from == opt - inventory_draw_from){
+				draw_sprite_stretched(spr_seta_txt, 0, x_text - correction_x_selection, y_text - correction_x_selection * 1.5, width_selection_box - margin_text*2, heigth_selection_box);
+				color_text = highlight_color;
+				var item_info = item.properties_description
+			
+				//desenhando info do item
+				draw_set_valign(fa_middle);
+				draw_set_halign(fa_center);
+				var y_correction = 3;
+				draw_text_ext_color(x_inventory + (width_inventory/4) * 3, y_text_info - y_correction, item_info, 6, width_inventory/2 - margin_text*2, c_white, c_white, c_white, c_white, medium_alpha)
+				draw_set_halign(fa_left);
+				draw_set_valign(fa_top);
+			}
+		} else {
+			alpha_text = medium_alpha;
+			if (i - inventory_draw_from) == (selected_item - inventory_draw_from){
+				alpha_text = 1;
+				color_text = highlight_color;
+				draw_sprite_stretched(spr_seta_txt, 0, x_text - correction_x_selection, y_text - correction_x_selection * 1.5, width_selection_box - margin_text*2, heigth_selection_box);
+				
+				draw_set_valign(fa_middle);
+				draw_set_halign(fa_center);
+				var y_correction = 3;
+				var padding = -string_height(inventory_options[0]);
+				var padding_increase = 12;
+				draw_text_ext_color(x_inventory + (width_inventory/4) * 3, y_text_options_question - y_correction + padding, "Usar " + string(inst_gm.inventory[selected_item].name) + "?", 6, width_inventory/2 - margin_text*2, c_white, c_white, c_white, c_white, alpha_text)
+				for (var j = 0; j < array_length(inventory_options); j++){
+					draw_text_ext_color(x_inventory + (width_inventory/4) * 3, y_text_options - y_correction + padding, inventory_options[j], 6, width_inventory/2 - margin_text*2, c_white, c_white, c_white, c_white, alpha_text)
+					
+					if (opt == j){
+						var string_h = string_height(inventory_options[j])
+						draw_sprite_stretched(spr_seta_txt, 0,x_inventory + (width_inventory/4) * 2,  y_text_options - y_correction + padding - string_h/2, width_selection_box - margin_text, heigth_selection_box);
+					}
+					
+					
+					
+					
+					padding += padding_increase;
+				}
+				draw_set_halign(fa_left);
+				draw_set_valign(fa_top);
+			}
+		}
+	
+		
+		if ((i - inventory_draw_from == item_draw_count) && (i + 1 < item_amount)){
+			draw_sprite(spr_arrow_down, inventory_arrow_index, x_text, y_text);
+			break;
+		}
+			
+
+		
+		draw_text_color(x_text, y_text, item_name, color_text, color_text, color_text, color_text, alpha_text);
+		
+		
+	
+		padding_text += padding_text_increase;
+	}
+	
+	draw_sprite_stretched(spr_dot, 0, x_inventory, y_inventory, 2, items_total_height )
+}
 
 
 
@@ -362,9 +523,11 @@ if (state == BATTLE_STATES.item_menu || state == BATTLE_STATES.hope_menu || stat
 	
 	for(var i = 0; i < quant_opc; i++){
 			var option = options[i]
-			draw_sprite_ext(option[1], b_subimage[i], _cam_x + _padding - tam_hud/2 - _margin, _cam_y + _cam_h/2 - _sprite_h - _margin,1,1,0,c_white,1)
+			draw_sprite_ext(option[1], b_subimage[i], _cam_x + _padding - tam_hud/2 - _margin, _cam_y + _cam_h/2 - height_textbox_battle - _sprite_h - _margin,1,1,0,c_white,1)
 			_padding += 2 + sprite_get_width(option[1]);
 	}
+	
+	
 
 	
 }
@@ -374,9 +537,12 @@ var padding_hud = 5;
 var alt_hud = sprite_get_height(spr_player_hud);
 draw_set_font(fnt_tiny);
 var width_texto_fp = string_width("FP");
-draw_text( _cam_x - _cam_w / 2 + _margin, _cam_y + _cam_h/2 - alt_hud - padding_hud - _margin - string_height("A")/2, "FP:");
+var x_base_info = _cam_x - _cam_w / 2 + _margin;
+var y_base_info = _cam_y + _cam_h/2 - alt_hud - padding_hud - _margin - height_textbox_battle;
 
-draw_sprite_stretched_ext(spr_hopebar, 0, _cam_x - _cam_w / 2 + _margin + width_texto_fp + padding_hud, _cam_y + _cam_h/2 - alt_hud - padding_hud - _margin, tam_hud - width_texto_fp - padding_hud, alt_focus_points, c_black, 0.5);
-draw_sprite_stretched(spr_hopebar, 0, _cam_x - _cam_w / 2 + _margin + width_texto_fp + padding_hud, _cam_y + _cam_h/2 - alt_hud - padding_hud - _margin, (focus_points_draw / max_focus_points) * (tam_hud - width_texto_fp - padding_hud), alt_focus_points);
+draw_text( x_base_info, y_base_info - string_height("A")/2, "FP:");
+
+draw_sprite_stretched_ext(spr_hopebar, 0,x_base_info + width_texto_fp + padding_hud, y_base_info, tam_hud - width_texto_fp - padding_hud, alt_focus_points, c_black, 0.5);
+draw_sprite_stretched(spr_hopebar, 0, x_base_info + width_texto_fp + padding_hud, y_base_info, (focus_points_draw / max_focus_points) * (tam_hud - width_texto_fp - padding_hud), alt_focus_points);
 
 
