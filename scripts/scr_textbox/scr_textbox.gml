@@ -8,6 +8,8 @@ function scr_open_textbox(_id, _item_name = "ITEM_NÃO_DEFINIDO"){
         item : _item_name
     };
 
-	instance_create_depth(0, 0, -99999, obj_textboxx, _inst_vars);
+	var inst_id = instance_create_depth(0, 0, -99999, obj_textboxx, _inst_vars);
+	return inst_id;
 	}
+	
 }

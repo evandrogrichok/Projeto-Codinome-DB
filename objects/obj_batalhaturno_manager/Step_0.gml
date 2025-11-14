@@ -1,14 +1,15 @@
-var l_keys = keyboard_check_pressed(vk_right) or keyboard_check_pressed(ord("D"));
-var r_keys = keyboard_check_pressed(vk_left) or keyboard_check_pressed(ord("A"));
-var u_keys = keyboard_check_pressed(vk_up) or keyboard_check_pressed(ord("W"));
-var d_keys = keyboard_check_pressed(vk_down) or keyboard_check_pressed(ord("S"));
-var accept_key = keyboard_check_pressed(vk_enter) or keyboard_check_pressed(ord("Z"));
-var deny_key = keyboard_check_pressed(vk_shift) or keyboard_check_pressed(ord("X"));
-var inst_player = obj_player;
-var opt_changer =  (l_keys) - (r_keys);
-var opt_changer_v = (d_keys) - (u_keys) ;
-var opt_count = array_length(options);
+var l_keys = global.LEFT_KEY
+var r_keys = global.RIGHT_KEY;
+var u_keys = global.UP_KEY;
+var d_keys = global.DOWN_KEY;
+var accept_key = global.ACCEPT_KEY;
+var deny_key = global.BACK_KEY;
 
+var opt_changer =  (r_keys) - (l_keys);
+var opt_changer_v = (d_keys) - (u_keys) ;
+
+var inst_player = obj_player;
+var opt_count = array_length(options);
 var spd_fp_draw = 0.25;
 
 if focus_points_draw != focus_points {
@@ -19,12 +20,12 @@ if focus_points_draw != focus_points {
 //show_debug_message(focus_points_draw);
 
 //localizacao do obj cam
-var cam_x = obj_camera.x;
-var cam_y = obj_camera.y
-
+var cam_x = obj_camera.x
+var cam_y = obj_camera.y;
 
 var target_size = 20;
-var arrow_target_x = (cam_x-20)-target_size;
+var tam_alvo = 20
+var arrow_target_x = cam_x + tam_alvo/2;
 
 //inimigos
 var enemy_count = array_length(inimigos_combo);
@@ -34,7 +35,8 @@ var enemy_count_alive = array_length(inimigos_vivos);
 
 
 sin_t += 0.05
-dist_seta_alvo = point_distance(arrow_target_x, cam_y, local_seta_mais_proxima, cam_y)
+
+
 
 can_use = true;
 
@@ -106,6 +108,7 @@ switch (state){
 			draw_inventory_actions = false;
 			opt = selected_item;
 			selected_item = undefined;
+
 		}
 	
 	
@@ -208,17 +211,23 @@ switch (state){
 	
 	if accept_key{
 		next_enemy_to_attack = opt;
+		instance_destroy(obj_textboxx);
 		state = BATTLE_STATES.arrow_pattern;
 	}
 		
 	if deny_key{
 		focus_points -= focus_points_amnt_incr
 		state = BATTLE_STATES.main_menu;
+		main_textbox_id.visible = true;
 	}
 	
 	break;
 	
 	case (BATTLE_STATES.arrow_pattern):
+	height_textbox_battle = lerp(height_textbox_battle, 0, 0.1);
+	alpha_vignette = lerp(alpha_vignette, alpha_vignette_high, 0.1);
+	
+	dist_seta_alvo = point_distance(arrow_target_x, cam_y, closest_arrow_x, closest_arrow_y);	
 	
 	if alpha_barra_ini != 1{
 		alpha_barra_ini = 1;
@@ -330,6 +339,8 @@ switch (state){
 	
 	switch(next_state){
 		case BATTLE_STATES.enemy_turn:
+		alpha_vignette = lerp(alpha_vignette, alpha_vignette_low, 0.1);
+		
 		if wait_timer > 0{
 			mostrar_limites_de_movimentacao = true;
 		} else {

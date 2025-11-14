@@ -28,8 +28,9 @@
 
 scr_shader_outline(sprite_index, image_index, 255, 255, 255, 1.0)
 
-scr_desenhar_player();
-
+if blink_timer <= 0 && blink_times%2 == 0{
+	scr_desenhar_player();
+} 
 shader_reset();
 
 

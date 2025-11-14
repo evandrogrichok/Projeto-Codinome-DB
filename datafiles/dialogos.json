@@ -6,12 +6,12 @@
         "text": "Você encontrou <item>! <item> foi adicionado ao seu inventário."
       }
     ],
-    "battle1":[
+    "BATTLE_test_001":[
       {
         "textbox": "spr_textbox_battle",
         "location": 3,
         "type": "battle",
-        "text": "<wave>O assovio do vento te causa arrepios...</wave>"
+        "text": "<wave>O vento gelado te causa um arrepio...</wave>"
       }
     ],
     

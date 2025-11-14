@@ -2,7 +2,7 @@
   "$GMProject":"v1",
   "%Name":"DownesBasement",
   "AudioGroups":[
-    {"$GMAudioGroup":"","%Name":"audiogroup_default","name":"audiogroup_default","resourceType":"GMAudioGroup","resourceVersion":"2.0","targets":-1,},
+    {"$GMAudioGroup":"v1","%Name":"audiogroup_default","exportDir":"","name":"audiogroup_default","resourceType":"GMAudioGroup","resourceVersion":"2.0","targets":-1,},
   ],
   "configs":{
     "children":[],
@@ -57,7 +57,7 @@
   "isEcma":false,
   "LibraryEmitters":[],
   "MetaData":{
-    "IDEVersion":"2024.13.1.193",
+    "IDEVersion":"2024.14.0.207",
   },
   "name":"DownesBasement",
   "resources":[
@@ -212,8 +212,10 @@
     {"id":{"name":"spr_textbox_opener","path":"sprites/spr_textbox_opener/spr_textbox_opener.yy",},},
     {"id":{"name":"spr_textbox_verde","path":"sprites/spr_textbox_verde/spr_textbox_verde.yy",},},
     {"id":{"name":"spr_textbox","path":"sprites/spr_textbox/spr_textbox.yy",},},
+    {"id":{"name":"spr_vignette","path":"sprites/spr_vignette/spr_vignette.yy",},},
     {"id":{"name":"Sprite41","path":"sprites/Sprite41/Sprite41.yy",},},
     {"id":{"name":"Sprite49","path":"sprites/Sprite49/Sprite49.yy",},},
+    {"id":{"name":"Sprite85","path":"sprites/Sprite85/Sprite85.yy",},},
     {"id":{"name":"ts_grama","path":"tilesets/ts_grama/ts_grama.yy",},},
   ],
   "resourceType":"GMProject",

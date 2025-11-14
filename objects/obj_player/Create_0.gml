@@ -47,7 +47,8 @@ cutscene_y_vel_player = undefined;
 cutscene_x_vel_player = undefined;
 acao = undefined;
 
-
+blink_timer = 0;
+blink_times = 0;
 
 // --------------------------------------------------------------
 //PARAMETROS DE BATALHA E ESTATISTICAS DO PERSONAGEM
@@ -59,8 +60,12 @@ values = {
 	attack: 0,
 	level: 1,
 	xp: 0,
-	gold: 0
+	gold: 0,
+	
+	take_dmg: function(_amount){
+		self.hp -= _amount
 	}
+}
 
 //ativar_ataque = false; // se o player interagir com obj atacavel, ele ativa essa variavel;
 //descansar_espada = false;

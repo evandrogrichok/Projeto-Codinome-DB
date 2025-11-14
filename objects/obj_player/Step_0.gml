@@ -1,7 +1,6 @@
 
 
 
-
 depth = -y
 
 if keyboard_check_pressed(ord("Y")){
@@ -263,6 +262,19 @@ if (moving == false && !cutscene_char /*&& !ativar_ataque && !descansar_espada*/
 
 if cooldown > 0 {
 	cooldown -= 0.5
+	
+	if blink_timer > 0{
+		blink_timer--;
+	} else{
+		if blink_times> 0{
+			blink_times--;
+			blink_timer = 5;
+		}
+	}
+
+} else {
+	blink_timer = 0;
+	blink_times = 0;
 }
 
 //if fog_timer > 0 {

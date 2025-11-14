@@ -8,7 +8,7 @@ myimage_index = scr_animar_sprite(myimage_index, myimage_speed, spr_player_portr
 
 var _inst_player = obj_player;
 
-var height_textbox_battle = 40;
+
 
 //tamanho do visor da camera
 var _cam_w = camera_get_view_width(view_camera[0]);
@@ -32,7 +32,7 @@ var lifebar_x = (_cam_x - _cam_w/2 + _margin) + 22
 var lifebar_y = (_cam_y + _cam_h/2 - _sprite_h_hud - 5) + 11
 var tam_alvo = 20
 //parte >>ESQUERDA<< do alvo setas
-var x_alvo_setas = (_cam_x-20)-tam_alvo
+var x_alvo_setas = _cam_x
 var x_dist = 10;
 var aumentar_alvo = 0;
 //desenhando setas
@@ -53,33 +53,33 @@ var _opt_changer_v = (d_keys) - (u_keys) ;
 draw_set_font(fnt_tiny);
 
 //var padd = 0;
-//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "battle_state: " + string(state))
+//draw_text_transformed(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 5*padd, "battle_state: " + string(state), 0.5, 0.5, 0)
 //padd++;
-//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "opt: " + string(opt))
+//draw_text_transformed(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 5*padd, "opt: " + string(opt), 0.5, 0.5, 0)
 //padd++;
-//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "last opt: " + string(last_opt))
+//draw_text_transformed(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 5*padd, "last opt: " + string(last_opt), 0.5, 0.5, 0)
 //padd++;
-//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "shake_level: " + string(shake_level))
+//draw_text_transformed(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 5*padd, "shake_level: " + string(shake_level), 0.5, 0.5, 0)
 //padd++;
-//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "inis: " + string(inimigos_combo))
+//draw_text_transformed(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 5*padd, "inis: " + string(inimigos_combo), 0.5, 0.5, 0)
 //padd++;
-//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "inis vivo: " + string(inimigos_vivos))
+//draw_text_transformed(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 5*padd, "inis vivo: " + string(inimigos_vivos), 0.5, 0.5, 0)
 //padd++;
-//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "wait timer: " + string(wait_timer))
+//draw_text_transformed(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 5*padd, "wait timer: " + string(wait_timer), 0.5, 0.5, 0)
 //padd++;
-//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "level: " + string(_inst_player.values.level))
+//draw_text_transformed(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 5*padd, "level: " + string(_inst_player.values.level), 0.5, 0.5, 0)
 //padd++;
-//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "exp: " + string(_inst_player.values.xp))
+//draw_text_transformed(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 5*padd, "exp: " + string(_inst_player.values.xp), 0.5, 0.5, 0)
 //padd++;
-//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "dist_seta: " + string(dist_seta_alvo))
+//draw_text_transformed(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 5*padd, "dist_seta: " + string(dist_seta_alvo), 0.5, 0.5, 0)
 //padd++;
-//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "draw_from: " + string(inventory_draw_from))
+//draw_text_transformed(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 5*padd, "draw_from: " + string(inventory_draw_from), 0.5, 0.5, 0)
 //padd++;
-//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "dir: " + string(push_inventory_dir))
+//draw_text_transformed(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 5*padd, "dir: " + string(push_inventory_dir), 0.5, 0.5, 0)
 //padd++;
-//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "enemy_timer: " + string(enemy_attack_timer))
+//draw_text_transformed(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 5*padd, "enemy_timer: " + string(enemy_attack_timer), 0.5, 0.5, 0)
 //padd++;
-//draw_text(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 10*padd, "enemy_duration: " + string(enemy_attack_duration))
+//draw_text_transformed(_cam_x - _cam_w/2, _cam_y -_cam_h/2 + 5*padd, "enemy_duration: " + string(enemy_attack_duration), 0.5, 0.5, 0)
 //padd++;
 
 
@@ -87,12 +87,12 @@ draw_set_font(fnt_main);
 
 
 
+
 //draw_rectangle(x_alvo_setas, _cam_y,x_alvo_setas, _cam_y+20, 0)
 //draw_rectangle(x_lim_setas-5, 0,x_lim_setas, 300, 0)
-//draw_rectangle(local_seta_mais_proxima, 0, local_seta_mais_proxima+(sprite_get_width(spr_seta_up)), 300, 0)
 
 
-
+draw_sprite_ext(spr_vignette, 0, camera_get_view_x(view_camera[0]), camera_get_view_y(view_camera[0]), 1, 1, 0, c_white, alpha_vignette);
 
 if state == BATTLE_STATES.arrow_pattern{
 	for(var k = 0; k < array_length(keys); k++){
@@ -111,18 +111,58 @@ if state == BATTLE_STATES.arrow_pattern{
 	var start = arrow_to_draw_from
 	
 	for (var i = 0; i < quant_setas; i++){
-		if arrow_to_draw_from <= i{
-		draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"),0,spawn_setas + arrow_x_distance, _cam_y, 1, 1, 0, c_white, alpha);
+		
+		
+		// se o i for igual ao arrow to draw from dai ele atribui o cloosest
+		
+	
+	if arrow_to_draw_from <= i{
+		
+		switch arrow_pat[i]{
+		
+			case "right":
+				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, (_cam_x + tam_alvo/2) + individual_arrow_distance[i], _cam_y, 1, 1, 0, c_white, alpha);
+					if arrow_to_draw_from == i{
+						determine_closest_arrow_xy_pos(_cam_x + tam_alvo/2, _cam_y, individual_arrow_distance[i], 0);
+					}
+			break;
+			case "left":
+				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, (_cam_x + tam_alvo/2) - individual_arrow_distance[i], _cam_y, 1, 1, 0, c_white, alpha);
+					if arrow_to_draw_from == i{
+						determine_closest_arrow_xy_pos(_cam_x + tam_alvo/2, _cam_y, -individual_arrow_distance[i], 0);
+					}
+			break;
+			
+			case "up":
+				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, _cam_x + tam_alvo/2, _cam_y - individual_arrow_distance[i], 1, 1, 0, c_white, alpha);
+					if arrow_to_draw_from == i{
+						determine_closest_arrow_xy_pos(_cam_x + tam_alvo/2, _cam_y, 0, -individual_arrow_distance[i]);
+					}
+			
+			break;
+			
+			case "down":
+				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, _cam_x + tam_alvo/2, _cam_y + individual_arrow_distance[i], 1, 1, 0, c_white, alpha);
+				if arrow_to_draw_from == i{
+						determine_closest_arrow_xy_pos(_cam_x + tam_alvo/2, _cam_y, 0, +individual_arrow_distance[i]);
+				}
+			break;
+			
+		}
+		
 		alpha -= 1/quant_setas;
 		}
 		arrow_x_distance += sprite_get_width(spr_seta_up) + x_dist;	
-			
+		individual_arrow_distance[i] -= vel_setas		
 	}
 	
+	local_seta_mais_proxima = individual_arrow_distance[arrow_to_draw_from];
+	//draw_rectangle(closest_arrow_x,closest_arrow_y,closest_arrow_x+2, closest_arrow_y+2, false)
 
-	
-	spawn_setas -= vel_setas;
 }
+
+
+//draw_rectangle(seta, 0, local_seta_mais_proxima+(sprite_get_width(spr_seta_up)), 300, 0)
 
 
 //DESENHANDO EFEITO DE FEEDBACK NAS SETAS
@@ -137,7 +177,7 @@ if arrow_feedback_draw[0] != ""{
 			arrow_feedback_draw = ["","",""]
 		}
 	} else {
-		draw_sprite_ext(asset_get_index($"spr_seta_gray_{arrow_feedback_draw[0]}"), 0, arrow_feedback_draw[2] + sprite_get_width(spr_seta_gray_left)/2, _cam_y, 1, 1, 0, cor_texto_acerto, alpha_feedback);
+		draw_sprite_ext(asset_get_index($"spr_seta_gray_{arrow_feedback_draw[0]}"), 0, last_closest_arrow_x, last_closest_arrow_y, 1, 1, 0, cor_texto_acerto, alpha_feedback);
 		if alpha_feedback > 0{
 			alpha_feedback -= 0.1
 			
@@ -170,15 +210,13 @@ for(var i = 0; i < quant_inimigos; i++){
 		sprite_ini_pur = asset_get_index(sprite_ini_pur)
 		
 		if (hp_inimigos[i] <= 0){
-	
-
 		if enemies_draw_defeat_state[i] == 0{
-			draw_away = lerp(draw_away, 20, 0.01)
-			fade_away += -0.05
+			draw_away = lerp(draw_away, 20, 0.01);
+			fade_away += -0.05;
 			var vel_draw_away = 5;
 			
-			var x_ini = x_inimigo[i] + vel_draw_away * draw_away
-			var y_ini = y_inimigo[i] - vel_draw_away - sin(sin_t*3.5) * 5
+			var x_ini = x_inimigo[i] + vel_draw_away * draw_away;
+			var y_ini = y_inimigo[i] - vel_draw_away - sin(sin_t*3.5) * 5;
 			
 			part_emitter_region(part_system_stars, part_emitter_stars, x_ini -10, x_ini +10, y_ini -10, y_ini +10, ps_shape_rectangle, ps_distr_linear);
 			part_emitter_burst(part_system_stars, part_emitter_stars, 0, 20);
@@ -187,16 +225,12 @@ for(var i = 0; i < quant_inimigos; i++){
 			
 			if fade_away <= 0{
 				enemies_draw_defeat_state[i] = 1;
-				draw_away = 0
-				fade_away = 2
+				draw_away = 0;
+				fade_away = 2;
 				 
 				}
 			}
 			
-			
-		}
-		
-		if(hp_inimigos[i] <= 0){
 			continue;
 		}
 		
@@ -208,10 +242,18 @@ for(var i = 0; i < quant_inimigos; i++){
 	
 		if quant_inimigos == 1{
 		x_inimigo[i] = _cam_x + _cam_w/3
-		y_inimigo[i] = _cam_y  
+		y_inimigo[i] = _cam_y - height_textbox_battle/2;
 		} else {
-		x_inimigo[i] = _cam_x + _cam_w/3
-		y_inimigo[i] = (_cam_y - _cam_h / 2 + ini_sprites_altura[i]/2) + (_cam_h / (quant_inimigos+1)) * (i + 1);
+			
+		var x_padding = 0
+		
+		if (i%2 != 0 && quant_inimigos>2){
+		x_padding = 20;
+		}
+		x_inimigo[i] = _cam_x + _cam_w/3 + x_padding;
+		var padding = 10;
+		
+		y_inimigo[i] = ((_cam_y  - height_textbox_battle)/2 + ini_sprites_altura[i]/2) + ((_cam_h- height_textbox_battle) / (quant_inimigos+1)) * (i);
 
 		}
 	
@@ -225,8 +267,8 @@ for(var i = 0; i < quant_inimigos; i++){
 	
 		}
 	
-		draw_sprite_stretched_ext(spr_outline_enemy_hb,0, x_inimigo[i] - larg_out_hp/2, y_inimigo[i] - sprite_get_height(sprite_ini) - altura_out_hp+1, larg_out_hp, altura_out_hp, c_white,alpha_barra_ini)
-		draw_sprite_stretched_ext(spr_healthbar_enemy,0, x_inimigo[i] - larg_barra_hp/2, y_inimigo[i] - sprite_get_height(sprite_ini) - altura_barra_hp, (hp_inimigos[i] / max_hp)*larg_barra_hp, altura_barra_hp, #54003e,alpha_barra_ini)
+		draw_sprite_stretched_ext(spr_outline_enemy_hb,0, x_inimigo[i] - larg_out_hp/2 - larg_barra_hp, y_inimigo[i] - sprite_get_height(sprite_ini) - altura_out_hp+1, larg_out_hp, altura_out_hp, c_white,alpha_barra_ini)
+		draw_sprite_stretched_ext(spr_healthbar_enemy,0, x_inimigo[i] - larg_barra_hp/2 - larg_barra_hp, y_inimigo[i] - sprite_get_height(sprite_ini) - altura_barra_hp, (hp_inimigos[i] / max_hp)*larg_barra_hp, altura_barra_hp, #54003e,alpha_barra_ini)
 	
 		if state == BATTLE_STATES.enemy_turn{
 			enemies_index[i] = scr_animar_sprite(enemies_index[i], enemies_speed[i], sprite_ini_atk);
@@ -263,8 +305,6 @@ for(var i = 0; i < quant_inimigos; i++){
 	
 		}
 	}
-	
-	
 }
 
 
@@ -282,7 +322,7 @@ if text_to_draw[0] != ""{
 			x_texto_acerto = x_texto_acerto  + (dest_x_texto_acerto - x_texto_acerto) * 0.1;
 	
 		} else {
-			text_to_draw = ["","",""]
+			text_to_draw = ["",""]
 		}
 	}
 	
@@ -299,12 +339,12 @@ if text_to_draw[0] != ""{
 			x_texto_acerto = x_texto_acerto  + (dest_x_texto_acerto - x_texto_acerto) * 0.1;
 	
 		} else {
-			text_to_draw = ["","",""]
+			text_to_draw = ["",""]
 		}
 	
 	}
 }
-local_seta_mais_proxima = (spawn_setas + (sprite_get_width(spr_seta_up) + x_dist) * arrow_to_draw_from)-(sprite_get_width(spr_seta_up)/2)
+//local_seta_mais_proxima = (spawn_setas + (sprite_get_width(spr_seta_up) + x_dist) * arrow_to_draw_from)-(sprite_get_width(spr_seta_up)/2)
 
 if (mostrar_limites_de_movimentacao){
 	if fade_in_alpha < 0.5{

@@ -125,7 +125,7 @@ if (current_speaker != "noone"){
 //desenhandoc caixa de texto
 
 var c_textbox = asset_get_index(current_textbox)
-draw_sprite_stretched_ext(asset_get_index(current_textbox), 0, x_textbox + w_cam/2 - sprite_get_width(c_textbox)/2, y_textbox + top_offset, textbox_width, textbox_heigth, c_white, 1);
+draw_sprite_stretched_ext(asset_get_index(current_textbox), 0, x_textbox + w_cam/2 - textbox_width/2, y_textbox + top_offset, textbox_width, textbox_heigth, c_white, 1);
 
 if (current_type == "decision"){
 	

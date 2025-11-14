@@ -44,8 +44,8 @@ for (var p = 0; p < array_length(dialogo); p++){
 		textbox_heigth_lim[p] = 70;
 		break;
 		case "battle":
-		textbox_heigth_lim[p] = 40;
-		textbox_heigth = 40
+		textbox_heigth_lim[p] = 45;
+		textbox_heigth = 45
 		textbox_width = 320;
 		break;
 		case "decision":
@@ -110,7 +110,7 @@ function check_pause(_char) {
 function find_offset_by_location(_location){
 	switch (_location){
 		case 3:
-			return 140;
+			return 135;
 		case 2:
 			return 10;
 		case 1: 

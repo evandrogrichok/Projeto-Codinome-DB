@@ -12,7 +12,7 @@ var inventory_length =   array_length(inst_gm.inventory);
 var inventory =					   	   inst_gm.inventory;
 var i_act_length = array_length(i_options)
 
-var _opt_changer =  (l_keys) - (r_keys);
+var _opt_changer =  (r_keys) - (l_keys);
 var _opt_changer_v = (d_keys) - (u_keys) ;
 
 

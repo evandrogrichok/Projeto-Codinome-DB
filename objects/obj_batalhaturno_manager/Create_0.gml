@@ -97,16 +97,18 @@ param_acertar = [
 	[5, #0cf2cc, "perfeito!" ],
 	[15, #35e8a7, "ótimo!"],
 	[25, #b8ff96, "ok"],
-	[1000, #fff896, "ixi..."],
-	[-1, #f56464, "errou"]
+	[1000, #fff896, "longe"],
+	[-1, #f56464, "errou..."]
 ]
 
 x_lim_setas = obj_camera.x - camera_get_view_width(view_camera[0])/2 + 20
-arrow_pat = [];
+default_height_textbox_battle = 40;
+height_textbox_battle = default_height_textbox_battle;
+arrow_pat = []; // armazena no padrão de setas correto.
 vel_setas = 0;
-player_arrow_pat = [];
+player_arrow_pat = [];// armazena o input do player
 inst_player_tweak = false;
-text_to_draw = array_create(3,"")
+text_to_draw = ["", ""] // [VALOR, TIPO DE TEXTO P/ DESENHAR];
 dest_x_texto_acerto = 0;
 x_texto_acerto = 0;
 
@@ -116,7 +118,7 @@ mostrar_limites_de_movimentacao = false;
 
 
 position_player = array_create(state_num, array_create(2,0));
-position_player[0] = [-20,  round(camera_get_view_height(view_camera[0])/2)];
+position_player[0] = [obj_camera.x - 75,  round(camera_get_view_height(view_camera[0]) - height_textbox_battle/2)/2 ];
 spawn_setas = obj_camera.x +80;
 local_seta_mais_proxima = 0;
 
@@ -141,8 +143,8 @@ options = [
 	["defend", asset_get_index("spr_button_defend_" + string(global.lang))]
 ]
 
-scr_open_textbox("battle1")
-show_debug_message(options[0][1])
+
+main_textbox_id = scr_open_textbox("BATTLE_test_001");
 
 	
 //}
@@ -211,23 +213,44 @@ seta_speed = 1;
 inimigos_vivos = [];
 
 
+closest_arrow_x = undefined;
+closest_arrow_y = undefined;
+last_closest_arrow_x = closest_arrow_x
+last_closest_arrow_y = closest_arrow_x
+
+
 available_enemies_attacks = [];
 var enemies_atks_keys = variable_struct_get_names(ataques_inimigos);
 var count_enemies_atks = array_length(enemies_atks_keys);
 
-	
-for (var i = 0; i < count_enemies_atks; i++){
-	var atk = variable_struct_get(ataques_inimigos, enemies_atks_keys[i]);
-	var atk_requirements = atk.requirements;
 
-	if(array_contains_ext(inimigos_combo, atk_requirements, true)){
-		array_push(available_enemies_attacks, atk);
+function load_arrow_distance(){
+	individual_arrow_distance = [];
+	base_initial_distance = 80;
+	distance_between_arrows = 40;
+	
+	for (var i = 0; i < array_length(arrow_pat); i++){
+		array_push(individual_arrow_distance, base_initial_distance + distance_between_arrows * i);
+		show_debug_message("aaaaaaaaaaaaaaaaaaaaaaa");
+		show_debug_message(individual_arrow_distance);
 	}
 }
 
 
-function reload_enemies_attacks(){
+
+//SETUP INICIAL DOS ATAQUES DISPONÍVEIS. =====
+for (var i = 0; i < count_enemies_atks; i++){
+	var atk = variable_struct_get(ataques_inimigos, enemies_atks_keys[i]); 
+	var atk_requirements = atk.requirements;
 	
+	if(array_contains_ext(inimigos_combo, atk_requirements, false)){
+		array_push(available_enemies_attacks, atk);
+	}
+
+}
+
+
+function reload_enemies_attacks(){
 	var attacks_count = array_length(available_enemies_attacks)
 	var enemies_alive = inimigos_vivos;
 
@@ -240,6 +263,16 @@ function reload_enemies_attacks(){
 		}
 	}
 }
+
+function determine_closest_arrow_xy_pos(x_center_value, y_center_value, x_distance, y_distance){
+	closest_arrow_x = x_center_value + x_distance;
+	closest_arrow_y = y_center_value + y_distance;
+}
+
+
+alpha_vignette_high = 0.5;
+alpha_vignette_low = 0.2;
+alpha_vignette = alpha_vignette_low;
 
 
 atqs_chave = "";
@@ -316,7 +349,6 @@ caixa_valores = {
 	default_box: {
 			caixa_tamanho: 215,
 			caixa_altura: 100,
-		
 			caixa_posicao_x: obj_camera.x/2,
 			caixa_posicao_y: obj_camera.y+10
 
@@ -337,8 +369,10 @@ for (var e = 0; e < quant_inimigos_combo; e++){
 function run_command(_opt){
 	switch (_opt){
 		case 0:
-//		state = BATTLE_STATES.arrow_pattern;
+//		state = BATTLE_STATES.arrow_pattern
 		run_arrow_pattern("normal_attack");
+		state = BATTLE_STATES.select_enemy;
+		
 		break;
 		
 		case 2:
@@ -360,10 +394,11 @@ function run_arrow_pattern(_attack){
 			max_dmg = attack_params.damage;
 			vel_setas = attack_params.velocity;
 			arrow_timer = arrow_time;
-			state = BATTLE_STATES.select_enemy;
+			
 			focus_points_amnt_incr = 10;
 			focus_points_dest = clamp(round(focus_points + (focus_points_amnt_incr)), 0, 100);
 			focus_points = focus_points_dest;
+			load_arrow_distance();
 		break;
 	}
 }
@@ -382,7 +417,7 @@ function load_enemy_attack(){
 		}
 	}
 	
-	
+	show_debug_message(available_enemies_attacks)
 	caixa_mov_pat = best_attack.limit_box;
 	current_attack = best_attack;
 
@@ -428,6 +463,9 @@ function setup_accuracy_text_draw(params, target_size, arrow_target_x){
 }
 
 function setup_accuracy_text_draw_values(dist_alvo){
+	last_closest_arrow_x = closest_arrow_x;
+	last_closest_arrow_y = closest_arrow_y;
+	
 	arrow_feedback_draw = [arrow_pat[arrow_to_draw_from], dist_alvo, local_seta_mais_proxima]
 	alpha_feedback = 1
 }

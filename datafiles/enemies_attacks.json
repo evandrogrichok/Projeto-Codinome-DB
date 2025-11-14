@@ -3,7 +3,7 @@
       {
         "limit_box": "default_box",
         "attack_script": "circle_and_falling_ice",
-        "requirements": ["inimigo1"],
+        "requirements": ["inimigo1","inimigo1","inimigo1"],
         "type": "time-repeat",
         "repeat_frequency": 20,
         "duration": 600,
