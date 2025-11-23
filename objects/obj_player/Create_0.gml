@@ -14,7 +14,8 @@ debug_mode_aa = false
 
 
 
-
+hope_index = 0;
+hope_spd = 1;
 
 // --------------------------------------------------------------
 //PARAMETROS P/ MOVIMENTAÇÃO BASICA
@@ -67,6 +68,9 @@ values = {
 	}
 }
 
+
+hope_dir = 0;
+hope_dir_dest = 0;
 //ativar_ataque = false; // se o player interagir com obj atacavel, ele ativa essa variavel;
 //descansar_espada = false;
 //descanso_contador = 0; // Vai contar as repetições da animação
@@ -79,6 +83,27 @@ cooldown = 0; // cooldown para ser atacado de novo
 //processo_atacar = false; //está atacando
 //inst_atacar = noone;
 //shake_level = 0;
+
+
+
+hope_sprite_scale_add = 0
+
+hope_sprite_scale_fast_increase = 0
+
+global.BLEND_COLOR_PLAYER_R = 255;
+global.BLEND_COLOR_PLAYER_G = 255;
+global.BLEND_COLOR_PLAYER_B = 255;
+
+global.ALPHA_PLAYER = 1;
+global.ALPHA_PLAYER_BORDER = 1;
+global.ALPHA_HOPE_BORDER = 1;
+
+global.BLEND_COLOR_PLAYER = make_colour_rgb(global.BLEND_COLOR_PLAYER_R, global.BLEND_COLOR_PLAYER_G, global.BLEND_COLOR_PLAYER_B);
+
+global.RADIUS_HOPE_LIGHT = 0;
+global.RADIUS_HOPE_LIGHT_MINIMUM = 10;
+
+sin_t = 0;
 
 
 // --------------------------------------------------------------

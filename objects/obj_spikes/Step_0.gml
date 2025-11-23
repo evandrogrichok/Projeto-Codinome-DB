@@ -1,17 +1,4 @@
 
-if y <= final_y-10{
-	mask_index = spr_empty;
-	depth = -16000
-	
-} else {
-	mask_index = spr_spikes;
-	depth = -y;
-	if fade_in_alpha < 1{
-		fade_in_alpha += 0.1
-	}
-	
-}
-
 
 event_inherited();
 

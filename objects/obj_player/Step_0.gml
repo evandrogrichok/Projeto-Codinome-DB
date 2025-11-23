@@ -1,6 +1,6 @@
 
 
-
+global.BLEND_COLOR_PLAYER = make_colour_rgb(global.BLEND_COLOR_PLAYER_R, global.BLEND_COLOR_PLAYER_G, global.BLEND_COLOR_PLAYER_B);
 depth = -y
 
 if keyboard_check_pressed(ord("Y")){
@@ -10,7 +10,26 @@ debug_mode_aa = !debug_mode_aa
 tecla_confirmar = keyboard_check_pressed(vk_enter) || keyboard_check_pressed(ord("Z"));
 
 
+//if object_exists(obj_batalhaturno_manager){
+	
+//	var inst = obj_batalhaturno_manager;
+	
+	
+//	switch (inst.state){
+//		case BATTLE_STATES.enemy_turn:
+		
+//		break;
+//	}
+	
+	
 
+	
+//}
+
+
+
+
+mask_index = spr_player_hope_box;
 
 if cutscene_char{
 	switch(acao){
@@ -192,20 +211,65 @@ if global.can_move > 0{
 //    }
 //}
 
-if instance_exists(obj_batalhaturno_manager) && obj_batalhaturno_manager.state == BATTLE_STATES.enemy_turn{
+if instance_exists(obj_batalhaturno_manager){
 	
-var inst_manager = obj_batalhaturno_manager;
-var caixas_valores = inst_manager.caixa_valores
-var caixa_atual_valores = caixas_valores.default_box
-var largura_caixa = caixa_atual_valores.caixa_tamanho 
-var altura_caixa = caixa_atual_valores.caixa_altura
-var x_caixa = caixa_atual_valores.caixa_posicao_x
-var y_caixa = caixa_atual_valores.caixa_posicao_y
-var w_bbox_p = sprite_get_bbox_right(sprite_index)  - sprite_get_bbox_left(sprite_index);
-var h_bbox_p = sprite_get_bbox_bottom(sprite_index) -  sprite_get_bbox_top(sprite_index);
+	switch(obj_batalhaturno_manager.state){
 		
-x = clamp(x, x_caixa - largura_caixa/2 + w_bbox_p, x_caixa + largura_caixa/2 - w_bbox_p)
-y = clamp(y, y_caixa - altura_caixa/2 + h_bbox_p, y_caixa + altura_caixa/2 - h_bbox_p)
+	case BATTLE_STATES.enemy_turn:
+	
+	sin_t += 0.05;
+	
+	
+	if global.UP_KEY{
+		hope_dir_dest = 90;
+		hope_sprite_scale_add = -.2
+		hope_sprite_scale_fast_increase = .5;
+	} else
+	if global.LEFT_KEY{
+		hope_dir_dest = 180;
+		hope_sprite_scale_add = -.2
+		hope_sprite_scale_fast_increase = .5;
+	} else
+	if global.DOWN_KEY{
+		hope_dir_dest = 270;
+		hope_sprite_scale_add = -.2
+		hope_sprite_scale_fast_increase = .5;
+	} else
+	if global.RIGHT_KEY{
+		hope_dir_dest = 0;
+		hope_sprite_scale_add = -.2
+		hope_sprite_scale_fast_increase = .5;
+	}
+	
+	if hope_sprite_scale_add != 0 {
+		hope_sprite_scale_add = lerp(hope_sprite_scale_add, 0, 0.1);
+	}
+	
+	if hope_sprite_scale_fast_increase != 0 {
+		hope_sprite_scale_fast_increase = lerp(hope_sprite_scale_fast_increase, 0, 0.2);
+	}
+	
+	var diff = angle_difference(hope_dir_dest, hope_dir)
+	 
+	hope_dir += diff * 0.2
+	var inst_manager = obj_batalhaturno_manager;
+	var caixas_valores = inst_manager.caixa_valores
+	var caixa_atual_valores = caixas_valores.default_box
+	var largura_caixa = caixa_atual_valores.caixa_tamanho 
+	var altura_caixa = caixa_atual_valores.caixa_altura
+	var x_caixa = caixa_atual_valores.caixa_posicao_x
+	var y_caixa = caixa_atual_valores.caixa_posicao_y
+	var w_bbox_p = sprite_get_bbox_right(sprite_index)  - sprite_get_bbox_left(sprite_index);
+	var h_bbox_p = sprite_get_bbox_bottom(sprite_index) -  sprite_get_bbox_top(sprite_index);
+		
+	x = clamp(x, x_caixa - largura_caixa/2 + w_bbox_p, x_caixa + largura_caixa/2 - w_bbox_p)
+	y = clamp(y, y_caixa - altura_caixa/2 + h_bbox_p, y_caixa + altura_caixa/2 - h_bbox_p)
+	
+	break;
+	
+	}
+	
+	
 }
 
 if (moving == false && !cutscene_char /*&& !ativar_ataque && !descansar_espada*/){

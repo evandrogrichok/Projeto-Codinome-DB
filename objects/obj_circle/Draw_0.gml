@@ -1,6 +1,6 @@
 var inst_player = obj_player
 
-show_debug_message("oi")
+//show_debug_message("oi")
 
 var offset = 0; 
 var quant = 15;

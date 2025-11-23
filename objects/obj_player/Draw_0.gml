@@ -26,13 +26,57 @@
 //}
 
 
-scr_shader_outline(sprite_index, image_index, 255, 255, 255, 1.0)
+scr_shader_outline(sprite_index, image_index, 255, 255, 255, global.ALPHA_PLAYER_BORDER)
 
 if blink_timer <= 0 && blink_times%2 == 0{
-	scr_desenhar_player();
-} 
+	scr_desenhar_player(global.BLEND_COLOR_PLAYER, global.ALPHA_PLAYER);
+}
+
 shader_reset();
 
+
+
+
+
+
+
+
+if instance_exists(obj_batalhaturno_manager){
+	
+	switch(obj_batalhaturno_manager.state){
+		
+	case BATTLE_STATES.enemy_turn:
+	
+	gpu_set_blendmode(bm_add)
+	draw_set_alpha(0.03);
+	
+	draw_circle_color(x-.5, y-10.5, global.RADIUS_HOPE_LIGHT + sin(sin_t), c_white, c_white, false);
+	
+	draw_set_alpha(0.08);
+	draw_circle_color(x-.5, y-10.5, global.RADIUS_HOPE_LIGHT + sin(sin_t) + 5, c_white, c_white, false);
+	
+	draw_set_alpha(1);
+	gpu_set_blendmode(bm_normal)
+	
+	
+	
+
+	scr_shader_outline(spr_hope, hope_index, 255, 255, 255, global.ALPHA_HOPE_BORDER)
+
+
+	hope_index = scr_animar_sprite(hope_index, hope_spd, spr_hope);
+	
+	draw_sprite_ext(spr_hope, hope_index, x, y-10, 1 + hope_sprite_scale_add + hope_sprite_scale_fast_increase, 1 + hope_sprite_scale_add*2  + hope_sprite_scale_fast_increase, hope_dir, c_white, 1);
+
+	
+	shader_reset();
+	
+	break;
+	
+	}
+	
+	
+}
 
 //draw_text_transformed(x-25, y, depth,0.3,0.3,0);
 

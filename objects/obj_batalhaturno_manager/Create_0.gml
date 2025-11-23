@@ -73,12 +73,24 @@ duracao = 0;
 tempo_inicio = 0;
 state_num = 6;
 
+cam_w = camera_get_view_width(view_camera[0]);
+cam_h = camera_get_view_height(view_camera[0]);
+
+arrow_sprite_width = sprite_get_width(spr_button_fight_pt);
+arrow_sprite_height = sprite_get_height(spr_button_fight_pt);
+
+sprite_player_hud_height = sprite_get_height(spr_player_hud);
+target_size = 20;
+padding_between_arrows = 10;
+
 xyvar = [
 	[0, -1],
 	[0,  1],
 	[-1, 0],
 	[1,  0]
 ]
+
+target_rot_effect = 0;
 
 keys = [
 	[vk_up, "up"],
@@ -91,6 +103,9 @@ keys = [
 	[ord("D"),"right"]
 ]
 
+black_player_col_enemy_turn = 255;
+black_bg_color_alpha = 0;
+
 //futuramente adicionar nesse array o texto em ingles também, que no for vai ser scaneado com uma variavel global de definicao de linguagem
 //sempre deixar os parametros de erro como errou!
 param_acertar = [
@@ -101,7 +116,7 @@ param_acertar = [
 	[-1, #f56464, "errou..."]
 ]
 
-x_lim_setas = obj_camera.x - camera_get_view_width(view_camera[0])/2 + 20
+x_lim_setas = -(cam_h/2 - 20);
 default_height_textbox_battle = 40;
 height_textbox_battle = default_height_textbox_battle;
 arrow_pat = []; // armazena no padrão de setas correto.
@@ -118,7 +133,7 @@ mostrar_limites_de_movimentacao = false;
 
 
 position_player = array_create(state_num, array_create(2,0));
-position_player[0] = [obj_camera.x - 75,  round(camera_get_view_height(view_camera[0]) - height_textbox_battle/2)/2 ];
+position_player[0] = [obj_camera.x - 75,  round(obj_camera.y - height_textbox_battle/2)];
 spawn_setas = obj_camera.x +80;
 local_seta_mais_proxima = 0;
 
@@ -143,6 +158,7 @@ options = [
 	["defend", asset_get_index("spr_button_defend_" + string(global.lang))]
 ]
 
+option_count = array_length(options);
 
 main_textbox_id = scr_open_textbox("BATTLE_test_001");
 
@@ -322,7 +338,25 @@ part_emitter_stars = part_emitter_create(part_system_stars);
 //part_emitter_region(part_system_stars, part_emitter_stars,  x_ini -10, x_ini +10, y_ini -10, y_ini +10, ps_shape_rectangle, ps_distr_linear);
 part_emitter_relative(part_system_stars, part_emitter_stars, true)
 
+//layer_create(-16000, "Effects_On_Top");
 
+//part_system_hope = part_system_create_layer("Effects_On_Top", true);
+//part_type_hope = part_type_create();
+
+//part_type_sprite(part_type_hope, spr_particle_hope, false, false, false);
+//part_type_size(part_type_hope, 1, 1.2, .1, 0);
+//part_type_speed(part_type_hope, 1, 1, 0, 0);
+//part_type_life(part_type_hope, 32, 32);
+//part_type_blend(part_type_hope, false);
+//part_type_direction(part_type_hope, obj_player.hope_dir,obj_player.hope_dir,1, 10)
+//part_type_alpha2(part_type_hope, 1, 0);
+
+//part_emitter_hope = part_emitter_create(part_system_hope);
+
+//part_emitter_relative(part_system_hope, part_emitter_hope, true)
+
+
+ene_dist_y = 20;
 attack_timer = undefined;
 runned_attack_action = false;
 item_draw_count = 4;
@@ -349,7 +383,7 @@ caixa_valores = {
 	default_box: {
 			caixa_tamanho: 215,
 			caixa_altura: 100,
-			caixa_posicao_x: obj_camera.x/2,
+			caixa_posicao_x: obj_camera.x/5*4,
 			caixa_posicao_y: obj_camera.y+10
 
 	}

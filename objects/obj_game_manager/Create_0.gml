@@ -23,6 +23,12 @@ level_tiers = [
 ]
 
 
+
+if !object_exists(obj_ingamemenu){
+	instance_create_depth(0,0, 16000, obj_ingamemenu);
+}
+
+
 player_val = obj_player.values;
 // =============   ITENS ===============
 //TYPE 0 = COMESTIVEL
@@ -106,3 +112,5 @@ add_item(global.ITEMS_DATA.item_001)
 add_item(global.ITEMS_DATA.item_002)
 //add_item(global.ITEMS_DATA.item_001)
 //add_item(global.ITEMS_DATA.item_001)
+
+

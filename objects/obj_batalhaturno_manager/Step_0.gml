@@ -6,7 +6,7 @@ var accept_key = global.ACCEPT_KEY;
 var deny_key = global.BACK_KEY;
 
 var opt_changer =  (r_keys) - (l_keys);
-var opt_changer_v = (d_keys) - (u_keys) ;
+var vertical_opt_changer = (d_keys) - (u_keys) ;
 
 var inst_player = obj_player;
 var opt_count = array_length(options);
@@ -23,9 +23,7 @@ if focus_points_draw != focus_points {
 var cam_x = obj_camera.x
 var cam_y = obj_camera.y;
 
-var target_size = 20;
-var tam_alvo = 20
-var arrow_target_x = cam_x + tam_alvo/2;
+var arrow_target_x = cam_x;
 
 //inimigos
 var enemy_count = array_length(inimigos_combo);
@@ -36,7 +34,9 @@ var enemy_count_alive = array_length(inimigos_vivos);
 
 sin_t += 0.05
 
-
+if target_rot_effect != 0 {
+	target_rot_effect = lerp(target_rot_effect, 0, 0.3);
+}
 
 can_use = true;
 
@@ -85,7 +85,7 @@ switch (state){
 	if (draw_inventory_actions){
 		var inventory_options_count = array_length(inventory_options);	
 		
-		opt += opt_changer_v;
+		opt += vertical_opt_changer;
 		opt = (opt + inventory_options_count) mod inventory_options_count;
 		
 		
@@ -245,7 +245,8 @@ switch (state){
 		
 		if (keyboard_check_pressed(key[0]) && array_length(player_arrow_pat) < quant_setas){
 			array_push(player_arrow_pat, [key[1], dist_alvo])
-
+		
+		target_rot_effect = choose(20, -20);
 
 		if (key[1] == arrow_pat[arrow_to_draw_from]){
 			setup_accuracy_text_draw_values(dist_alvo);
@@ -341,6 +342,7 @@ switch (state){
 		case BATTLE_STATES.enemy_turn:
 		alpha_vignette = lerp(alpha_vignette, alpha_vignette_low, 0.1);
 		
+		
 		if wait_timer > 0{
 			mostrar_limites_de_movimentacao = true;
 		} else {
@@ -361,6 +363,17 @@ switch (state){
 		} else {
 			var t = clamp((current_time - tempo_inicio) / duracao, 0, 1);
 			inst_player.move_player_towards_point(position_player[0][0], position_player[0][1], t);
+	
+			black_player_col_enemy_turn = lerp(black_player_col_enemy_turn, 255, t);	
+			black_bg_color_alpha = lerp(black_bg_color_alpha, 0, t);	
+			scr_update_player_blend_color(black_player_col_enemy_turn, black_player_col_enemy_turn, black_player_col_enemy_turn);
+			
+			global.ALPHA_PLAYER = lerp(global.ALPHA_PLAYER, 1, t);
+			global.ALPHA_PLAYER_BORDER = lerp(global.ALPHA_PLAYER_BORDER, 1, t);
+			global.RADIUS_HOPE_LIGHT =  lerp(global.RADIUS_HOPE_LIGHT, 0, t);
+		
+
+	
 			if t == 1{
 				wait_timer = 0;
 			}
@@ -381,8 +394,23 @@ switch (state){
 	break;
 	
 	case BATTLE_STATES.enemy_turn:
+		
+		if black_player_col_enemy_turn != 0{
+		var lerp_amnt = 0.1;
+		black_player_col_enemy_turn = lerp(black_player_col_enemy_turn, 0, lerp_amnt);	
+		black_bg_color_alpha = lerp(black_bg_color_alpha, 1, lerp_amnt);
+		global.ALPHA_PLAYER = lerp(global.ALPHA_PLAYER, .2, lerp_amnt);
+		global.ALPHA_PLAYER_BORDER = lerp(global.ALPHA_PLAYER_BORDER, 0, lerp_amnt);
+		
+		global.RADIUS_HOPE_LIGHT =  lerp(global.RADIUS_HOPE_LIGHT, global.RADIUS_HOPE_LIGHT_MINIMUM, lerp_amnt);
+		
+		scr_update_player_blend_color(black_player_col_enemy_turn, black_player_col_enemy_turn, black_player_col_enemy_turn);
+		
+		}
+	
 		if !setup_enemy_turn {
 			setup_enemy_turn_settings();
+			
 		}
 
 		
