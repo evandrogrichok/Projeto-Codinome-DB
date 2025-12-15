@@ -22,13 +22,13 @@ var cam_y = obj_camera.y;
 
 var ptxt =0
 
-draw_text_ext_transformed(cam_x, cam_y + ptxt- cam_h/2 +5, "state = " + string(state), 3, 4000,0.5,0.5,0);
-ptxt += 5;
-draw_text_ext_transformed(cam_x, cam_y + ptxt -  cam_h/2 +5, "opt = " + string(opt), 3, 4000,0.5,0.5,0);
-ptxt += 5;
-draw_text_ext_transformed(cam_x, cam_y + ptxt -  cam_h/2 +5, "draw_move = " + string(slide_move), 3, 4000,0.5,0.5,0);
-ptxt += 5;
-draw_text_ext_transformed(cam_x, cam_y + ptxt -  cam_h/2 +5, "draw_move = " + string(slide_default_value), 3, 4000,0.5,0.5,0);
+//draw_text_ext_transformed(cam_x, cam_y + ptxt- cam_h/2 +5, "state = " + string(state), 3, 4000,0.5,0.5,0);
+//ptxt += 5;
+//draw_text_ext_transformed(cam_x, cam_y + ptxt -  cam_h/2 +5, "opt = " + string(opt), 3, 4000,0.5,0.5,0);
+//ptxt += 5;
+//draw_text_ext_transformed(cam_x, cam_y + ptxt -  cam_h/2 +5, "draw_move = " + string(slide_move), 3, 4000,0.5,0.5,0);
+//ptxt += 5;
+//draw_text_ext_transformed(cam_x, cam_y + ptxt -  cam_h/2 +5, "draw_move = " + string(slide_default_value), 3, 4000,0.5,0.5,0);
 
 
 //can_select = true;

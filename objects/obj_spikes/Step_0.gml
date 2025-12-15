@@ -23,11 +23,8 @@ if sprite_index == spr_spikes_destroy && image_index == 2{
 var _inst = obj_player
 
 
-if place_meeting(x, y, _inst) && _inst.cooldown <= 0{
-	audio_play_sound(snd_dmg, 3, 0, 1);
-	_inst.values.hp -= bullet_damage;
-	_inst.cooldown = 15
-	
+if place_meeting(x, y, _inst){
+	scr_player_dmg(bullet_damage, 15, 1, 1)
 }
 
 

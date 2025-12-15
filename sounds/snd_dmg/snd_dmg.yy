@@ -10,7 +10,7 @@
   "compression":0,
   "compressionQuality":4,
   "conversionMode":0,
-  "duration":0.20666666,
+  "duration":0.07879818,
   "exportDir":"",
   "name":"snd_dmg",
   "parent":{
@@ -22,5 +22,5 @@
   "resourceVersion":"2.0",
   "sampleRate":44100,
   "soundFile":"snd_dmg.wav",
-  "volume":0.46,
+  "volume":1.0,
 }

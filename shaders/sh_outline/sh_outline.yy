@@ -1,7 +1,7 @@
 {
   "$GMShader":"",
-  "%Name":"sh_teste",
-  "name":"sh_teste",
+  "%Name":"sh_outline",
+  "name":"sh_outline",
   "parent":{
     "name":"Shaders",
     "path":"folders/Shaders.yy",

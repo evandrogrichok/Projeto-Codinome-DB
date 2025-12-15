@@ -149,7 +149,7 @@ last_opt = undefined;
 
 obj_camera.fixated_camera = true;
 
-global.lang = "pt"
+global.lang = "en"
 
 options = [
 	["fight", asset_get_index("spr_button_fight_" + string(global.lang))],
@@ -235,7 +235,7 @@ last_closest_arrow_x = closest_arrow_x
 last_closest_arrow_y = closest_arrow_x
 
 
-available_enemies_attacks = [];
+available_enemies_attacks = array_create(0);
 var enemies_atks_keys = variable_struct_get_names(ataques_inimigos);
 var count_enemies_atks = array_length(enemies_atks_keys);
 
@@ -247,36 +247,24 @@ function load_arrow_distance(){
 	
 	for (var i = 0; i < array_length(arrow_pat); i++){
 		array_push(individual_arrow_distance, base_initial_distance + distance_between_arrows * i);
-		show_debug_message("aaaaaaaaaaaaaaaaaaaaaaa");
+	
 		show_debug_message(individual_arrow_distance);
 	}
 }
 
 
+show_debug_message(variable_struct_get(ataques_inimigos, enemies_atks_keys[0]))
+
 
 //SETUP INICIAL DOS ATAQUES DISPONÍVEIS. =====
 for (var i = 0; i < count_enemies_atks; i++){
+
 	var atk = variable_struct_get(ataques_inimigos, enemies_atks_keys[i]); 
 	var atk_requirements = atk.requirements;
-	
+
+
 	if(array_contains_ext(inimigos_combo, atk_requirements, false)){
 		array_push(available_enemies_attacks, atk);
-	}
-
-}
-
-
-function reload_enemies_attacks(){
-	var attacks_count = array_length(available_enemies_attacks)
-	var enemies_alive = inimigos_vivos;
-
-	for (var i = 0; i < attacks_count; i++){
-		var atk = available_enemies_attacks[i];
-		var atk_requirements = atk.requirements;
-
-		if (!array_contains_ext(enemies_alive, atk_requirements, true)) {
-			array_delete(available_enemies_attacks, i, 1);
-		}
 	}
 }
 
@@ -438,24 +426,51 @@ function run_arrow_pattern(_attack){
 }
 
 function load_enemy_attack(){
-	reload_enemies_attacks();
 	
-	var attacks = available_enemies_attacks;
-	var best_attack = undefined;
-	var priority = 0;
-	for (var i = 0; i < array_length(attacks); i++){
-		var atk = attacks[i]
+	reload_alive_enemies_array()
+	
+	var available_atks = [];
+
+	for(var i = 0; i < array_length(available_enemies_attacks); i++){
+		var current_atk = available_enemies_attacks[i];
+		var req = current_atk.requirements;
 		
-		if (atk.priority > priority){
-			best_attack = atk;
+		var can_use_attack = true;
+		
+		for (var r = 0; r < array_length(req); r++){
+			if (!array_contains(inimigos_vivos, req[r])){
+				can_use_attack = false;
+			}
+		}
+		
+		if(can_use_attack){
+			array_push(available_atks, current_atk)
 		}
 	}
 	
-	show_debug_message(available_enemies_attacks)
-	caixa_mov_pat = best_attack.limit_box;
-	current_attack = best_attack;
-
+	var best_attack = undefined;
+	var max_priority = -9999;
 	
+	if (array_length(available_atks) == 0) {
+        show_error("Nenhum ataque possível encontrado!", false);
+        return;
+    }
+	
+	for (var i = 0; i < array_length(available_atks); i++){
+        var atk = available_atks[i];
+        
+        if (atk.priority > max_priority){
+            max_priority = atk.priority;
+            best_attack = atk;
+        }
+    }
+	
+	
+	if (best_attack != undefined) {
+        show_debug_message("Ataque escolhido: " + string(best_attack));
+        caixa_mov_pat = best_attack.limit_box;
+        current_attack = best_attack;
+    }	
 }
 
 
@@ -559,7 +574,9 @@ function calculate_damage(arrow_count){
 	return (round(base_dmg - clamped_distance_discount - clamped_dmg_discount));	
 }
 
-function reload_alive_enemies_array(enemy_count){
+function reload_alive_enemies_array(){
+			
+			enemy_count = array_length(inimigos_combo)
 			array_delete(inimigos_vivos, 0,array_length(inimigos_vivos));
 			//percorre adicionando os inimigos se eles estiverem com mais que 0 de vida
 			for (var e = 0; e < enemy_count; e++){

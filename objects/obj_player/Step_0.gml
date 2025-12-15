@@ -31,44 +31,6 @@ tecla_confirmar = keyboard_check_pressed(vk_enter) || keyboard_check_pressed(ord
 
 mask_index = spr_player_hope_box;
 
-if cutscene_char{
-	switch(acao){
-		case "walk_w":
-			sprite_index = spr_player_w
-			break;
-		case "walk_a":
-			sprite_index = spr_player_a
-			break;
-		case "walk_s":
-			sprite_index = spr_player_s
-			break;
-		case "walk_d":
-			sprite_index = spr_player_d
-			break;
-	}
-	
-	if cutscene_player_x_dest > x{
-		x += cutscene_x_vel_player;
-		facing_x = 1;
-	} else
-	if cutscene_player_x_dest < x{
-		x -= cutscene_x_vel_player;
-		facing_x = 0;
-	}
-	
-	if cutscene_player_x_dest == x{
-		cutscene_char = false;
-	}
-	
-	if cutscene_player_y_dest > y{
-		y += cutscene_y_vel_player
-		facing_y = 1;
-	} else
-	if cutscene_player_y_dest < y{
-		y -= cutscene_y_vel_player
-		facing_y = 0;
-	}	
-}
 
 
 
@@ -119,137 +81,176 @@ if global.can_move > 0{
 	//scr_checagem_interacao();
 
 
-
-	if (keyboard_check(vk_shift)){vel_player = 1.5} 
-	else {vel_player = 1}
-	
 	moving = false;
-
-	for (var i = 0; i < array_length(direcoes); i++ ){
-		
-		var p = direcoes[i];
 	
-		if ((keyboard_check(p[0]) or (keyboard_check(p[1]))) ){
-			var coll_checker_x = x + p[2] * vel_colisao
-			var coll_checker_y = y+ p[3] * vel_colisao 
-			facing_x = p[6];
-			facing_y = p[7];
+	if global.ACCEPT_KEY{
+		if (dash_timer <= 0) && state == PLAYER_STATES.hope{
+			var dash_time = 20;
+			var per_step_dist = 3
+			
+			dashing = true;
+			dash_timer = 20;
+			
+			dash_x = lengthdir_x(per_step_dist, degrees_directon)
+			dash_y = lengthdir_y(per_step_dist, degrees_directon)
+			dash_x_coll = lengthdir_x(per_step_dist + 2, degrees_directon)
+			dash_y_coll = lengthdir_y(per_step_dist + 2, degrees_directon)
+			
+			hope_sprite_scale_add = -1
+			hope_sprite_scale_fast_increase = 1.5;
+			values.cooldown = 5
+			
 
-			
-			//if !ativar_ataque && !descansar_espada{
-			//image_xscale = 1;
-			//}
-			
-			if place_free(coll_checker_x, coll_checker_y){
-				sprite_index = p[4];
-				
-				moving = true;
-				coll_dir = p[5];
-				x += p[2] * vel_player 
-				y += p[3] * vel_player 
-				//descanso_contador = 0
-				//descansar_espada = false;
-			}
-			
-					
+			part_emitter_region(part_sys_hope, part_emitter, x-2, x+2, (y-10)-2, (y-10)+2, ps_shape_rectangle, ps_distr_linear);
+			part_type_speed(part_type_hope, .2, 1.5, 0, 0);
+			part_type_direction(part_type_hope, degrees_directon -20 -180, degrees_directon +20 - 180, 0, 0);
+			part_emitter_relative(part_sys_hope, part_emitter, false);
+			part_emitter_burst(part_sys_hope, part_emitter, part_type_hope, 10)
 
-		} 
+		}
+	}
+
+	var mx = 0;
+	var my = 0;
+	if !(dashing){
+	if global.RIGHT_KEY_HOLD{
+		mx = 1;
+		facing_x = 1;
+		facing_y = 0;
+		interact_dir = 0;
+		sprite_index = spr_player_d;
+		}
+	if global.UP_KEY_HOLD {
+		my = -1;
+		facing_x = 0;
+		facing_y = -1;
+		interact_dir = 90;
+		sprite_index = spr_player_w;
+		}
+	if global.LEFT_KEY_HOLD{
+		mx = -1;
+		facing_x = -1;
+		facing_y = 0;
+		interact_dir = 180;
+		sprite_index = spr_player_a;
+		}
+	if global.DOWN_KEY_HOLD{
+		my = 1;
+		facing_x = 0;
+		facing_y = 1;
+		interact_dir = 270;
+		sprite_index = spr_player_s;
+		}
 	}
 	
+	vel_colisao = vel_player + 2
+	
+	var coll_check_x = x + mx * vel_colisao 
+	var coll_check_y = y + my * vel_colisao 
 	
 	
-
-// ===================================================================
-// GERENCIADOR DE ESTADO (ATAQUE E DESCANSO)
-// ===================================================================
-
-//// SE ESTIVER ATACANDO...
-//if (ativar_ataque) {
-//    // Detecta o FIM da animação de ataque
-//    // (image_number - 1) é o último frame da animação
-//	    if (facing_x == 0) {
-//        image_xscale = -1;
-//    } else {
-//        image_xscale = 1;
-//    }
 	
-//    if (sprite_index == spr_player_attack_horizontal && image_index >= image_number - 1) {
-        
-//        // 1. Termina o estado de ataque
-//        ativar_ataque = false;
-//        processo_atacar = false;
-        
-//        // 2. Inicia o estado de DESCANSO COM ESPADA
-//        descansar_espada = true;
-//        descanso_contador = 3; // Queremos que a animação toque 3 vezes
-        
-//        // 3. Define a animação de descanso
-//        sprite_index = spr_player_idle_battle; // <<< MUDE AQUI para o nome do seu sprite!
-//        image_index = 0; // Começa a animação do início
-//    }
-//}
+	if (mx != 0 or my != 0){
+	    var len = point_distance(0, 0, mx, my);
+		
+	    mx /= len;
+	    my /= len;
+		
+		degrees_directon = point_direction(0, 0, mx, my);
+		degrees_directon = round(degrees_directon / 45) * 45;
+		
+		if (place_free(coll_check_x, coll_check_y)) {
+	        x += mx * vel_player;
+	        y += my * vel_player;
+	        moving = true;
+	    }
+	}
+	
+	if (dashing){
+		
+		coll_check_x = x + dash_x_coll;
+		coll_check_y = y + dash_y_coll;
+		
+		if (place_free(coll_check_x, coll_check_y)) {
+		x += dash_x
+		y += dash_y
+	    }
 
-// SE ESTIVER NO MODO DESCANSO COM ESPADA...
-//else if (descansar_espada) {
-//    // Mantém o personagem virado para o lado certo
-//    if (facing_x == 0) {
-//        image_xscale = -1;
-//    } else {
-//        image_xscale = 1;
-//    }
-    
-//    // Detecta o FIM da animação de descanso
-//    if (image_index >= image_number - 1) {
-//        descanso_contador -= 1; // Diminui o nosso contador
-        
-//		//caso contador menor que zero, acaba a animacao, se nao, repete
-//        if (descanso_contador > 0) {
-//            image_index = 0;
-//        } else {
-//        descansar_espada = false;
-//        }
-//    }
-//}
+	}
+
+
+
+	
+
+
+if !moving{
+	if facing_y == 1 {
+		
+		//baixo
+		sprite_index = spr_player;
+		image_index = 1
+
+	}
+	if facing_y == -1 {
+		//cima
+		sprite_index = spr_player;
+		image_index = 2
+
+	}
+	if facing_x == 1 {
+		//direita
+		sprite_index = spr_player;
+		image_index = 0
+
+	}
+	if facing_x == -1 {
+		//esquerda
+		sprite_index = spr_player;
+		image_index = 3
+
+	}
+}
+
 
 if instance_exists(obj_batalhaturno_manager){
 	
 	switch(obj_batalhaturno_manager.state){
 		
 	case BATTLE_STATES.enemy_turn:
-	
 	sin_t += 0.05;
 	
 	
-	if global.UP_KEY{
-		hope_dir_dest = 90;
+	state = PLAYER_STATES.hope;
+	
+	if global.UP_KEY or global.LEFT_KEY or global.DOWN_KEY or global.RIGHT_KEY{
 		hope_sprite_scale_add = -.2
 		hope_sprite_scale_fast_increase = .5;
-	} else
-	if global.LEFT_KEY{
-		hope_dir_dest = 180;
-		hope_sprite_scale_add = -.2
-		hope_sprite_scale_fast_increase = .5;
-	} else
-	if global.DOWN_KEY{
-		hope_dir_dest = 270;
-		hope_sprite_scale_add = -.2
-		hope_sprite_scale_fast_increase = .5;
-	} else
-	if global.RIGHT_KEY{
-		hope_dir_dest = 0;
-		hope_sprite_scale_add = -.2
-		hope_sprite_scale_fast_increase = .5;
-	}
+
+		
+	} 
+	if global.UP_KEY_HOLD or global.LEFT_KEY_HOLD or global.DOWN_KEY_HOLD or global.RIGHT_KEY_HOLD{
+		
+		part_emitter_relative(part_sys_hope, part_emitter, true);
+		part_emitter_burst(part_sys_hope, part_emitter, part_type_hope, 1000)
+		part_type_speed(part_type_hope, .2, .5, 0, 0);
+		part_emitter_region(part_sys_hope, part_emitter, x-2, x+2, (y-10)-2, (y-10)+2, ps_shape_rectangle, ps_distr_linear);
+		part_type_direction(part_type_hope, degrees_directon -10 -180, degrees_directon +10-180, 0, 0);
+	} 
 	
 	if hope_sprite_scale_add != 0 {
-		hope_sprite_scale_add = lerp(hope_sprite_scale_add, 0, 0.1);
+		hope_sprite_scale_add = lerp(hope_sprite_scale_add, 0, 0.2);
 	}
 	
 	if hope_sprite_scale_fast_increase != 0 {
 		hope_sprite_scale_fast_increase = lerp(hope_sprite_scale_fast_increase, 0, 0.2);
 	}
 	
-	var diff = angle_difference(hope_dir_dest, hope_dir)
+
+
+
+	
+	
+	var diff = angle_difference(degrees_directon, hope_dir)
 	 
 	hope_dir += diff * 0.2
 	var inst_manager = obj_batalhaturno_manager;
@@ -265,49 +266,18 @@ if instance_exists(obj_batalhaturno_manager){
 	x = clamp(x, x_caixa - largura_caixa/2 + w_bbox_p, x_caixa + largura_caixa/2 - w_bbox_p)
 	y = clamp(y, y_caixa - altura_caixa/2 + h_bbox_p, y_caixa + altura_caixa/2 - h_bbox_p)
 	
+
+	
 	break;
-	
+	default:
+	state = PLAYER_STATES.normal;
+	break;
 	}
 	
 	
+} else {
+	state = PLAYER_STATES.normal;
 }
-
-if (moving == false && !cutscene_char /*&& !ativar_ataque && !descansar_espada*/){
-	// para quando ele parar de andar ele nao ficar entre os pixels, pq a vel dele é um decimal
-	//x = round(x);
-	//y = round(y);
-	//if !descansar_espada && !ativar_ataque {
-	//image_xscale = 1
-	//}
-	
-	//escolher sprite do ultimo botao
-	if facing_y = 1 {
-		
-		//baixo
-		sprite_index = spr_player;
-		image_index = 1
-		coll_dir = 270;
-	}
-	if facing_y = 0 {
-		//cima
-		sprite_index = spr_player;
-		image_index = 2
-		coll_dir = 90
-	}
-	if facing_x = 1 {
-		//direita
-		sprite_index = spr_player;
-		image_index = 0
-		coll_dir = 0
-	}
-	if facing_x = 0 {
-		//esquerda
-		sprite_index = spr_player;
-		image_index = 3
-		coll_dir = 180
-	}
-}
-
 
 }
 
@@ -324,21 +294,14 @@ if (moving == false && !cutscene_char /*&& !ativar_ataque && !descansar_espada*/
 //}
 
 
-if cooldown > 0 {
-	cooldown -= 0.5
+if values.cooldown > 0 {
+	values.sin_t_flash_dmg += 0.8
+	values.cooldown -= 0.5
 	
-	if blink_timer > 0{
-		blink_timer--;
-	} else{
-		if blink_times> 0{
-			blink_times--;
-			blink_timer = 5;
-		}
-	}
+
 
 } else {
-	blink_timer = 0;
-	blink_times = 0;
+
 }
 
 //if fog_timer > 0 {
@@ -350,11 +313,22 @@ if cooldown > 0 {
 //	shake_level -= 0.1
 //}
 
+	
 
 
 
 
-
-
+if dash_timer > 0{
+	if dash_timer < 15{
+	dash_x = 0;
+	dash_y = 0;
+	dashing = false;
+	}
+	dash_timer --;
+} else {
+	
+	dash_x = 0;
+	dash_y = 0;
+}
 
 

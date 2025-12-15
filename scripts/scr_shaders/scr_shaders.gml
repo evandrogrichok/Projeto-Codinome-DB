@@ -9,7 +9,7 @@
 function scr_shader_outline(_sprite_index, _image_index, _color_R, _color_G, _color_B, _alpha){
 			
 	
-		shader_set(sh_teste);
+		shader_set(sh_outline);
 	
 		var texture = sprite_get_texture(_sprite_index, _image_index);
 		var t_w = texture_get_texel_width(texture);

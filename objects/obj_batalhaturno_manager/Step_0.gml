@@ -319,7 +319,7 @@ switch (state){
 			//ATUALIZANDO ARRAY DE INIMIGOS VIVOS
 		
 			//deleta os inimigos que tinha antes
-			reload_alive_enemies_array(enemy_count)
+			reload_alive_enemies_array()
 			
 			enemy_count_alive = array_length(inimigos_vivos);
 			

@@ -15,3 +15,7 @@ function scr_update_player_blend_color(_blend_r, _blend_g, _blend_b){
 	global.BLEND_COLOR_PLAYER_G = _blend_g;
 	global.BLEND_COLOR_PLAYER_B = _blend_b;
 }
+
+function scr_player_dmg(_amount, _cooldown_time, _cam_shake_intensity, _cam_shake_time){
+	obj_player.values.take_dmg(_amount, _cooldown_time, _cam_shake_intensity, _cam_shake_time);
+}

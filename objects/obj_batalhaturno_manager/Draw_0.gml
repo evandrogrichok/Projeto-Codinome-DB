@@ -224,7 +224,7 @@ for(var i = 0; i < enemy_count; i++){
 			var y_ini = y_inimigo[i] - vel_draw_away - sin(sin_t*3.5) * 5;
 			
 			part_emitter_region(part_system_stars, part_emitter_stars, x_ini -10, x_ini +10, y_ini -10, y_ini +10, ps_shape_rectangle, ps_distr_linear);
-			part_emitter_burst(part_system_stars, part_emitter_stars, 0, 20);
+			part_emitter_burst(part_system_stars, part_emitter_stars, part_type_stars, 20);
 			
 			draw_sprite_ext(sprite_ini_pur, enemies_index[i], x_ini, y_ini, 1, 1, 0, c_white, fade_away);
 			

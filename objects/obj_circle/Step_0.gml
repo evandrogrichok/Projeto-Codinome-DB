@@ -13,12 +13,10 @@ var inst = collision_circle(x, y, range, obj_player,false, false)
 var instint = collision_circle(x, y, range-10, obj_player,false, false)
 
 if inst != noone && instint == noone{
-	if inst_player.cooldown <= 0{
-    inst_player.values.take_dmg(5);
-	inst_player.cooldown = 5
-	scr_blink_player_sprite(5);
-	obj_camera.cam_shake(1, 5)
-	}
+
+    inst_player.values.take_dmg(5, 5, 1, 1);
+	
+
 }
 
 if obj_batalhaturno_manager.enemy_attack_duration <= 0{

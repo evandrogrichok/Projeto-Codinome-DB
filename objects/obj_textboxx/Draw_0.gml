@@ -3,18 +3,18 @@ draw_set_valign(fa_top);
 draw_set_halign(fa_left);
 var portrait_x_offset = 0;
 
-draw_text(obj_player.x, obj_player.y, string(textbox_heigth))
+//draw_text(obj_player.x, obj_player.y, string(textbox_heigth))
 
 
 if !runned_every_page{
 	setup_page_variables();
 }
 
-show_debug_message(current_sound)
-show_debug_message(current_textbox)
-show_debug_message(current_location)
-show_debug_message(current_color)
-show_debug_message(current_speaker)
+//show_debug_message(current_sound)
+//show_debug_message(current_textbox)
+//show_debug_message(current_location)
+//show_debug_message(current_color)
+//show_debug_message(current_speaker)
 
 
 var tecla_confirmar = keyboard_check_pressed(vk_enter) || keyboard_check_pressed(ord("Z"));
@@ -33,8 +33,8 @@ if textbox_heigth < textbox_heigth_lim[page]{
 if !interpreter_setted_up{
 	text_interpreter();
 }
-show_debug_message(current_text[page])
-show_debug_message(char_effects[page])
+//show_debug_message(current_text[page])
+//show_debug_message(char_effects[page])
 
 
 if (draw_char < string_length(current_text[page])){
@@ -70,7 +70,7 @@ if (draw_char >= string_length(current_text[page]) && tecla_confirmar){
 	
 	if current_type == "decision"{
 		instance_destroy();
-		show_debug_message(string(option_link_id[option_pos]))
+		//show_debug_message(string(option_link_id[option_pos]))
 		scr_open_textbox(string(option_link_id[option_pos]))		
 	}
 }
@@ -181,7 +181,7 @@ if (current_type == "decision"){
 			draw_set_halign(fa_center);
 for (var op = 0; op < options_quant; op++){
 	
-		show_debug_message("DESENHOU");
+		//show_debug_message("DESENHOU");
 		var pos = positions[op];
 		var text = options[op];
 		draw_text(pos[0], pos[1], text);

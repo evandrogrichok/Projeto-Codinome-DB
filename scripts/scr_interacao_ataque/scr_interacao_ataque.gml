@@ -1,7 +1,7 @@
 function scr_identificar_obj(_obj_tipo, _params){
 	
-	var _coll_dir_idx = coll_dir_indexer(coll_dir);
-	var p = _params[_coll_dir_idx];
+	var _interact_dir_idx = coll_dir_indexer(interact_dir);
+	var p = _params[_interact_dir_idx];
 	var _inst = noone;
 	
 
@@ -15,8 +15,8 @@ function scr_interact(){
 	
 var _range = 4;
 var _distance = 12
-var _vx = x + lengthdir_x(_distance, coll_dir)
-var _vy = y + lengthdir_y(_distance, coll_dir)
+var _vx = x + lengthdir_x(_distance, interact_dir)
+var _vy = y + lengthdir_y(_distance, interact_dir)
 
 interact_params = [
 	[x+2,        y - _range - 1, _vx + 2,   _vy + _range],

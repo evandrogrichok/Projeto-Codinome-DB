@@ -1,4 +1,6 @@
 if shaking_camera{
+	spd_camera = 1;
+	
 	var shake_x = 0
 	var shake_y = 0
 	var shake_dir = irandom(360)
@@ -8,56 +10,58 @@ if shaking_camera{
 	
 	x = shake_x 
 	y = shake_y
-	if intensity > 0{
-	intensity -= .05
+	
+	
+	
+	if shake_timer > 0{
+	shake_timer--;
 	} else {
-	shaking_camera = false
+		intensity -= .2;
+		spd_camera = spd_camera_default;
+		if intensity <= 0 {
+			shaking_camera = false
+		}
 	}
+
+
 } 
+
+
 
 if keyboard_check_pressed(ord("Y")){
 	fixated_camera = !fixated_camera;
 }
 
-if (cam_moving == false && !fixated_camera){
-x = lerp(x, obj_player.x, 0.3);
-y = lerp(y, obj_player.y, 0.3);
-
-cutscene_dest_x_cam = x;
-cutscene_dest_y_cam = y;
-cutscene_y_vel_cam = undefined;
-cutscene_x_vel_cam = undefined;
-}
-
-
-else
-	if (cam_moving) && !fixated_camera{
-	if cutscene_dest_y_cam < y{
-		y -= cutscene_y_vel_cam;
-	} else
-	if cutscene_dest_y_cam > y{
-		y += cutscene_y_vel_cam;
+if (!fixated_camera){
+	if setup_fixated_cam == true{
+		setup_fixated_cam = false;
 	}
 	
-	if cutscene_dest_x_cam < x{
-		x -= cutscene_x_vel_cam;
-	} else
-	if cutscene_dest_x_cam > x{
-		x += cutscene_x_vel_cam;
+	x = lerp(x, obj_player.x, spd_camera);
+	y = lerp(y, obj_player.y, spd_camera);
+
+} else {
+	
+	if !setup_fixated_cam{
+		x_fixated_camera = x
+		y_fixated_camera = y
+		setup_fixated_cam = true;
 	}
 	
-	if !instance_exists(obj_cutscene_manager){
-		y = obj_player.y;
-		x = obj_player.x;
-		cam_moving = false;
-		
-	}
-} else
-if (fixated_camera){
+	x = lerp(x, x_fixated_camera, spd_camera);
+	y = lerp(y, y_fixated_camera, spd_camera);
+
 
 }
 
 
 cam_x = x - camera_get_view_width(view_camera[0]) / 2;
 cam_y = y - camera_get_view_height(view_camera[0]) / 2;
+
 camera_set_view_pos(view_camera[0], cam_x, cam_y);
+
+//if obj_player.dashing == true{
+//	spd_camera = lerp(spd_camera, 1, 0.2);
+//} else {
+//	spd_camera = lerp(spd_camera, spd_camera_default, 0.2)
+//}
