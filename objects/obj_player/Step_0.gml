@@ -29,7 +29,7 @@ tecla_confirmar = keyboard_check_pressed(vk_enter) || keyboard_check_pressed(ord
 
 
 
-mask_index = spr_player_hope_box;
+
 
 
 
@@ -118,7 +118,8 @@ if global.can_move > 0{
 		facing_x = 1;
 		facing_y = 0;
 		interact_dir = 0;
-		sprite_index = spr_player_d;
+		sprite_index = spr_player_h;
+
 		}
 	if global.UP_KEY_HOLD {
 		my = -1;
@@ -126,13 +127,15 @@ if global.can_move > 0{
 		facing_y = -1;
 		interact_dir = 90;
 		sprite_index = spr_player_w;
+
 		}
 	if global.LEFT_KEY_HOLD{
 		mx = -1;
 		facing_x = -1;
 		facing_y = 0;
 		interact_dir = 180;
-		sprite_index = spr_player_a;
+		sprite_index = spr_player_h;
+
 		}
 	if global.DOWN_KEY_HOLD{
 		my = 1;
@@ -140,7 +143,9 @@ if global.can_move > 0{
 		facing_y = 1;
 		interact_dir = 270;
 		sprite_index = spr_player_s;
+
 		}
+
 	}
 	
 	vel_colisao = vel_player + 2
@@ -159,8 +164,12 @@ if global.can_move > 0{
 		degrees_directon = point_direction(0, 0, mx, my);
 		degrees_directon = round(degrees_directon / 45) * 45;
 		
-		if (place_free(coll_check_x, coll_check_y)) {
+		if (place_free(coll_check_x, y)) {
 	        x += mx * vel_player;
+	        moving = true;
+	    }
+		
+		if (place_free(x, coll_check_y)) {
 	        y += my * vel_player;
 	        moving = true;
 	    }
@@ -171,8 +180,11 @@ if global.can_move > 0{
 		coll_check_x = x + dash_x_coll;
 		coll_check_y = y + dash_y_coll;
 		
-		if (place_free(coll_check_x, coll_check_y)) {
+		if (place_free(coll_check_x, y)) {
 		x += dash_x
+	    }
+
+		if (place_free(x, coll_check_y)) {
 		y += dash_y
 	    }
 
@@ -187,29 +199,31 @@ if !moving{
 	if facing_y == 1 {
 		
 		//baixo
-		sprite_index = spr_player;
-		image_index = 1
+		sprite_index = spr_player_s_idle;
+
 
 	}
 	if facing_y == -1 {
 		//cima
-		sprite_index = spr_player;
-		image_index = 2
+		sprite_index = spr_player_w_idle;
+
 
 	}
 	if facing_x == 1 {
 		//direita
-		sprite_index = spr_player;
-		image_index = 0
+		sprite_index = spr_player_h_idle;
+
 
 	}
 	if facing_x == -1 {
 		//esquerda
-		sprite_index = spr_player;
-		image_index = 3
+		sprite_index = spr_player_h_idle;
+
 
 	}
 }
+
+
 
 
 if instance_exists(obj_batalhaturno_manager){
@@ -331,4 +345,4 @@ if dash_timer > 0{
 	dash_y = 0;
 }
 
-
+mask_index = spr_player_s_idle;

@@ -1,5 +1,19 @@
 
+//SETUP INICIAL
 
+setup_objects = [
+	obj_player,
+	obj_camera,
+	obj_ingamemenu
+]
+
+
+for (var i = 0; i < array_length(setup_objects); i++){
+	var inst = setup_objects[i]
+	if !instance_exists(inst){
+		instance_create_layer(100, 100, "Instances", inst)
+	}
+}
 
 
 //TECLAS

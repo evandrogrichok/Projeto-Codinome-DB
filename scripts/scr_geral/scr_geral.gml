@@ -3,7 +3,13 @@ function scr_animar_sprite(_image_index_var, _image_speed_var, _sprite){
 }
 function scr_desenhar_player(_color_blend = c_white, _alpha = 1, _rot = 0){
 	var _inst_player = obj_player;
-	draw_sprite_ext(_inst_player.sprite_index, _inst_player.image_index, _inst_player.x, _inst_player.y, 1, 1, _rot, _color_blend, _alpha);
+	var x_scale = 0
+	if facing_x == -1 {
+		x_scale = -1;
+	} else {
+		x_scale = 1;
+	}
+	draw_sprite_ext(_inst_player.sprite_index, _inst_player.image_index, _inst_player.x, _inst_player.y, x_scale, 1, _rot, _color_blend, _alpha);
 }
 
 function scr_change_canmove(_number){

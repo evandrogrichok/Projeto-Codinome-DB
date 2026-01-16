@@ -28,7 +28,7 @@ hope_spd = 1;
 // tecla1, tecla2, dir_x, dir_y, sprite, coll_dir, facing_x, facing_y
 direcoes = [
 	[vk_up,    ord("W"),  0, -1, spr_player_w,  90,  -1,  0, vk_left,  ord("A"), 135],
-	[vk_right, ord("D"),  1,  0, spr_player_d,   0,   1, -1, vk_up,    ord("W"),  45],
+	[vk_right, ord("D"),  1,  0, spr_player_h,   0,   1, -1, vk_up,    ord("W"),  45],
 	[vk_down,  ord("S"),  0,  1, spr_player_s, 270,  -1,  1, vk_right, ord("D"), 315],
     [vk_left,  ord("A"), -1,  0, spr_player_a, 180,   0, -1, vk_down,  ord("S"), 225]
 	

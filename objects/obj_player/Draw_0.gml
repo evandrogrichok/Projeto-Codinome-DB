@@ -13,6 +13,8 @@
 //		gpu_set_fog(true,c_white,0,0);
 //		draw_sprite_ext(_sprite_atual, image_index, shake_x, shake_y, 1, 1, 0, c_white, 1);
 //		gpu_set_fog(false,c_white,0,0);
+//		draw_sprite_ext(_sprite_atual, image_index, shake_x, shake_y, 1, 1, 0, c_white, 1);
+//		gpu_set_fog(false,c_white,0,0);
 //	}	 
 	
 //} else {
@@ -26,14 +28,8 @@
 //}
 
 
-scr_shader_outline(sprite_index, image_index, 255, 255, 255, global.ALPHA_PLAYER_BORDER)
 
-if blink_timer <= 0 && blink_times%2 == 0{
-	scr_desenhar_player(global.BLEND_COLOR_PLAYER, global.ALPHA_PLAYER);
-}
-
-shader_reset();
-
+scr_desenhar_player(global.BLEND_COLOR_PLAYER, global.ALPHA_PLAYER);
 
 
 
@@ -86,11 +82,18 @@ if instance_exists(obj_batalhaturno_manager){
 	
 	break;
 	
+	default:
+	scr_shader_outline(sprite_index, image_index, 255, 255, 255, global.ALPHA_PLAYER_BORDER)
+	scr_desenhar_player(global.BLEND_COLOR_PLAYER, global.ALPHA_PLAYER);
+	shader_reset();
+	break;
+	
 	}
 	
 	
 }
 
+draw_text_transformed(x-25, y-10, facing_x,1,1,0);
 draw_text_transformed(x-25, y, degrees_directon,1,1,0);
 draw_text_transformed(x-25, y+10, moving,1,1,0);
 draw_text_transformed(x-25, y+20, lengthdir_x(20, degrees_directon),1,1,0);

@@ -19,7 +19,7 @@
   "name":"rm_inicio",
   "parent":{
     "name":"Casa Downes",
-    "path":"folders/Cenas/Casa Downes.yy",
+    "path":"folders/Cenas/area1/Casa Downes.yy",
   },
   "parentRoom":null,
   "physicsSettings":{
