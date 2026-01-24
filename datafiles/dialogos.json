@@ -6,14 +6,6 @@
         "text": "Você encontrou <item>! <item> foi adicionado ao seu inventário."
       }
     ],
-    "BATTLE_test_001":[
-      {
-        "textbox": "spr_textbox_battle",
-        "location": 3,
-        "type": "battle",
-        "text": "<wave>What is happening here..?</wave>"
-      }
-    ],
     
     "item_space_full":[
       {
@@ -29,7 +21,52 @@
         "location": 1
       }
     ],
+ 
     
+
+    "BATTLE_test_001":[
+      {
+        "textbox": "spr_textbox_battle",
+        "location": 3,
+        "type": "battle",
+        "text": "<wave>Três bonecos de neve bloquearam o caminho!</wave>"
+      }
+
+    ],
+
+
+    "BATTLE_test_002":[
+      {
+        "textbox": "spr_textbox_battle",
+        "location": 3,
+        "type": "battle",
+        "text": "<wave>Snowy se pergunta quando isso vai acabar...</wave>"
+      }
+    ],
+
+
+    "BATTLE_test_003":[
+      {
+        "textbox": "spr_textbox_battle",
+        "location": 3,
+        "type": "battle",
+        "text": "<shake>Será que dá pra ligar o aquecedor?</shake>"
+      }
+      
+    ],
+
+    "BATTLE_test_004":[
+      {
+        "textbox": "spr_textbox_battle",
+        "location": 3,
+        "type": "battle",
+        "text": "Você se prepara para seu próximo passo de dança."
+      }
+      
+    ],
+
+
+
     "dialogo1": [
       {
         "type": "chat",

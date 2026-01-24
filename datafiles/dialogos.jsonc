@@ -1,0 +1,186 @@
+{ 
+    
+//TIPOS DE ATRIBUTOS:
+/*  
+    *REQUERIDOS
+
+     *"type": chat/decision/battle;
+        quando o valor é "decision", é obrigatória a inclusão dos atributos "options" e "link options".
+    *"text": o texto + efeitos
+        OS EFEITOS:
+            <item>, usado quando quiser mencionar o nome do item na textbox;
+            <wave>exemplo</wave>, usado para dar ao texto um efeito de onda;
+            <color>exemplo</color>, usado em conjunto com o atributo "color:", requerindo-o;
+            <shake>exemplo</shake>, usado para dar ao texto um efeito de "tremida";
+
+    caso o tipo definido for "option":
+        *"options": ["texto, em array, que será exibido em cada opção"]
+        *"linkoption": ["ids, em array, de cada uma das opções respectivamente."]        
+        
+    "color": usado para definir uma cor de destaque para o efeito <color>;
+    "location": usado para definir a localização da caixa na tela.
+        0 = baixo, 1 = meio, 2 = topo, 3 = valor exclusivo para caixa principal de batalha;
+        padrão = 0;
+    "font": define a fonte do texto. caso o valor usado nao for encontrado no jogo, a fonte padrão será usada.
+        padrão = "fnt_main"
+    "textbox": usado para especificar um sprite de caixa de texto para ser usado.
+        padrão: "spr_textbox";
+    "speaker": define quem está "falando". 
+        padrão: "noone".
+    "sound": som do efeito de máquina de escrever. 
+        padrão: "snd_text_default".
+
+
+*/
+
+// ------------MENSAGENS DE SISTEMA-------------
+    "item_space_available":[
+      {
+        "type": "chat",
+        "text": "Você encontrou <item>! <item> foi adicionado ao seu inventário."
+      }
+    ],
+
+    
+    "item_space_full":[
+      {
+        "type": "chat",
+        "text": "Você encontrou <item>! Mas seu inventário estava cheio demais..."
+      }
+    ],
+    "battle_won":[
+      {
+        "type": "chat",
+        "text": "<wave><color>VOCÊ VENCEU! Ganhou 9 milheos de xp e 91 bitcoins</color></wave>",
+        "color": "c_yellow",
+        "location": 1
+      }
+    ],
+// ---------------------------------------------
+
+// ------------MENSAGENS DE BATALHA-------------
+//os ids das frases de cada monstro devem ser iguais tanto na lingua brasileira quanto na lingua inglesa.
+
+    "BATTLE_test_001":[
+      {
+        "textbox": "spr_textbox_battle",
+        "location": 3,
+        "type": "battle",
+        "text": "<wave>O vento gelado te causa arrepios...</wave>"
+      }
+
+
+    ],
+
+    "BATTLE_test_002":[
+      {
+        "textbox": "spr_textbox_battle",
+        "location": 3,
+        "type": "battle",
+        "text": "<wave>Snowy se pergunta quando isso vai acabar...</wave>"
+      }
+
+
+    ],
+
+// ---------------------------------------------
+
+// -----------MENSAGENS DE PERSONAGENS----------
+  "dialogo1": [
+      {
+        "type": "chat",
+        "text": "oi <wave>huaaaa<color>aa<shake>aa</color>aaaaaaaaaa</shake>aaaaaaaaaaaaaa</wave> :D",
+        "textbox": "spr_textbox",
+        "sound": "snd_text_def123ault",
+        "color": "c_red", 
+        "font": "fnt_main",
+        "speaker": "spr_naoexiwsto",
+        "location": 0
+
+      },
+      {
+        "type": "chat",
+        "text": "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii é a minha caixinha de teeeexto ein",
+        "textbox": "spr_textbox",
+        "color": "c_white", 
+        "font": "fnt_main",
+        "speaker": "spr_naoexiwsto",
+        "location": 1
+      },
+      {
+        "type": "chat",
+        "text": "essa é a minha caixinha de teeeexto ein",
+        "textbox": "spr_textbox",
+        "color": "c_white", 
+        "font": "fnt_main",
+        "speaker": "spr_personagem1fala",
+        "location": 1
+      },
+      {
+        "type": "chat",
+        "text": "abnle  <shake>foijasdojfioasjodifj</shake> asodjhfoiasj aeblaeba",
+        "textbox": "spr_textbox",
+        "color": "c_white", 
+        "font": "fnt_main",
+        "speaker": "noone",
+        "location": 2
+      }
+    ],
+    "dialogo2": [
+      {
+        "type": "chat",
+        "text": "oi <wave>huaaaa<color>aa<shake>aa</color>aaaaaaaaaa</shake>aaaaaaaaaaaaaa</wave> :D",
+        "textbox": "spr_textbox",
+        "color": "c_red", 
+        "font": "fnt_main",
+        "speaker": "noone",
+        "location": 0
+
+      },
+      {
+        "type": "chat",
+        "text": "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii é a minha caixinha de teeeexto ein",
+        "textbox": "spr_textbox",
+        "color": "c_white", 
+        "font": "fnt_main",
+        "speaker": "spr_personagem1fala",
+        "location": 1
+      },
+      {
+        "type": "chat",
+        "text": "essa é a minha caixinha de teeeexto ein",
+        "textbox": "spr_textbox",
+        "color": "c_white", 
+        "font": "fnt_main",
+        "speaker": "spr_personagem1fala",
+        "location": 1
+      },
+      {
+        "type": "chat",
+        "text": "abnle  <shake>foijasdojfioasjodifj</shake> asodjhfoiasj aeblaeba",
+        "textbox": "spr_textbox",
+        "color": "c_white", 
+        "font": "fnt_main",
+        "speaker": "noone",
+        "location": 2
+      },
+      {
+        "type": "decision",
+        "options": ["nasdasdasdaao", "sim ele quer", "ele quer muito"],
+        "linkoption":["dialogo2", "dialogo3", "dialogo4"] ,
+        "text": "<wave>o eduardo quer doce?</wave>",
+        "textbox": "spr_textbox",
+        "color": "c_white", 
+        "font": "fnt_main",
+        "speaker": "noone",
+        "location": 2
+      }
+    ]
+
+// ---------------------------------------------
+
+
+    
+  
+}
+  

@@ -1,7 +1,11 @@
-depth = -99999;
+depth = DEPTH.UI_BASE;
+inst_gm = obj_game_manager;
 
 w_box = 180;
 h_box = 15// altura do menu
+cam_x = obj_camera.x;
+cam_y = obj_camera.y;
+
 
 
 options = ["DADOS", "ITENS", "OPÇÕES"];
@@ -12,10 +16,12 @@ item_types_count = array_length(item_types);
 sin_t = 0
 opt_size = w_box/opt_count
 
-i_options[0] = "Usar"
-i_options[1] = "Descartar"
+i_options = ["Usar", "Descartar"]
+i_act_length = array_length(i_options)
 selected_item = undefined;
 highlight_color = #FFD44C;
+
+
 
 
 selected_item_action = undefined;
@@ -26,6 +32,7 @@ slide_default_value = sprite_get_height(spr_player_hud_inventory);
 slide_move = slide_default_value;
 
 full_h_menu = 120;
+battle_h_menu = 95;
 tiny_h_menu = 15;
 small_h_menu = 25;
 padding_opt_boxes = 1;
@@ -44,7 +51,7 @@ selec_box_speed = 1;
 
 draw_item_actions = false;
 item_substate = ITEM_SUBSTATES.selecting
-
+state_has_changed = false;
 medium_alpha = 0.5;
 high_alpha = 0.8;
 max_alpha = 1;
@@ -66,6 +73,7 @@ enum MENU_STATES {
 	stats_menu,
 	item_types_menu,
 	item_menu,
+	item_menu_battle,
 	options_menu
 }
 enum ITEM_SUBSTATES {
@@ -74,7 +82,45 @@ enum ITEM_SUBSTATES {
 	executing
 }
 
-state = MENU_STATES.main_menu;
+closing_battle = false;
+state = MENU_STATES.closed;
+
+hud_padding = 3;
+hud_margin_y = 2;
+				
+hp_x_offset = 16;
+hp_count_x_offset = hp_x_offset - 10;
+portrait_offset = 3;
+				
+hp_bar_size = 43;
+hp_bar_height = 7;
+				
+hp_bar_y_offset = 11
+hp_bar_x_correction = 1;
+
+padding_submenu = 10
+margin_item_boxes = 5;
+margin_item_names = 5;
+padding_item_names = 10;
+size_box_items = (w_box/5)*3
+size_box_info = (w_box/5)*2
+item_box_height = h_box - margin_item_boxes*2 - opt_height/2 - padding_submenu
+info_box_height = h_box - margin_item_boxes*2 - opt_height/2 - padding_submenu
+info_box_width =  size_box_info - margin_item_boxes
+info_box_unit = info_box_height/5
+select_box_h = 14;
+select_box_adjust = 2; // Usado para organizar a caixinha em volta do texto corretamente. visto que o ponto de origem é bugadinho.
+y_font_padd = 2; // A fonte usada tem um alinhamento estranho. Esse parametro será usado para deixar os nomes centralizados corretamente.]
+margins = margin_item_boxes + margin_item_names;
+item_box_origin_x = cam_x - w_box/2 + margin_item_boxes
+item_box_origin_y = cam_y - h_box/2 + margin_item_boxes + opt_height/2 + padding_submenu
+
+		
+		
+info_box_origin_x = cam_x - w_box/2 + size_box_items
+info_box_origin_y = cam_y - h_box/2 +margin_item_boxes + opt_height/2 + padding_submenu 
+
+
 
 function open_opt_menu(_opt, _submenu = undefined){
 	if (_submenu == "item_submenu"){
@@ -237,14 +283,13 @@ function draw_item_types_submenu(_opt, _state){
 }
 
 function execute_action_item(_option){
-	var inst_gm = obj_game_manager;
-	var inventory = inst_gm.inventory;
-	var type = inventory[selected_item].type;
 	
+	var type = inst_gm.inventory[selected_item].type;
 	
+		show_debug_message("entrou")
 	switch _option{
 		case 0:
-		inst_gm.use_item(inventory[selected_item], selected_item, type);
+		inst_gm.use_item(inst_gm.inventory[selected_item], selected_item);
 		break;
 		case 1:
 		inst_gm.remove_item(selected_item);
@@ -264,18 +309,7 @@ function draw_player_hud(){
 		var player_hud_x = cam_x - player_hud_width/2;
 		var player_hud_y = cam_y + cam_h/2 - player_hud_height + slide_move;
 				
-		var hud_padding = 3;
-		var hud_margin_y = 2;
-				
-		var hp_x_offset = 16;
-		var hp_count_x_offset = hp_x_offset - 10;
-		var portrait_offset = 3;
-				
-		var hp_bar_size = 43;
-		var hp_bar_height = 7;
-				
-		var hp_bar_y_offset = 11
-		var hp_bar_x_correction = 1;
+
 			
 				
 
@@ -318,5 +352,95 @@ function slide_box_height(_target){
 		}
 
 }
+
+
+function drawing_item_list(){
+			
+			var inventory = obj_game_manager.inventory
+			var inventory_length = array_length(obj_game_manager.inventory);
+			
+			var padd_names = 0
+			
+			for (var i = 0; i < inventory_length; i++){
+			
+			var item_name = inventory[i].name
+			var item_info = inventory[i].info
+			var item_type = inventory[i].type
+			var h_item_name = string_height(item_name)
+			
+			var alpha_items = 1 // alpha do texto dos itens
+			var col_items = c_white;
+			
+			draw_set_halign(fa_center);
+			draw_set_valign(fa_middle);
+
+			if (opt == i && item_substate == ITEM_SUBSTATES.selecting){
+				col_items = highlight_color;
+				
+				
+				//desenhando caixa seleção item. 
+				draw_sprite_stretched(spr_seta_txt, selec_box_index, item_box_origin_x + margin_item_names - select_box_adjust, item_box_origin_y + padd_names + margin_item_names - h_item_name/2 - select_box_adjust + y_font_padd, size_box_items - margins * 2 + select_box_adjust, select_box_h);
+				
+				//desenhando as infos do item selecionado.
+				
+				//nome do item
+				draw_text(info_box_origin_x + info_box_width/2, info_box_origin_y + info_box_unit/2, string(item_name))
+				//descricao do item
+				draw_text_ext_transformed_color(info_box_origin_x + info_box_width/2, info_box_origin_y + info_box_unit*2 + info_box_unit/2, string(item_info), 6, info_box_width - margin_item_names*2, 1, 1, 0, c_white, c_white, c_white, c_white, 0.6)
+				
+				//o que o item faz
+				draw_text_color(info_box_origin_x + info_box_width/2, info_box_origin_y + info_box_unit*4 + info_box_unit/2, string(inventory[i].properties_description), highlight_color, highlight_color, highlight_color, highlight_color, 1);
+				
+			} 
+			
+			//desenhando os nomes dos itens
+			
+			if item_substate == ITEM_SUBSTATES.confirming{
+				if (i == selected_item){
+					col_items = highlight_color;
+					draw_sprite_stretched(spr_seta_txt, selec_box_index, item_box_origin_x + margin_item_names - select_box_adjust, item_box_origin_y + padd_names + margin_item_names - h_item_name/2 - select_box_adjust + y_font_padd, size_box_items - margins * 2 + select_box_adjust, select_box_h);
+					draw_text(info_box_origin_x + info_box_width/2, info_box_origin_y + info_box_unit/2, string(item_name))
+				} else {
+					alpha_items = 0.6
+				}
+				
+				
+			}
+			
+			draw_set_halign(fa_left);
+			draw_text_color(item_box_origin_x + margin_item_names, item_box_origin_y + padd_names + margin_item_names + y_font_padd, item_name, col_items, col_items, col_items, col_items, alpha_items)
+			padd_names += padding_item_names;
+		
+		}
+		
+		
+		if item_substate == ITEM_SUBSTATES.confirming{
+			
+			draw_set_halign(fa_center);
+			//draw_set_valign(fa_middle);
+			
+			var padd = -string_height(i_options[0]);
+			var padd_increase = 12
+				for (var j = 0; j < i_act_length; j++){
+					var c_opt_items = c_white
+					
+					if (j == opt){
+					draw_sprite_stretched(spr_seta_txt, selec_box_index, info_box_origin_x, info_box_origin_y + info_box_unit/2 + info_box_unit*2 + padd - select_box_h/2, info_box_width, select_box_h);
+					c_opt_items = highlight_color;
+					}
+				
+					draw_text_color(info_box_origin_x + info_box_width/2, info_box_origin_y + info_box_unit/2 + info_box_unit*2 + padd, string(i_options[j]), c_opt_items, c_opt_items, c_opt_items, c_opt_items, 1)
+					padd += padd_increase
+					
+				}
+				
+			
+			draw_text_color(info_box_origin_x + info_box_width/2, info_box_origin_y + info_box_unit*4 + info_box_unit/2, string(inventory[selected_item].properties_description), highlight_color, highlight_color, highlight_color, highlight_color, 1);
+			
+			draw_set_halign(fa_left);
+			draw_set_valign(fa_middle);
+		}
+}
+
 
 

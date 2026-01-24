@@ -1,3 +1,15 @@
+depth = DEPTH.LOGIC_OBJECTS
+
+manager_aux_obj = [obj_battle_manager_bg, obj_battle_manager_top];
+manager_aux_obj_depths = [DEPTH.LOGIC_BEHIND, DEPTH.LOGIC_TOP];
+
+for (var i = 0; i < array_length(manager_aux_obj); i++){
+	if !instance_exists(manager_aux_obj[i]){
+		instance_create_depth(0, 0, manager_aux_obj_depths[i], manager_aux_obj[i])
+	}
+}
+
+
 enum BATTLE_STATES{
 	main_menu,
 	item_menu,
@@ -8,6 +20,11 @@ enum BATTLE_STATES{
 	attacking,
 	battle_won,
 	wait_time
+}
+
+enum TXT_TYPES{
+	arrow_accuracy,
+	enemy_damage
 }
 
 max_focus_points = 100;
@@ -21,7 +38,7 @@ gold_gain_constant = 2;
 leveled_up = false;
 
 bonus_xp = 0;
- 
+
 
 
 var file = file_text_open_read("attacks.json");
@@ -69,6 +86,86 @@ file_text_close(file);
 data = json_parse(json_string);
 ataques_inimigos = data;
 
+file = file_text_open_read("musicas.json");
+json_string = "";
+while (!file_text_eof(file)) {
+    json_string += file_text_read_string(file);
+    file_text_readln(file);
+}
+file_text_close(file);
+
+data = json_parse(json_string);
+music_data = data;
+
+music_parameters = music_data.Main
+
+show_debug_message(music_parameters.time_signature)
+
+beat = 0;
+bar = 0;
+
+gain_arrow_hit = 0;
+
+audio_play_sound(snd_stardust, 10, true, 0);
+
+snd_id_arrow_hit = undefined;
+can_run_attack_script = false;
+function count_beat(){
+	var ts = variable_struct_get(music_parameters, "time_signature")
+switch (ts){
+	case "4/4":
+	var per_bar_beat = 4
+	
+	can_run_attack_script = true;
+	beat++;
+	if beat == per_bar_beat{
+	count_bar(ts)
+	}
+	beat = (beat + per_bar_beat) mod per_bar_beat;
+	show_debug_message("Beat!")
+	break;
+}
+	call_beat_functions();
+}
+function count_bar(ts){
+	bar++;
+}
+
+
+function call_beat_functions(){
+
+	screen_effects()
+}
+
+// preciso descobrir qual é a distancia que a seta tem que estar, somando uma a beat + o que falta pra beat atual acabar.
+ts_index_increase = undefined;
+
+
+alpha_vignette_beat = 0;
+color_vignette_beat = c_white;
+
+vignette_beat_colors = [ #95e6ff, #4eb4ff, #85ffcc]
+
+function screen_effects(){
+	var idx = irandom(array_length(vignette_beat_colors) -1);
+	
+	color_vignette_beat = vignette_beat_colors[idx]
+	alpha_vignette_beat = 1;
+};
+
+bmp_seconds = time_bpm_to_seconds(music_parameters.bpm)
+show_debug_message(bmp_seconds)
+//spb = seconds per beat
+time_source_spb = time_source_create(time_source_game, bmp_seconds, time_source_units_seconds, function(){with (self){ count_beat()}},[undefined],-1)
+time_source_start(time_source_spb);
+
+
+can_lower_dmg_txt_alpha = false;
+//Vm = ΔS / Δt
+
+pitch_arrow = 1;
+
+
 duracao = 0;
 tempo_inicio = 0;
 state_num = 6;
@@ -112,20 +209,21 @@ param_acertar = [
 	[5, #0cf2cc, "perfeito!" ],
 	[15, #35e8a7, "ótimo!"],
 	[25, #b8ff96, "ok"],
-	[1000, #fff896, "longe"],
+	[1000, #fff896, "longe..."],
 	[-1, #f56464, "errou..."]
 ]
 
 x_lim_setas = -(cam_h/2 - 20);
 default_height_textbox_battle = 40;
+dest_height_textbox_battle = default_height_textbox_battle;
 height_textbox_battle = default_height_textbox_battle;
 arrow_pat = []; // armazena no padrão de setas correto.
 vel_setas = 0;
 player_arrow_pat = [];// armazena o input do player
 inst_player_tweak = false;
 text_to_draw = ["", ""] // [VALOR, TIPO DE TEXTO P/ DESENHAR];
-dest_x_texto_acerto = 0;
-x_texto_acerto = 0;
+text_final_x_position = 0;
+text_initial_x_position = 0;
 
 wait_timer = 0;
 next_state = undefined;
@@ -149,18 +247,16 @@ last_opt = undefined;
 
 obj_camera.fixated_camera = true;
 
-global.lang = "en"
+
 
 options = [
-	["fight", asset_get_index("spr_button_fight_" + string(global.lang))],
-	["hope", asset_get_index("spr_button_hope_" + string(global.lang))],
-	["item", asset_get_index("spr_button_item_" + string(global.lang))],
-	["defend", asset_get_index("spr_button_defend_" + string(global.lang))]
+	["fight", asset_get_index("spr_button_fight_" + string(global.LANG))],
+	["hope", asset_get_index("spr_button_hope_" + string(global.LANG))],
+	["item", asset_get_index("spr_button_item_" + string(global.LANG))],
+	["defend", asset_get_index("spr_button_defend_" + string(global.LANG))]
 ]
 
 option_count = array_length(options);
-
-main_textbox_id = scr_open_textbox("BATTLE_test_001");
 
 	
 //}
@@ -169,7 +265,7 @@ sin_t = 0;
 arrow_timer = 0;
 arrow_time = 60;
 arrow_to_draw_from = 0;
-arrow_feedback_draw = ["",0,0];
+arrow_feedback_draw = ["",0];
 alpha_feedback = 0;
 arrow_pattern_perfects = 0;
 myimage_speed = 1;
@@ -181,15 +277,37 @@ dist_seta_alvo = 0;
 max_health = 30
 max_dmg = 0;
 dmg = 0;
-alpha_txt_acerto = 1;
-cor_texto_acerto = 0;
+alpha_txt_to_draw = 1;
+text_to_draw_color = 0;
 can_draw_texto_acerto = false;
 shake_level = 0;
+
+default_attack_text_hsv = [
+	[115, 0, 255],
+	[120, 0, 255]
+];
+dest_attack_text_hsv = [
+	[155, 255, 255],
+	[130, 255, 255]
+];
+
+hue_attack_text =  [default_attack_text_hsv[0][0], default_attack_text_hsv[1][0]];
+sat_attack_text =  [default_attack_text_hsv[0][1], default_attack_text_hsv[1][1]];
+val_attack_text =  [default_attack_text_hsv[0][2], default_attack_text_hsv[1][2]];
+
+rot_attack_text =  0;
+rot_attack_text_dest =  0;
+size_attack_text_default =  1;
+size_attack_text_big =  1.25;
+size_attack_text = size_attack_text_default;
+
 //arrow_x_distance = 0;
 
 
 //carrega adversario(s)
 adversario = combinacao_inimigos.combo1;
+enemy_sentences = adversario.enviromental_sentences_ids;
+
 //armazena os adversarios 
 inimigos_combo = adversario.enemies;
 
@@ -198,6 +316,7 @@ var quant_inimigos_combo = array_length(inimigos_combo);
 //guarda a vida, sprites,... de cada um dos inimigos do combo
 parametros_inimigos = array_create(quant_inimigos_combo);
 hp_inimigos = array_create(quant_inimigos_combo);
+enemies_enviromental_sentences = array_create(quant_inimigos_combo);
 nomes_inimigos = array_create(quant_inimigos_combo);
 show_debug_message(inimigos_combo)
 
@@ -234,7 +353,6 @@ closest_arrow_y = undefined;
 last_closest_arrow_x = closest_arrow_x
 last_closest_arrow_y = closest_arrow_x
 
-
 available_enemies_attacks = array_create(0);
 var enemies_atks_keys = variable_struct_get_names(ataques_inimigos);
 var count_enemies_atks = array_length(enemies_atks_keys);
@@ -242,8 +360,9 @@ var count_enemies_atks = array_length(enemies_atks_keys);
 
 function load_arrow_distance(){
 	individual_arrow_distance = [];
-	base_initial_distance = 80;
-	distance_between_arrows = 40;
+	var gamespeed = 60;
+	base_initial_distance = (gamespeed*bmp_seconds*vel_setas)*2 + (gamespeed*time_source_get_time_remaining(time_source_spb)*vel_setas); //
+	distance_between_arrows = (gamespeed*bmp_seconds*vel_setas); //
 	
 	for (var i = 0; i < array_length(arrow_pat); i++){
 		array_push(individual_arrow_distance, base_initial_distance + distance_between_arrows * i);
@@ -273,6 +392,8 @@ function determine_closest_arrow_xy_pos(x_center_value, y_center_value, x_distan
 	closest_arrow_y = y_center_value + y_distance;
 }
 
+dmg_copy_string = "";
+index_dmg = 0;
 
 alpha_vignette_high = 0.5;
 alpha_vignette_low = 0.2;
@@ -342,8 +463,8 @@ part_emitter_relative(part_system_stars, part_emitter_stars, true)
 //part_emitter_hope = part_emitter_create(part_system_hope);
 
 //part_emitter_relative(part_system_hope, part_emitter_hope, true)
-
-
+alpha_options = array_create(option_count, 1);
+arrow_target_x = obj_camera.x;
 ene_dist_y = 20;
 attack_timer = undefined;
 runned_attack_action = false;
@@ -371,7 +492,7 @@ caixa_valores = {
 	default_box: {
 			caixa_tamanho: 215,
 			caixa_altura: 100,
-			caixa_posicao_x: obj_camera.x/5*4,
+			caixa_posicao_x: obj_camera.x-30,
 			caixa_posicao_y: obj_camera.y+10
 
 	}
@@ -399,6 +520,15 @@ function run_command(_opt){
 		
 		case 2:
 			state = BATTLE_STATES.item_menu;
+				for (var i = 0; i < option_count; i++){
+				var alpha = 0.6
+				if (i == 2){
+					alpha = 1;
+				}
+				alpha_options[i] = alpha; 
+			}
+			obj_game_menu.state = MENU_STATES.item_menu_battle
+			obj_game_menu.item_substate = ITEM_SUBSTATES.selecting
 		break;
 
 		
@@ -500,38 +630,90 @@ function check_level_up_player(){
 	
 }
 
-function setup_accuracy_text_draw(params, target_size, arrow_target_x){
-	var range_text = 5;
-	
-	cor_texto_acerto = params[1];
-	text_to_draw[0] = params[2]
-	text_to_draw[1] = "qualidade_acerto";
-	x_texto_acerto = arrow_target_x + range_text + target_size/2;
-	dest_x_texto_acerto = arrow_target_x - range_text + target_size/2;
-	alpha_txt_acerto = 1
+time_source_alpha_control = undefined;
+blink_dmg = true;
+
+function reset_text_to_draw(txt_type){
+	switch(txt_type){
+		case TXT_TYPES.arrow_accuracy:
+		text_to_draw = ["",""]
+		
+		break;
+		case TXT_TYPES.enemy_damage:
+		text_to_draw = ["",""]
+		can_lower_dmg_txt_alpha = false;
+		blink_dmg = true;
+		break;
+	}
 }
 
-function setup_accuracy_text_draw_values(dist_alvo){
+function setup_text_draw(text, txt_type, color = undefined){
+	text_to_draw_color = color;
+	text_to_draw[0] = text;
+	text_to_draw[1] = txt_type;
+	
+	switch(txt_type){
+	case TXT_TYPES.arrow_accuracy:
+		var range_text = 5;
+		text_initial_x_position = arrow_target_x + range_text + target_size/2;
+		text_final_x_position = arrow_target_x - range_text + target_size/2;
+		alpha_txt_to_draw = 1
+	
+	break;
+	case TXT_TYPES.enemy_damage:
+		range_text = 8;
+		alpha_txt_to_draw = 1
+		
+		can_lower_dmg_txt_alpha = false;
+		
+		text_initial_x_position = x_inimigo[opt] + range_text;
+		text_final_x_position = x_inimigo[opt] - range_text;
+		
+		hue_attack_text =  [default_attack_text_hsv[0][0], default_attack_text_hsv[1][0]];
+		sat_attack_text =  [default_attack_text_hsv[0][1], default_attack_text_hsv[1][1]];
+		val_attack_text =  [default_attack_text_hsv[0][2], default_attack_text_hsv[1][2]];
+		
+
+		
+		time_source_alpha_control = time_source_create(time_source_game, 1, time_source_units_seconds, function(){with (self){ can_lower_dmg_txt_alpha = true}})
+		time_source_start(time_source_alpha_control);
+		time_source_blink_dmg = time_source_create(time_source_game, 1, time_source_units_frames, function(){with (self){ blink_dmg = false}})
+		time_source_start(time_source_blink_dmg);
+		
+		
+		var rot_range = 10
+		rot_attack_text_dest = choose(rot_range, -rot_range)
+		rot_attack_text =  0;
+		
+		size_attack_text = size_attack_text_default
+		
+		scale_pop_effect = array_create(string_length(text_to_draw[0]), - size_attack_text);
+		
+
+	break;
+	}
+
+	
+}
+
+function draw_arrow_feedback(dist_alvo){
 	last_closest_arrow_x = closest_arrow_x;
 	last_closest_arrow_y = closest_arrow_y;
 	
-	arrow_feedback_draw = [arrow_pat[arrow_to_draw_from], dist_alvo, local_seta_mais_proxima]
+	arrow_feedback_draw = [arrow_pat[arrow_to_draw_from], dist_alvo]
 	alpha_feedback = 1
 }
 
-function search_for_param_accuracy(dist_alvo, target_size, arrow_target_x, is_missed_arrow = false){
+function search_for_param_accuracy(dist_alvo, is_missed_arrow = false){
 	if is_missed_arrow{
-		var params = param_acertar[array_length(param_acertar)-1];
-		setup_accuracy_text_draw(params, target_size, arrow_target_x)
-		return;
+		return param_acertar[array_length(param_acertar)-1];
 	}
 	
 	
 	for(var i = 0; i < array_length(param_acertar)-1; i++){
 		var params = param_acertar[i];
 		if dist_alvo < params[0]{
-			setup_accuracy_text_draw(params, target_size, arrow_target_x)
-			break;
+			return param_acertar[i]
 		}
 	}
 }
@@ -632,3 +814,43 @@ function go_to_wait_time_state(_next_state){
 	wait_timer = wait_time;
 	next_state = _next_state;
 }
+
+enum TEXTBOX_PROPERTIES{
+	is_visible,
+	is_created,
+}
+
+function toggle_textbox(property, value){
+	switch(property){
+	case TEXTBOX_PROPERTIES.is_visible:
+		main_textbox_id.visible = value
+	break;
+	
+	case TEXTBOX_PROPERTIES.is_created:
+		if value == true{
+			main_textbox_id = scr_open_textbox(textbox_chat_id);
+			dest_height_textbox_battle = default_height_textbox_battle
+		} else 
+		if value == false{
+			instance_destroy(main_textbox_id);
+			dest_height_textbox_battle = 0;
+		}
+	break;
+	}
+}
+
+chosen_index = 0;
+
+textbox_chat_id = enemy_sentences[chosen_index]
+
+
+function next_enviroment_sentence(){
+	chosen_index++;
+	chosen_index = (chosen_index + array_length(enemy_sentences)) % array_length(enemy_sentences);
+	chosen_index = clamp(chosen_index, 1, array_length(enemy_sentences))
+	textbox_chat_id = enemy_sentences[chosen_index]
+}
+
+
+main_textbox_id = scr_open_textbox(textbox_chat_id);
+load_enemy_attack()

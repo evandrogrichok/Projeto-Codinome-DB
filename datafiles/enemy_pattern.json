@@ -1,7 +1,8 @@
 {
     "combo1":
       {
-        "enemies": ["inimigo1","inimigo1","inimigo1"]
+        "enemies": ["inimigo1","inimigo1","inimigo1"],
+        "enviromental_sentences_ids": ["BATTLE_test_001", "BATTLE_test_002", "BATTLE_test_003", "BATTLE_test_004"]
       }
 }
   

@@ -32,7 +32,7 @@ if (menu_key){
 
 can_use = true;
 can_choose = true;
-var state_has_changed = true;
+state_has_changed = true;
 
 while(state_has_changed){
 	
@@ -89,8 +89,10 @@ while(state_has_changed){
 	break;
 	
 	case MENU_STATES.item_menu:
-	
-	slide_box_height(full_h_menu);
+
+			slide_box_height(full_h_menu);
+
+		
 	slide_player_hud(1);
 	
 	switch(item_substate){
@@ -111,11 +113,12 @@ while(state_has_changed){
 					
 
 				}
-				
-				if (back_key){
-					opt = selected_item_type; // para voltar pro campo do tipo do item escolhido
-					state = MENU_STATES.item_types_menu;
-				}
+
+					if (back_key){
+						opt = selected_item_type; // para voltar pro campo do tipo do item escolhido
+						state = MENU_STATES.item_types_menu;
+					}
+
 			break;
 			case ITEM_SUBSTATES.confirming:
 				
@@ -134,15 +137,83 @@ while(state_has_changed){
 				}
 			break;
 			case ITEM_SUBSTATES.executing:
+
+				
 					item_substate = ITEM_SUBSTATES.selecting
 					execute_action_item(selected_item_action);
 					inventory_length = array_length(inventory)
 					can_choose = false;
 					state_has_changed = true
-				
+
 			break;
 		}
 		
+	break;
+	
+	case MENU_STATES.item_menu_battle:
+	depth = DEPTH.LOGIC_TOP;
+	slide_box_height(battle_h_menu);
+	
+	switch(item_substate){
+		
+			case ITEM_SUBSTATES.selecting:
+				
+				if inventory_length > 0{
+					opt += _opt_changer_v
+					opt = (opt + inventory_length) mod inventory_length;
+					if accept_key && can_choose{
+						selected_item = opt
+						opt = 0;
+						item_substate = ITEM_SUBSTATES.confirming
+						draw_item_actions = true;
+						can_use = false;
+						state_has_changed = true;
+					}
+				}
+
+					if (back_key){
+						state = MENU_STATES.closed;
+						item_substate = ITEM_SUBSTATES.selecting;
+						h_box = tiny_h_menu;
+						obj_battle_manager.state = BATTLE_STATES.main_menu;
+						obj_battle_manager.opt = 2;
+						obj_battle_manager.alpha_options = array_create(obj_battle_manager.option_count, 1);
+						global.TEXTBOX_ALPHA = 1;
+						
+						
+					}
+
+			break;
+			case ITEM_SUBSTATES.confirming:
+				
+				opt += _opt_changer_v
+				opt = (opt + i_act_length) mod i_act_length;
+				
+				if (back_key){
+					opt = selected_item
+					item_substate = ITEM_SUBSTATES.selecting;
+				}
+				
+				if accept_key && can_use{
+					selected_item_action = opt;
+					item_substate = ITEM_SUBSTATES.executing
+					state_has_changed = true;
+				}
+			break;
+			case ITEM_SUBSTATES.executing:
+						obj_battle_manager.go_to_wait_time_state(BATTLE_STATES.enemy_turn);
+						obj_battle_manager.toggle_textbox(TEXTBOX_PROPERTIES.is_created, false);
+				
+						item_substate = ITEM_SUBSTATES.selecting
+						execute_action_item(selected_item_action);
+						inventory_length = array_length(inventory)
+						can_choose = false;
+						state_has_changed = true
+						state = MENU_STATES.closed;
+						
+
+			break;
+		}
 	break;
 	}
 }

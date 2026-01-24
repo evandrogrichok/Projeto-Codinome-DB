@@ -1,7 +1,7 @@
 function iniciar_hopebattle(_indexname){
 	obj_player.persistent = false;
 	obj_camera.persistent = false;
-	obj_ingamemenu.persistent = false;
+	obj_game_menu.persistent = false;
 	obj_room_manager.persistent = false;
 	room_goto(rm_hopebattle);
 	

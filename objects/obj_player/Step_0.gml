@@ -1,7 +1,13 @@
 
 
 global.BLEND_COLOR_PLAYER = make_colour_rgb(global.BLEND_COLOR_PLAYER_R, global.BLEND_COLOR_PLAYER_G, global.BLEND_COLOR_PLAYER_B);
-depth = -y
+
+if instance_exists(obj_battle_manager){
+	depth = DEPTH.LOGIC_OBJECTS
+
+} else {
+    depth = DEPTH.ENTITY_BASE -y;
+}
 
 if keyboard_check_pressed(ord("Y")){
 debug_mode_aa = !debug_mode_aa
@@ -226,9 +232,9 @@ if !moving{
 
 
 
-if instance_exists(obj_batalhaturno_manager){
+if instance_exists(obj_battle_manager){
 	
-	switch(obj_batalhaturno_manager.state){
+	switch(obj_battle_manager.state){
 		
 	case BATTLE_STATES.enemy_turn:
 	sin_t += 0.05;
@@ -267,7 +273,7 @@ if instance_exists(obj_batalhaturno_manager){
 	var diff = angle_difference(degrees_directon, hope_dir)
 	 
 	hope_dir += diff * 0.2
-	var inst_manager = obj_batalhaturno_manager;
+	var inst_manager = obj_battle_manager;
 	var caixas_valores = inst_manager.caixa_valores
 	var caixa_atual_valores = caixas_valores.default_box
 	var largura_caixa = caixa_atual_valores.caixa_tamanho 
@@ -344,5 +350,3 @@ if dash_timer > 0{
 	dash_x = 0;
 	dash_y = 0;
 }
-
-mask_index = spr_player_s_idle;

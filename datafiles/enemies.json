@@ -1,12 +1,11 @@
 {
     "inimigo1":
       {
-        "hp": 10,
+        "hp": 30,
         "defense_points:": 0,
         "attack_points:": 0,
         "enemy_name": "Boneco de Neve",
         "sprite": "spr_objetoplaceholder_atacavel",
-        "sentences_pt": ["que vento gelado UI UI"],
         "sprite_dmg": "spr_objetoplaceholder_atacavel_dmg",
         "sprite_atk": "spr_objetoplaceholder_atacavel_atk",
         "sprite_pur": "spr_objetoplaceholder_atacavel_pur"

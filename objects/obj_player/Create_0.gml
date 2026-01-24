@@ -6,7 +6,7 @@ enum PLAYER_STATES{
 // --------------------------------------------------------------
 //AJUSTES DE ENGINE
 
-depth = -y;
+depth = DEPTH.ENTITY_BASE -y;
 	
 
 //desabilitando interpolação
@@ -178,7 +178,8 @@ global.sh_outline_texel_pointer = shader_get_uniform(sh_outline, "v_Texel");
 global.sh_outline_color_pointer = shader_get_uniform(sh_outline, "v_Color");
 
 
-part_sys_hope = part_system_create();
+layer_create(DEPTH.LOGIC_TOP +1, "FX")
+part_sys_hope = part_system_create_layer("FX", false);
 part_emitter = part_emitter_create(part_sys_hope);
 
 part_type_hope = part_type_create();

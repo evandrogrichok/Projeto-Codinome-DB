@@ -1,5 +1,5 @@
 var inst_player = obj_player
-
+depth = DEPTH.LOGIC_OBJECTS;
 //show_debug_message("oi")
 
 var offset = 0; 

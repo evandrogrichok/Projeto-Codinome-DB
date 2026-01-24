@@ -1,4 +1,4 @@
-depth = -9999
+depth = DEPTH.UI_BASE;
 var file = file_text_open_read("dialogos.json");
 var json_string = "";
 while (!file_text_eof(file)) {
@@ -10,7 +10,10 @@ file_text_close(file);
 var data = json_parse(json_string);
 
 
+
 dialogo = variable_struct_get(data, dialogo_id); 
+
+
 
 show_debug_message("oi");
 options = [""];
@@ -63,6 +66,10 @@ line_width = textbox_width - border * 2;// onde quebrar
 line_breaks = [];
 linebreaks_setted_up = false;
 interpreter_setted_up = false;
+break_char = undefined;
+text_x_offset = 0;
+my_color = undefined
+
 
 text_pause_timer = 0;
 text_pause_time = 15;
@@ -330,3 +337,4 @@ linebreaks_setted_up = true;
 }
 
 show_debug_message(" criei")
+

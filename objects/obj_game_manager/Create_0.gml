@@ -1,17 +1,47 @@
+global.DELTA_TIME = delta_time/16666
+global.LANG = "pt"
+
+enum DEPTH {
+    BG_FAR        = 340000,
+    BG_NEAR       = 300000,
+    BG_NEAREST    = 260000,
+
+    WORLD_BASE    = 220000,
+	
+    FX_BEHIND     = 180000, 
+    ENTITY_BASE   = 150000,
+    ENTITY_TOP    = 140000,
+    FX_FRONT      = 100000,
+	
+
+
+	WORLD_TOP     =  75000,
+	
+	LOGIC_BEHIND  =  46000,
+	LOGIC_OBJECTS =  45000,
+	LOGIC_TOP     =  44000,
+	
+	
+    UI_BASE       =  10000,
+    UI_TOP        =   5000,
+    DEBUG         =   1000
+}
+
+
 
 //SETUP INICIAL
 
 setup_objects = [
 	obj_player,
 	obj_camera,
-	obj_ingamemenu
+	obj_game_menu
 ]
 
 
 for (var i = 0; i < array_length(setup_objects); i++){
 	var inst = setup_objects[i]
 	if !instance_exists(inst){
-		instance_create_layer(100, 100, "Instances", inst)
+		instance_create_layer(300, 300, "Instances", inst)
 	}
 }
 
@@ -52,8 +82,8 @@ level_tiers = [
 
 
 
-if !object_exists(obj_ingamemenu){
-	instance_create_depth(0,0, 16000, obj_ingamemenu);
+if !object_exists(obj_game_menu){
+	instance_create_depth(0,0, 16000, obj_game_menu);
 }
 
 
@@ -112,13 +142,16 @@ function remove_item(item_index){
 }
 
 function use_item(item_id, item_index){
-	
+	show_debug_message("entrou")
 	type = item_id.type;
 	
 	switch(type){
 		case 0:
-			var restore_hp_calc = clamp(item_id.hp_restore + player_val.hp, 0, player_val.max_hp)
-			player_val.hp = restore_hp_calc;
+		show_debug_message("USOU")
+			var restore_hp_calc = clamp(item_id.hp_restore + obj_player.values.hp, 0, obj_player.values.max_hp)
+			show_debug_message(restore_hp_calc)
+			obj_player.values.hp = restore_hp_calc;
+			show_debug_message(obj_player.values.hp)
 			array_delete(inventory, item_index, 1);
 		break;
 		case 1:
@@ -140,5 +173,6 @@ add_item(global.ITEMS_DATA.item_001)
 add_item(global.ITEMS_DATA.item_002)
 //add_item(global.ITEMS_DATA.item_001)
 //add_item(global.ITEMS_DATA.item_001)
+
 
 

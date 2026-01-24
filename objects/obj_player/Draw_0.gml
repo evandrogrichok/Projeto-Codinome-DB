@@ -33,9 +33,10 @@ scr_desenhar_player(global.BLEND_COLOR_PLAYER, global.ALPHA_PLAYER);
 
 
 
-if instance_exists(obj_batalhaturno_manager){
+if instance_exists(obj_battle_manager){
 	
-	switch(obj_batalhaturno_manager.state){
+	
+	switch(obj_battle_manager.state){
 		
 	case BATTLE_STATES.enemy_turn:
 	
@@ -93,15 +94,15 @@ if instance_exists(obj_batalhaturno_manager){
 	
 }
 
-draw_text_transformed(x-25, y-10, facing_x,1,1,0);
-draw_text_transformed(x-25, y, degrees_directon,1,1,0);
-draw_text_transformed(x-25, y+10, moving,1,1,0);
-draw_text_transformed(x-25, y+20, lengthdir_x(20, degrees_directon),1,1,0);
-draw_text_transformed(x-25, y+30, lengthdir_y(20, degrees_directon),1,1,0);
-draw_text_transformed(x-25, y+40, interact_dir,1,1,0);
-draw_text_transformed(x-25, y+50, vel_player,1,1,0);
-draw_text_transformed(x-25, y+60, obj_camera.spd_camera,1,1,0);
-draw_text_transformed(x, y-40, "cooldown:" + string(values.cooldown), 0.3, 0.3, 0)
+//draw_text_transformed(x-25, y-10, facing_x,1,1,0);
+//draw_text_transformed(x-25, y, degrees_directon,1,1,0);
+//draw_text_transformed(x-25, y+10, moving,1,1,0);
+//draw_text_transformed(x-25, y+20, lengthdir_x(20, degrees_directon),1,1,0);
+//draw_text_transformed(x-25, y+30, lengthdir_y(20, degrees_directon),1,1,0);
+//draw_text_transformed(x-25, y+40, interact_dir,1,1,0);
+//draw_text_transformed(x-25, y+50, vel_player,1,1,0);
+//draw_text_transformed(x-25, y+60, obj_camera.spd_camera,1,1,0);
+//draw_text_transformed(x, y-40, "cooldown:" + string(values.cooldown), 0.3, 0.3, 0)
 
 if debug_mode_aa {
 
@@ -126,11 +127,11 @@ if debug_mode_aa {
         draw_rectangle(x - _range, y, _vx + _range, _vy, true);
     }
 	
-	draw_text_transformed(x, y-50, "vida:" + string(values.hp), 0.3, 0.3, 0)
-	draw_text_transformed(x, y-30, "spr index:" + string(sprite_index), 0.3, 0.3, 0)
+	//draw_text_transformed(x, y-50, "vida:" + string(values.hp), 0.3, 0.3, 0)
+	//draw_text_transformed(x, y-30, "spr index:" + string(sprite_index), 0.3, 0.3, 0)
 	
-	draw_text_transformed(x, y-60, "facing x:" + string(facing_x), 0.3, 0.3, 0)
-	draw_text_transformed(x, y-70, "facing y:" + string(facing_y), 0.3, 0.3, 0)
+	//draw_text_transformed(x, y-60, "facing x:" + string(facing_x), 0.3, 0.3, 0)
+	//draw_text_transformed(x, y-70, "facing y:" + string(facing_y), 0.3, 0.3, 0)
 
 }
 

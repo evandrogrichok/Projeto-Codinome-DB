@@ -1,3 +1,5 @@
+global.DELTA_TIME = delta_time/16666
+
 global.ACCEPT_KEY = keyboard_check_pressed(vk_enter) or keyboard_check_pressed(ord("Z"));
 global.BACK_KEY = keyboard_check_pressed(vk_shift) or keyboard_check_pressed(ord("X"));
 global.MENU_KEY = keyboard_check_pressed(vk_escape) or keyboard_check_pressed(ord("C"));
