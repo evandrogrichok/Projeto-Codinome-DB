@@ -24,10 +24,9 @@ var tecla_confirmar = keyboard_check_pressed(vk_enter) || keyboard_check_pressed
 
 
 
-if textbox_heigth < textbox_heigth_lim[page]{
-	textbox_heigth = textbox_heigth+2
-} else if textbox_heigth > textbox_heigth_lim[page]{
-	textbox_heigth = textbox_heigth-2;
+if textbox_heigth != textbox_heigth_lim[page]{
+	var spd_lerp = .2;
+	textbox_heigth = lerp(textbox_heigth, textbox_heigth_lim[page], spd_lerp)
 }
 
 if !interpreter_setted_up{
@@ -70,6 +69,7 @@ if (draw_char >= string_length(current_text[page]) && tecla_confirmar){
 	
 	if current_type == "decision"{
 		instance_destroy();
+		scr_can_move_tweaker(+1);
 		//show_debug_message(string(option_link_id[option_pos]))
 		scr_open_textbox(string(option_link_id[option_pos]))		
 	}
@@ -78,6 +78,7 @@ if (draw_char >= string_length(current_text[page]) && tecla_confirmar){
 if page >= array_length(dialogo){
 	ds_map_destroy(colors);
 	instance_destroy();
+	scr_can_move_tweaker(+1);
 	exit;
 	
 }
@@ -93,39 +94,41 @@ var y_textbox = camera_get_view_y(view_camera[0]);
 var w_cam = camera_get_view_width(view_camera[0]);
 var h_cam = camera_get_view_height(view_camera[0]);
 
-var padding_x_text = 7;
-var padding_y_text = 5;
 
-if current_type == "battle"{
-	padding_x_text = 0;
-	padding_y_text = textbox_heigth/3;
-}
 
-var x_text = x_textbox + padding_x_text;
-var y_text = y_textbox + padding_y_text;
 
-var left_offset = 56;
+
+
+ 
 var option_offset = 40;
 var top_offset = find_offset_by_location(current_location);
 
-var x_options = x_textbox + left_offset + portrait_x_offset;
+
+
+
+
+if (current_speaker != "noone"){
+	portrait_x_offset = 72;
+	x_padding = (w_cam - textbox_width + portraitbox_size)/2;
+	
+
+	draw_sprite_stretched_ext(asset_get_index(current_textbox), 0, x_textbox - portraitbox_size + x_padding - padding_btwn_speaker_txtbox / 2, y_textbox + top_offset, portraitbox_size, portraitbox_size, c_white,1)
+	draw_sprite_stretched_ext(asset_get_index(current_speaker), 0, x_textbox - portraitbox_size + x_padding - padding_btwn_speaker_txtbox / 2, y_textbox + top_offset, portraitbox_size, portraitbox_size, c_white,1)
+} else {
+
+	x_padding = (w_cam - textbox_width)/2;
+}
+
+var x_options = x_textbox + x_padding;
 var three_options_y_offset = 0;
 var three_option_selection_y_offset = 0;
 var y_options = y_textbox + top_offset + option_offset;
 
-
-if (current_speaker != "noone"){
-	portrait_x_offset = 74;
-	left_offset = 18;
-
-	draw_sprite_stretched_ext(asset_get_index(current_textbox), 0, x_textbox + left_offset, y_textbox + top_offset, portraitbox_size, portraitbox_size, c_white,1)
-	draw_sprite_stretched_ext(asset_get_index(current_speaker), 0, x_textbox + left_offset, y_textbox + top_offset, portraitbox_size, portraitbox_size, c_white,1)
-}
-
 //desenhandoc caixa de texto
-
+var x_text = padding_x_text + x_textbox + x_padding + padding_btwn_speaker_txtbox/2;
+var y_text = y_textbox + padding_y_text;
 var c_textbox = asset_get_index(current_textbox)
-draw_sprite_stretched_ext(asset_get_index(current_textbox), 0, x_textbox + w_cam/2 - textbox_width/2, y_textbox + top_offset, textbox_width, textbox_heigth, c_white, 1);
+draw_sprite_stretched_ext(asset_get_index(current_textbox), 0, x_textbox + x_padding + padding_btwn_speaker_txtbox/2, y_textbox + top_offset, textbox_width, textbox_heigth, c_white, 1);
 
 if (current_type == "decision"){
 	
@@ -135,7 +138,7 @@ if (current_type == "decision"){
 	var op_spacing = 2;
 	var y_spacing = 0;
 	var area_options = textbox_width;
-	var center = area_options/2 + x_textbox + left_offset; 
+	var center = area_options/2 + x_textbox + x_padding; 
 	var positions = array_create(options_quant);
 	
 	
@@ -213,7 +216,7 @@ for (var i = 0; i < array_length(page_breaks); i++){
     var text_x_offset = 0; // acumulador da linha
 	
 	if current_type == "decision"{
-		x_text = x_textbox + textbox_width/2 - string_width(string_copy(current_text[page],start_char, break_char - start_char))/2;
+		x_text = x_textbox + x_padding + textbox_width/2 - string_width(string_copy(current_text[page],start_char, break_char - start_char))/2;
 	} else
 	if current_type == "battle"{
 		x_text = x_textbox + textbox_width/2 - string_width(string_copy(current_text[page],start_char, break_char - start_char))/2;
@@ -248,7 +251,7 @@ for (var i = 0; i < array_length(page_breaks); i++){
 			my_color = "c_yellow_main";
         }
 		
-        draw_text_color(x_text + portrait_x_offset + text_x_offset + x_off,
+        draw_text_color(x_text + text_x_offset + x_off,
                   y_text + top_offset + y_off + wave_y,
                   ch,  colors[? my_color], colors[? my_color], colors[? my_color], colors[? my_color], 1);
 

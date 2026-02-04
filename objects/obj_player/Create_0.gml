@@ -3,6 +3,13 @@ enum PLAYER_STATES{
 	hope
 }
 
+mx = 0;
+my = 0;
+
+pdx = 0
+pdy =0
+
+
 // --------------------------------------------------------------
 //AJUSTES DE ENGINE
 
@@ -39,7 +46,7 @@ direcoes = [
 
 
 
-vel_player = 1 // velocidade normal do personagem
+vel_player = 1.5 // velocidade normal do personagem
 vel_player_default = 1 // velocidade normal do personagem
 facing_y = 1 // direcao que está olhando no eixo y
 facing_x = 0 // direcao que está olhando no eixo x
@@ -176,6 +183,9 @@ function move_player_towards_point(_x, _y, _spd){
 
 global.sh_outline_texel_pointer = shader_get_uniform(sh_outline, "v_Texel");
 global.sh_outline_color_pointer = shader_get_uniform(sh_outline, "v_Color");
+
+global.sh_upwards_lighting_texel_pointer = shader_get_uniform(sh_upwards_lightning, "texelSize");
+global.sh_upwards_lighting_color_blend_pointer = shader_get_uniform(sh_upwards_lightning, "colorBlend");
 
 
 layer_create(DEPTH.LOGIC_TOP +1, "FX")

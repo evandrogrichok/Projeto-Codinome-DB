@@ -1,4 +1,14 @@
+if mouse_check_button(mb_left){
+global.DEBUG_PLAYER_DRAG = true;
+x =  mouse_x - pdx; 
+y =  mouse_y - pdy;
 
+
+} else {
+global.DEBUG_PLAYER_DRAG = false;
+pdx = mouse_x - x
+pdy = mouse_y - y
+}
 
 global.BLEND_COLOR_PLAYER = make_colour_rgb(global.BLEND_COLOR_PLAYER_R, global.BLEND_COLOR_PLAYER_G, global.BLEND_COLOR_PLAYER_B);
 
@@ -116,8 +126,8 @@ if global.can_move > 0{
 		}
 	}
 
-	var mx = 0;
-	var my = 0;
+	mx = 0;
+	my = 0;
 	if !(dashing){
 	if global.RIGHT_KEY_HOLD{
 		mx = 1;

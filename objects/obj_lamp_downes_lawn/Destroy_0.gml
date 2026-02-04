@@ -1,0 +1,1 @@
+if instance_exists(halo_id){instance_destroy(halo_id)}

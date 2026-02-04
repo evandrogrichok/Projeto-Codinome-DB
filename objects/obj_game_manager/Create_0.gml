@@ -2,9 +2,10 @@ global.DELTA_TIME = delta_time/16666
 global.LANG = "pt"
 
 enum DEPTH {
-    BG_FAR        = 340000,
-    BG_NEAR       = 300000,
-    BG_NEAREST    = 260000,
+    BG_FARTHEST   = 300000,
+    BG_FAR        = 280000,
+    BG_NEAR       = 260000,
+    BG_NEAREST    = 240000,
 
     WORLD_BASE    = 220000,
 	
@@ -174,5 +175,7 @@ add_item(global.ITEMS_DATA.item_002)
 //add_item(global.ITEMS_DATA.item_001)
 //add_item(global.ITEMS_DATA.item_001)
 
-
+GAME_SPRITES = {
+	spr_lamp_downes_lawn_halo
+}
 

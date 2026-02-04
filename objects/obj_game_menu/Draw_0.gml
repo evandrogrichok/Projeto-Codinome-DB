@@ -11,7 +11,6 @@ var _opt_changer =  (l_keys) - (r_keys);
 var _opt_changer_v = (d_keys) - (u_keys) ;
 
 
-var inventory_length =   array_length(inst_gm.inventory);
 var inventory =					   	   inst_gm.inventory;
 
 
@@ -64,15 +63,12 @@ switch(state){
 	
 	case MENU_STATES.item_menu:
 		
-
+		item_box_origin_x = cam_x - w_box/2 + margin_item_boxes;
 		item_box_origin_y = cam_y - h_box/2 + margin_item_boxes + opt_height/2 + padding_submenu
-		item_box_height = h_box - margin_item_boxes*2 - opt_height/2 - padding_submenu
 		
-		
-
+		info_box_origin_x = cam_x - w_box/2 + size_box_items
 		info_box_origin_y = cam_y - h_box/2 +margin_item_boxes + opt_height/2 + padding_submenu
 		info_box_height = h_box - margin_item_boxes*2 - opt_height/2 - padding_submenu
-		
 		info_box_unit = info_box_height/5
 		
 		draw_sprite_stretched_ext(spr_box, 0, cam_x - w_box/2, cam_y - h_box/2, w_box, h_box, c_white, 1);
@@ -101,16 +97,14 @@ switch(state){
 		y_position_battle_correction = 30;
 		margin_battle_item_list = 10;
 		
+		item_box_origin_x = cam_x - w_box/2 + margin_item_boxes;
 		item_box_origin_y = cam_y - h_box/2 + margin_battle_item_list/2 - y_position_battle_correction;
 		item_box_height = h_box - margin_battle_item_list;
 		
-		
-
+		info_box_origin_x = cam_x - w_box/2 + size_box_items
 		info_box_origin_y = cam_y - h_box/2 + margin_battle_item_list/2 - y_position_battle_correction;
 		info_box_height = h_box - margin_battle_item_list;
-		
 		info_box_unit = info_box_height/5
-		
 		x_item_button_correction = 135;
 		
 		draw_sprite_stretched_ext(spr_black, 0, cam_x - cam_w/2, cam_y - cam_h/2, cam_w, cam_h, c_white, 0.5);

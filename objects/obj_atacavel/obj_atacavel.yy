@@ -13,8 +13,8 @@
   "name":"obj_atacavel",
   "overriddenProperties":[],
   "parent":{
-    "name":"Objetos",
-    "path":"folders/Objetos.yy",
+    "name":"OBJETOS PAI",
+    "path":"folders/Objetos/OBJETOS PAI.yy",
   },
   "parentObjectId":null,
   "persistent":false,

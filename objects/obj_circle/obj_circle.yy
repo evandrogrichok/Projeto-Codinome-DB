@@ -10,8 +10,8 @@
   "name":"obj_circle",
   "overriddenProperties":[],
   "parent":{
-    "name":"projectiles",
-    "path":"folders/Objetos/projectiles.yy",
+    "name":"PROJÉTEIS (Bullet Hell)",
+    "path":"folders/Objetos/PROJÉTEIS (Bullet Hell).yy",
   },
   "parentObjectId":null,
   "persistent":false,

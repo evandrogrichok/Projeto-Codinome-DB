@@ -27,9 +27,18 @@
 	//}
 //}
 
+draw_rectangle(mouse_x,mouse_y,mouse_x,mouse_y,false)
+shader_set(sh_upwards_lightning);
+shader_set_uniform_f(global.sh_upwards_lighting_color_blend_pointer, 191/255, 255/255, 240/255, .3);
+var texture = sprite_get_texture(sprite_index, image_index);
+var t_w = texture_get_texel_width(texture);
+var t_h = texture_get_texel_height(texture);
+
+shader_set_uniform_f(global.sh_upwards_lighting_texel_pointer, t_w, t_h);
 
 
 scr_desenhar_player(global.BLEND_COLOR_PLAYER, global.ALPHA_PLAYER);
+shader_reset();
 
 
 

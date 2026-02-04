@@ -81,7 +81,7 @@
       },
       {
         "type": "chat",
-        "text": "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii é a minha caixinha de teeeexto ein",
+        "text": "<wave>Aaaahh</wave> Você sabe que eu sou ansiosa, vamo logo!",
         "textbox": "spr_textbox",
         "color": "c_white", 
         "font": "fnt_main",
@@ -90,12 +90,12 @@
       },
       {
         "type": "chat",
-        "text": "essa é a minha caixinha de teeeexto ein",
+        "text": "Você sabia que os Pterodáctilos não eram dinossauros?! Não dá pra se acreditar em mais nada esses dias.",
         "textbox": "spr_textbox",
         "color": "c_white", 
         "font": "fnt_main",
         "speaker": "spr_personagem1fala",
-        "location": 1
+        "location": 0
       },
       {
         "type": "chat",
@@ -120,7 +120,7 @@
       },
       {
         "type": "chat",
-        "text": "iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii é a minha caixinha de teeeexto ein",
+        "text": "Ouça. Eu sei que você não me respondeu. Mas em algum lugar eu posso sentir isso. Há um vislumbre de boa pessoa dentro de você.",
         "textbox": "spr_textbox",
         "color": "c_white", 
         "font": "fnt_main",

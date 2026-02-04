@@ -12,7 +12,7 @@ var data = json_parse(json_string);
 
 
 dialogo = variable_struct_get(data, dialogo_id); 
-
+scr_can_move_tweaker(-1);
 
 
 show_debug_message("oi");
@@ -33,10 +33,12 @@ for (var p = 0; p < array_length(dialogo); p++){
 
 
 
-textbox_width = 206 //largura
-textbox_heigth = 70 //altura
+textbox_width = 220 //largura
+textbox_heigth = 60 //altura
 textbox_heigth_lim = array_create(array_length(dialogo), 0); //altura
 runned_once = false;
+padding_btwn_speaker_txtbox = 5;
+x_padding = (camera_get_view_width(view_camera[0]) - textbox_width)/2;
 
 
 
@@ -44,7 +46,7 @@ runned_once = false;
 for (var p = 0; p < array_length(dialogo); p++){
 	switch dialogo[p].type{
 		case "chat":
-		textbox_heigth_lim[p] = 70;
+		textbox_heigth_lim[p] = 60;
 		break;
 		case "battle":
 		textbox_heigth_lim[p] = 45;
@@ -58,11 +60,16 @@ for (var p = 0; p < array_length(dialogo); p++){
 	//show_debug_message(textbox_heigth_lim[p])
 }
 
-portraitbox_size = 70 //altura
+portraitbox_size = 60 //altura
 
 line_sep = 12; //separação da linha
 border = 7;
-line_width = textbox_width - border * 2;// onde quebrar
+
+padding_x_text = 7;
+padding_y_text = 5;
+
+
+line_width = textbox_width - border * 2 - padding_x_text;// onde quebrar
 line_breaks = [];
 linebreaks_setted_up = false;
 interpreter_setted_up = false;
@@ -143,6 +150,12 @@ function play_text_sound(_snd){
 function setup_page_variables(){
 	current_page = dialogo[page];
 	current_type = current_page.type;
+	
+	if current_type == "battle"{
+		padding_x_text = 0;
+		padding_y_text = textbox_heigth/3;
+	}
+
 	
 	var properties_to_check = ["sound", "textbox", "location", "color", "speaker"];
 	

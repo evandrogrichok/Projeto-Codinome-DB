@@ -11,8 +11,8 @@
   "name":"obj_spikes",
   "overriddenProperties":[],
   "parent":{
-    "name":"projectiles",
-    "path":"folders/Objetos/projectiles.yy",
+    "name":"PROJÉTEIS (Bullet Hell)",
+    "path":"folders/Objetos/PROJÉTEIS (Bullet Hell).yy",
   },
   "parentObjectId":{
     "name":"obj_bullets",

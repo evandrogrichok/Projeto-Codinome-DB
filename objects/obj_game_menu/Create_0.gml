@@ -1,11 +1,15 @@
 depth = DEPTH.UI_BASE;
 inst_gm = obj_game_manager;
-
+global.DEBUG_PLAYER_DRAG = false;
 w_box = 180;
 h_box = 15// altura do menu
 cam_x = obj_camera.x;
 cam_y = obj_camera.y;
 
+
+
+_opt_changer =  0;
+_opt_changer_v = 0;
 
 
 options = ["DADOS", "ITENS", "OPÇÕES"];
@@ -357,11 +361,8 @@ function slide_box_height(_target){
 function drawing_item_list(){
 			
 			var inventory = obj_game_manager.inventory
-			var inventory_length = array_length(obj_game_manager.inventory);
-			
 			var padd_names = 0
-			
-			for (var i = 0; i < inventory_length; i++){
+			for (var i = 0; i < array_length(inst_gm.inventory); i++){
 			
 			var item_name = inventory[i].name
 			var item_info = inventory[i].info
@@ -373,6 +374,7 @@ function drawing_item_list(){
 			
 			draw_set_halign(fa_center);
 			draw_set_valign(fa_middle);
+			
 
 			if (opt == i && item_substate == ITEM_SUBSTATES.selecting){
 				col_items = highlight_color;
@@ -443,4 +445,48 @@ function drawing_item_list(){
 }
 
 
+function confirming_usage(){
+		option_changer(i_act_length, _opt_changer_v);
+				
+		if (global.BACK_KEY){
+			opt = selected_item
+			item_substate = ITEM_SUBSTATES.selecting;
+		}
+				
+		if global.ACCEPT_KEY && can_use{
+			selected_item_action = opt;
+			item_substate = ITEM_SUBSTATES.executing
+			state_has_changed = true;
+		}
+}
+
+function executing_usage(){
+		item_substate = ITEM_SUBSTATES.selecting
+		execute_action_item(selected_item_action);
+		can_choose = false;
+		state_has_changed = true
+}
+
+function selecting_item(){
+	if array_length(inst_gm.inventory) > 0{
+		option_changer(array_length(inst_gm.inventory), _opt_changer_v);
+		if global.ACCEPT_KEY && can_choose{
+			selected_item = opt
+			opt = 0;
+			item_substate = ITEM_SUBSTATES.confirming
+			draw_item_actions = true;
+			can_use = false;
+			state_has_changed = true;
+		}
+	}
+}
+
+
+function option_changer(option_count, opt_changer = 0){
+		opt += opt_changer
+		opt = (opt + option_count) mod option_count;
+	
+		if opt_changer != 0 
+		selec_box_index = 0; 
+}
 

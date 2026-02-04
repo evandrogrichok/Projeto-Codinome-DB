@@ -9,8 +9,8 @@
   "name":"obj_bullets",
   "overriddenProperties":[],
   "parent":{
-    "name":"projectiles",
-    "path":"folders/Objetos/projectiles.yy",
+    "name":"OBJETOS PAI",
+    "path":"folders/Objetos/OBJETOS PAI.yy",
   },
   "parentObjectId":null,
   "persistent":false,
