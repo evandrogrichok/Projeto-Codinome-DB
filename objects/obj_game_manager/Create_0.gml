@@ -1,6 +1,6 @@
 global.DELTA_TIME = delta_time/16666
 global.LANG = "pt"
-
+gpu_set_tex_filter(false);
 enum DEPTH {
     BG_FARTHEST   = 300000,
     BG_FAR        = 280000,
@@ -175,7 +175,10 @@ add_item(global.ITEMS_DATA.item_002)
 //add_item(global.ITEMS_DATA.item_001)
 //add_item(global.ITEMS_DATA.item_001)
 
-GAME_SPRITES = {
+global.GAME_SPRITES = {
+	spr_point_tiny,
+	spr_point_big,
+	spr_point_breakable,
 	spr_lamp_downes_lawn_halo
 }
 

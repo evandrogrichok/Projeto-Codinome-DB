@@ -48,42 +48,21 @@ if instance_exists(obj_battle_manager){
 	switch(obj_battle_manager.state){
 		
 	case BATTLE_STATES.enemy_turn:
-	
-	gpu_set_blendmode(bm_add)
-	draw_set_alpha(0.03);
-	
-	draw_circle_color(x-.5, y-10.5, global.RADIUS_HOPE_LIGHT + sin(sin_t), c_white, c_white, false);
-	
-	draw_set_alpha(0.08);
-	draw_circle_color(x-.5, y-10.5, global.RADIUS_HOPE_LIGHT + sin(sin_t) + 5, c_white, c_white, false);
-	
-	draw_set_alpha(1);
-	gpu_set_blendmode(bm_normal)
-	
-	
-	
 
-
-
-
-
+	draw_hope_light_fx(0.08, 0.03, c_white);
+	
 	hope_index = scr_animar_sprite(hope_index, hope_spd, spr_hope);
-
+	scr_shader_outline(spr_hope_1, hope_index, 255, 255, 255, global.ALPHA_HOPE_BORDER)
 	 if dashing{
-		scr_shader_outline(spr_hope_1, hope_index, 255, 255, 255, global.ALPHA_HOPE_BORDER)
 		draw_sprite_ext(spr_hope_1, hope_index, x, y-10, 1 + hope_sprite_scale_add + hope_sprite_scale_fast_increase, 1 + hope_sprite_scale_add*2  + hope_sprite_scale_fast_increase, hope_dir, c_white, 1);
 	}
 	else if values.cooldown>0 && dash_timer <= 0{
 		draw_sprite_ext(spr_hope, hope_index, x, y-10, 1 + hope_sprite_scale_add + hope_sprite_scale_fast_increase, 1 + hope_sprite_scale_add*2  + hope_sprite_scale_fast_increase, hope_dir, c_white, 1);
-		scr_shader_outline(spr_hope_1, hope_index, 255, 255, 255, global.ALPHA_HOPE_BORDER)
 		draw_sprite_ext(spr_hope_1, hope_index, x, y-10, 1 + hope_sprite_scale_add + hope_sprite_scale_fast_increase, 1 + hope_sprite_scale_add*2  + hope_sprite_scale_fast_increase, hope_dir, c_white, round(sin(values.sin_t_flash_dmg)));
 	
 	} else {
-		scr_shader_outline(spr_hope, hope_index, 255, 255, 255, global.ALPHA_HOPE_BORDER)
 		draw_sprite_ext(spr_hope, hope_index, x, y-10, 1 + hope_sprite_scale_add + hope_sprite_scale_fast_increase, 1 + hope_sprite_scale_add*2  + hope_sprite_scale_fast_increase, hope_dir, c_white, 1);
 		
-	
-
 	}
 	
 
@@ -103,9 +82,9 @@ if instance_exists(obj_battle_manager){
 	
 }
 
-//draw_text_transformed(x-25, y-10, facing_x,1,1,0);
-//draw_text_transformed(x-25, y, degrees_directon,1,1,0);
-//draw_text_transformed(x-25, y+10, moving,1,1,0);
+//draw_text_transformed(x-25, y-10, global.can_move,1,1,0);
+//draw_text_transformed(x-25, y, mx,1,1,0);
+//draw_text_transformed(x-25, y+10, my,1,1,0);
 //draw_text_transformed(x-25, y+20, lengthdir_x(20, degrees_directon),1,1,0);
 //draw_text_transformed(x-25, y+30, lengthdir_y(20, degrees_directon),1,1,0);
 //draw_text_transformed(x-25, y+40, interact_dir,1,1,0);

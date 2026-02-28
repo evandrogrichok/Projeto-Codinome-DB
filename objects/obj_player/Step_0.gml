@@ -1,14 +1,14 @@
-if mouse_check_button(mb_left){
-global.DEBUG_PLAYER_DRAG = true;
-x =  mouse_x - pdx; 
-y =  mouse_y - pdy;
+//if mouse_check_button(mb_left){
+//global.DEBUG_PLAYER_DRAG = true;
+//x =  mouse_x - pdx; 
+//y =  mouse_y - pdy;
 
 
-} else {
-global.DEBUG_PLAYER_DRAG = false;
-pdx = mouse_x - x
-pdy = mouse_y - y
-}
+//} else {
+//global.DEBUG_PLAYER_DRAG = false;
+//pdx = mouse_x - x
+//pdy = mouse_y - y
+//}
 
 global.BLEND_COLOR_PLAYER = make_colour_rgb(global.BLEND_COLOR_PLAYER_R, global.BLEND_COLOR_PLAYER_G, global.BLEND_COLOR_PLAYER_B);
 
@@ -19,9 +19,9 @@ if instance_exists(obj_battle_manager){
     depth = DEPTH.ENTITY_BASE -y;
 }
 
-if keyboard_check_pressed(ord("Y")){
-debug_mode_aa = !debug_mode_aa
-}
+//if keyboard_check_pressed(ord("Y")){
+//debug_mode_aa = !debug_mode_aa
+//}
 
 tecla_confirmar = keyboard_check_pressed(vk_enter) || keyboard_check_pressed(ord("Z"));
 
@@ -92,7 +92,7 @@ if tecla_confirmar{
 
 
 
-if global.can_move > 0{
+if global.can_move >= 0{
 	
 	//scr_checagem_interacao();
 
@@ -248,7 +248,7 @@ if instance_exists(obj_battle_manager){
 		
 	case BATTLE_STATES.enemy_turn:
 	sin_t += 0.05;
-	
+	mask_index = spr_player_hope_hit
 	
 	state = PLAYER_STATES.hope;
 	

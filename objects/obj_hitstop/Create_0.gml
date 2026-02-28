@@ -1,2 +1,2 @@
 tempo = 1
-spd = 20;
+spd = 1;

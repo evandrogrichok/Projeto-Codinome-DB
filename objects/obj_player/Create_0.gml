@@ -13,7 +13,7 @@ pdy =0
 // --------------------------------------------------------------
 //AJUSTES DE ENGINE
 
-depth = DEPTH.ENTITY_BASE -y;
+depth = DEPTH.ENTITY_BASE - y;
 	
 
 //desabilitando interpolação
@@ -92,7 +92,6 @@ values = {
 	sin_t_flash_dmg: 0,
 	
 	take_dmg: function(_amount, _cooldown_time, _cam_shake_intensity, _cam_shake_time){
-		
 		if self.cooldown <= 0{
 			sin_t_flash_dmg = 0;
 			self.hp -= _amount
@@ -188,8 +187,10 @@ global.sh_upwards_lighting_texel_pointer = shader_get_uniform(sh_upwards_lightni
 global.sh_upwards_lighting_color_blend_pointer = shader_get_uniform(sh_upwards_lightning, "colorBlend");
 
 
-layer_create(DEPTH.LOGIC_TOP +1, "FX")
-part_sys_hope = part_system_create_layer("FX", false);
+if !(layer_exists("FX_BATTLE")){
+	layer_create(DEPTH.LOGIC_TOP +1, "FX_BATTLE")
+}
+part_sys_hope = part_system_create_layer("FX_BATTLE", false);
 part_emitter = part_emitter_create(part_sys_hope);
 
 part_type_hope = part_type_create();
@@ -207,3 +208,18 @@ part_type_colour1(part_type_hope, #FFD784)
 
 part_emitter_burst(part_sys_hope, part_emitter, part_type_hope, 1000)
 part_emitter_relative(part_sys_hope, part_emitter, true);
+
+
+function draw_hope_light_fx(alpha_bright, alpha_dark, color){
+	gpu_set_blendmode(bm_add)
+	draw_set_alpha(alpha_dark);
+	
+	draw_circle_color(x-.5, y-10.5, global.RADIUS_HOPE_LIGHT + sin(sin_t), color, color, false);
+	
+	draw_set_alpha(alpha_bright);
+	draw_circle_color(x-.5, y-10.5, global.RADIUS_HOPE_LIGHT + sin(sin_t) + 5, color, color, false);
+	
+	draw_set_alpha(1);
+	gpu_set_blendmode(bm_normal)
+	
+}

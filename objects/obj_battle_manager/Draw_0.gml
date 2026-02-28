@@ -47,16 +47,25 @@ var d_keys = global.DOWN_KEY;
 var vertical_opt_changer = (d_keys) - (u_keys) ;
 
 draw_set_font(fnt_tiny);
-
 var padd = 0;
+
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "versao exclusiva para teste", 0.5, 0.5, 0)
+//padd++;
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "Z- ação/dash X- cancelar C/esc- menu", 0.5, 0.5, 0)
+//padd++;
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "f10- andar por aí :D", 0.5, 0.5, 0)
+//padd++;
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "f11- fullscreen", 0.5, 0.5, 0)
+//padd++;
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "setas/wasd- mover", 0.5, 0.5, 0)
+//padd++;
+draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BEAT: " + string(beat), 0.5, 0.5, 0)
 padd++;
-draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "versao exclusiva para teste", 0.5, 0.5, 0)
-//padd++;
-//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BEAT: " + string(beat), 0.5, 0.5, 0)
-//padd++;
-//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BAR: " + string(bar), 0.5, 0.5, 0)
-//padd++;
-//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BPM: " + string(music_parameters.bpm), 0.5, 0.5, 0)
+draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BAR: " + string(bar), 0.5, 0.5, 0)
+padd++;
+draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BPM: " + string(music_parameters.bpm), 0.5, 0.5, 0)
+padd++;
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BPM: " + string(time_source_get_time_remaining(time_source_sphb)), 0.5, 0.5, 0)
 //padd++;
 //draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "DT: " + string(delta_time/16666), 0.5, 0.5, 0)
 //padd++;
@@ -284,34 +293,37 @@ if state == BATTLE_STATES.arrow_pattern{
 		
 	
 	if arrow_to_draw_from <= i{
+		var current_song_time = audio_sound_get_track_position(mus);
+		var diff = (individual_arrow_time[i] - current_song_time);
+		var dist = diff * vel_setas;
 		
 		switch arrow_pat[i]{
 		
 			case "right":
-				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, (cam_x) + individual_arrow_distance[i], cam_y, 1, 1, 0, c_white, arrows_alpha);
+				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, (cam_x) + dist, cam_y, 1, 1, 0, c_white, arrows_alpha);
 					if arrow_to_draw_from == i{
-						determine_closest_arrow_xy_pos(cam_x, cam_y, individual_arrow_distance[i], 0);
+						determine_closest_arrow_xy_pos(cam_x, cam_y, dist, 0);
 					}
 			break;
 			case "left":
-				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, (cam_x) - individual_arrow_distance[i], cam_y, 1, 1, 0, c_white, arrows_alpha);
+				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, (cam_x) - dist, cam_y, 1, 1, 0, c_white, arrows_alpha);
 					if arrow_to_draw_from == i{
-						determine_closest_arrow_xy_pos(cam_x, cam_y, -individual_arrow_distance[i], 0);
+						determine_closest_arrow_xy_pos(cam_x, cam_y, -dist, 0);
 					}
 			break;
 			
 			case "up":
-				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, cam_x, cam_y - individual_arrow_distance[i], 1, 1, 0, c_white, arrows_alpha);
+				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, cam_x, cam_y - dist, 1, 1, 0, c_white, arrows_alpha);
 					if arrow_to_draw_from == i{
-						determine_closest_arrow_xy_pos(cam_x, cam_y, 0, -individual_arrow_distance[i]);
+						determine_closest_arrow_xy_pos(cam_x, cam_y, 0, -dist);
 					}
 			
 			break;
 			
 			case "down":
-				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, cam_x, cam_y + individual_arrow_distance[i], 1, 1, 0, c_white, arrows_alpha);
+				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, cam_x, cam_y + dist, 1, 1, 0, c_white, arrows_alpha);
 				if arrow_to_draw_from == i{
-						determine_closest_arrow_xy_pos(cam_x, cam_y, 0, +individual_arrow_distance[i]);
+						determine_closest_arrow_xy_pos(cam_x, cam_y, 0, +dist);
 				}
 			break;
 			
@@ -320,10 +332,12 @@ if state == BATTLE_STATES.arrow_pattern{
 		arrows_alpha -= 1/quant_setas;
 		}
 		arrow_x_distance += sprite_get_width(spr_seta_up) + padding_between_arrows;	
-		individual_arrow_distance[i] -= vel_setas * global.DELTA_TIME;	
+		//individual_arrow_distance[i] -= vel_setas * global.DELTA_TIME;	
+
 	}
-	
-	local_seta_mais_proxima = individual_arrow_distance[arrow_to_draw_from];
+	var current_song_time = audio_sound_get_track_position(mus);
+	var diff = individual_arrow_time[arrow_to_draw_from] - current_song_time; // a diferenca do tempo da seta menos o tempo atual
+	local_seta_mais_proxima = diff * vel_setas;
 	//draw_rectangle(closest_arrow_x,closest_arrow_y,closest_arrow_x+2, closest_arrow_y+2, false)
 
 }
@@ -368,8 +382,10 @@ if text_to_draw[0] != ""{
 	switch (text_to_draw[1]){
 	case TXT_TYPES.arrow_accuracy:
 		draw_set_halign(fa_center)
-		draw_text_color(text_initial_x_position, cam_y - target_size - 10, text_to_draw[0],text_to_draw_color,text_to_draw_color,text_to_draw_color,text_to_draw_color, alpha_txt_to_draw)
+		draw_set_valign(fa_middle)
+		draw_text_transformed_color(text_initial_x_position, cam_y - target_size - 5, text_to_draw[0],1,size_text,rot_text,text_to_draw_color,text_to_draw_color,text_to_draw_color,text_to_draw_color, alpha_txt_to_draw)
 		draw_set_halign(fa_left)
+		draw_set_valign(fa_top)
 	
 	break;
 	
@@ -392,7 +408,7 @@ if text_to_draw[0] != ""{
 			
 			
 		
-			draw_text_transformed_color(text_initial_x_position + char_padding, y_inimigo[opt] - y_correction_for_dmg + sin_math, single_char,size_attack_text , size_attack_text + scale_pop_effect[i], rot_attack_text,col,col,col2,col2,alpha_txt_to_draw)
+			draw_text_transformed_color(text_initial_x_position + char_padding, y_inimigo[opt] - y_correction_for_dmg + sin_math, single_char,size_text , size_text + scale_pop_effect[i], rot_text,col,col,col2,col2,alpha_txt_to_draw)
 		}
 		draw_set_font(fnt_main)
 		draw_set_halign(fa_left)

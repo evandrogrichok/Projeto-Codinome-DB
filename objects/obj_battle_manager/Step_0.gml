@@ -1,4 +1,11 @@
-
+if keyboard_check(vk_f10){
+room_goto(rm_downes_lawn_01);
+obj_camera.fixated_camera = false;
+scr_can_move_tweaker(+1);
+audio_stop_sound(mus);
+audio_play_sound(snd_something_started_to_change, 5, true);
+obj_player.mask_index = obj_player.sprite_index;
+}
 var l_keys = global.LEFT_KEY
 var r_keys = global.RIGHT_KEY;
 var u_keys = global.UP_KEY;
@@ -23,7 +30,20 @@ if height_textbox_battle != dest_height_textbox_battle{
 	height_textbox_battle = lerp(height_textbox_battle, dest_height_textbox_battle, lerp_speed)
 }
 
-//show_debug_message(focus_points);
+if (instance_exists(obj_game_manager) && setted_up_lang = false){
+setup_lang();
+setted_up_lang = true;
+}
+
+pattern_start_time = audio_sound_get_track_position(mus);
+
+var last_beat = beat;
+beat = floor(audio_sound_get_track_position(mus)/bpm_seconds);
+
+if (last_beat != beat){
+	screen_effects();
+}
+
 //show_debug_message(focus_points_draw);
 
 //localizacao do obj cam
@@ -47,7 +67,8 @@ if text_to_draw[0] != ""{
 
 	switch (text_to_draw[1]){
 	case TXT_TYPES.arrow_accuracy:
-	
+	rot_text = lerp(rot_text, rot_text_dest, 0.2);
+	size_text = lerp(size_text, size_text_big, 0.2);
 	if alpha_txt_to_draw > 0{
 		alpha_txt_to_draw -= 0.01;
 		text_initial_x_position = text_initial_x_position  + (text_final_x_position - text_initial_x_position) * 0.1;
@@ -81,8 +102,8 @@ if text_to_draw[0] != ""{
 		}
 		text_initial_x_position = text_initial_x_position  + (text_final_x_position - text_initial_x_position) * 0.1;
 		
-		size_attack_text = lerp(size_attack_text, size_attack_text_big, 0.2);
-		rot_attack_text = lerp(rot_attack_text, rot_attack_text_dest, 0.2);
+		size_text = lerp(size_text, size_text_big, 0.2);
+		
 	
 		hue_attack_text[0] = lerp(hue_attack_text[0], dest_attack_text_hsv[0][0], .1)
 		hue_attack_text[1] = lerp(hue_attack_text[1], dest_attack_text_hsv[1][0], .2)
@@ -249,10 +270,10 @@ switch (state){
 		
 		if (keyboard_check_pressed(key[0]) && array_length(player_arrow_pat) < quant_setas){
 			array_push(player_arrow_pat, [key[1], dist_alvo])
-		if dist_alvo <= 5 {
-			audio_play_sound(snd_arrow, 2, false)
+			if dist_alvo <= 5 {
+				play_arrow_sfx()
 			}
-
+			
 		
 		target_rot_effect = choose(20, -20);
 
@@ -369,6 +390,7 @@ switch (state){
 		break;
 		case BATTLE_STATES.main_menu:
 		if wait_timer <= 0{
+			global.sin_t_points = 0;
 			state = next_state
 			inst_player_tweak = false;
 			tempo_inicio = 0;
@@ -408,7 +430,7 @@ switch (state){
 	break;
 	
 	case BATTLE_STATES.enemy_turn:
-		
+
 		if black_player_col_enemy_turn != 0{
 		var lerp_amnt = 0.1;
 		black_player_col_enemy_turn = lerp(black_player_col_enemy_turn, 0, lerp_amnt);	
@@ -427,6 +449,9 @@ switch (state){
 			
 		}
 
+		if instance_exists(obj_points){
+			global.sin_t_points ++;
+		}
 		
 		if (enemy_attack_type == "time-repeat"){
 			var attack_scr = current_attack.attack_script;
@@ -444,7 +469,7 @@ switch (state){
 	
 	if enemy_attack_finished{
 		go_to_wait_time_state(BATTLE_STATES.main_menu);
-		scr_change_canmove(-1);
+		scr_can_move_tweaker(-1);
 		inst_player.sprite_index = spr_player_idle_battle;
 		enemy_attack_finished = false;
 		setup_enemy_turn = false;

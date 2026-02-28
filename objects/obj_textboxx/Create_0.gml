@@ -12,7 +12,7 @@ var data = json_parse(json_string);
 
 
 dialogo = variable_struct_get(data, dialogo_id); 
-scr_can_move_tweaker(-1);
+
 
 
 show_debug_message("oi");
@@ -30,8 +30,8 @@ for (var p = 0; p < array_length(dialogo); p++){
 	}
 }
 
-
-
+if dialogo[0].type != "battle"
+scr_can_move_tweaker(-1);
 
 textbox_width = 220 //largura
 textbox_heigth = 60 //altura

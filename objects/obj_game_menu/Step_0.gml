@@ -12,7 +12,7 @@ var inventory =					   	   inst_gm.inventory;
 var i_act_length = array_length(i_options)
 
 _opt_changer =  (global.RIGHT_KEY) - (global.LEFT_KEY);
-_opt_changer_v =  (global.UP_KEY) - (global.UP_KEY);
+_opt_changer_v =  (global.DOWN_KEY) - (global.UP_KEY);
 
 
 if (menu_key){
@@ -88,7 +88,6 @@ while(state_has_changed){
 			case ITEM_SUBSTATES.selecting:
 				
 				selecting_item();
-
 				if (back_key){
 					opt = selected_item_type; // para voltar pro campo do tipo do item escolhido
 					state = MENU_STATES.item_types_menu;
@@ -96,7 +95,7 @@ while(state_has_changed){
 
 			break;
 			case ITEM_SUBSTATES.confirming:
-				
+				option_changer(i_act_length, _opt_changer_v);
 				confirming_usage();
 				
 			break;
@@ -118,7 +117,6 @@ while(state_has_changed){
 			case ITEM_SUBSTATES.selecting:
 				
 					selecting_item();
-
 					if (back_key){
 						state = MENU_STATES.closed;
 						item_substate = ITEM_SUBSTATES.selecting;
@@ -133,7 +131,7 @@ while(state_has_changed){
 
 			break;
 			case ITEM_SUBSTATES.confirming:
-				
+				option_changer(i_act_length, _opt_changer_v);
 				confirming_usage();
 				
 			break;

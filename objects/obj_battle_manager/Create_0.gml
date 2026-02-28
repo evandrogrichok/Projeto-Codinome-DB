@@ -9,6 +9,7 @@ for (var i = 0; i < array_length(manager_aux_obj); i++){
 	}
 }
 
+scr_can_move_tweaker(-1);
 
 enum BATTLE_STATES{
 	main_menu,
@@ -38,6 +39,23 @@ gold_gain_constant = 2;
 leveled_up = false;
 
 bonus_xp = 0;
+
+if !(layer_exists("FX_BATTLE")){
+	layer_create(DEPTH.LOGIC_TOP +1, "FX_BATTLE")
+}
+
+global.part_sys_points = part_system_create_layer("FX_BATTLE", false);
+global.part_emitter_points = part_emitter_create(global.part_sys_points);
+global.part_type_points = part_type_create();
+global.point_part_colors = [ #fcfcfc, #ff2887, #54ecec];
+part_type_sprite(global.part_type_points, spr_particle_hope, false, false, false);
+part_type_size(global.part_type_points, 1, 1 , 0, false);
+part_type_life(global.part_type_points, 20, 40);
+part_type_blend(global.part_type_points, true);
+part_type_alpha3(global.part_type_points, 1, 1, 0);
+part_type_colour1(global.part_type_points, c_aqua);
+part_type_direction(global.part_type_points, 0, 360, 0, 0);
+part_emitter_relative(global.part_sys_points, global.part_emitter_points, false);
 
 
 
@@ -106,7 +124,7 @@ bar = 0;
 
 gain_arrow_hit = 0;
 
-audio_play_sound(snd_stardust, 10, true, 0);
+per_bar_beat = 4;
 
 snd_id_arrow_hit = undefined;
 can_run_attack_script = false;
@@ -114,7 +132,7 @@ function count_beat(){
 	var ts = variable_struct_get(music_parameters, "time_signature")
 switch (ts){
 	case "4/4":
-	var per_bar_beat = 4
+	per_bar_beat = 4
 	
 	can_run_attack_script = true;
 	beat++;
@@ -133,7 +151,13 @@ function count_bar(ts){
 
 
 function call_beat_functions(){
-
+	if state == BATTLE_STATES.arrow_pattern{
+	if beat != 0{
+		audio_play_sound(snd_c, 5, false, 1.2);
+	} else {
+		audio_play_sound(snd_c, 5, false, 1.2, 0, 1.1225);
+	}
+	}
 	screen_effects()
 }
 
@@ -153,11 +177,40 @@ function screen_effects(){
 	alpha_vignette_beat = 1;
 };
 
-bmp_seconds = time_bpm_to_seconds(music_parameters.bpm)
-show_debug_message(bmp_seconds)
-//spb = seconds per beat
-time_source_spb = time_source_create(time_source_game, bmp_seconds, time_source_units_seconds, function(){with (self){ count_beat()}},[undefined],-1)
-time_source_start(time_source_spb);
+bpm_seconds = time_bpm_to_seconds(music_parameters.bpm)
+show_debug_message(bpm_seconds)
+//time_source_spb = time_source_create(time_source_game, bpm_seconds, time_source_units_seconds, function(){with (self){ count_beat()}},[undefined],-1)
+//time_source_start(time_source_spb);
+//time_source_sphb = time_source_create(time_source_game, bpm_seconds*2, time_source_units_seconds, function (){show_debug_message("PAR"); show_debug_message(beat); }, [undefined],-1)
+//time_source_start(time_source_sphb);
+//time_source_sfx_arrow = time_source_create(time_source_game,  time_source_get_time_remaining(time_source_spb), time_source_units_seconds, function(){audio_play_sound(snd_arrow, 5, false, 2)});
+
+
+mus = audio_play_sound(snd_stardust, 10, true, .8);
+
+function play_arrow_sfx(){
+	var song_current_time = audio_sound_get_track_position(mus);
+	var float_beat = song_current_time/bpm_seconds;
+	var current_beat = round(song_current_time/bpm_seconds);
+	var diff_sec = (current_beat - float_beat) * bpm_seconds;
+	
+	show_debug_message(diff_sec)
+	
+	
+	if dist_seta_alvo <= 3 && (diff_sec)>0{
+			
+	var ts_sfx = time_source_create(time_source_game, diff_sec, time_source_units_seconds, function(){audio_play_sound(snd_arrow, 5, false, 2)});
+	time_source_start(ts_sfx);
+			
+		
+	} else {
+		audio_play_sound(snd_arrow, 5, false, 2)
+	}
+	
+	
+
+
+}
 
 
 can_lower_dmg_txt_alpha = false;
@@ -206,9 +259,9 @@ black_bg_color_alpha = 0;
 //futuramente adicionar nesse array o texto em ingles também, que no for vai ser scaneado com uma variavel global de definicao de linguagem
 //sempre deixar os parametros de erro como errou!
 param_acertar = [
-	[5, #0cf2cc, "perfeito!" ],
-	[15, #35e8a7, "ótimo!"],
-	[25, #b8ff96, "ok"],
+	[3, #0cf2cc, "perfeito!" ],
+	[10, #35e8a7, "ótimo!"],
+	[15, #b8ff96, "ok"],
 	[1000, #fff896, "longe..."],
 	[-1, #f56464, "errou..."]
 ]
@@ -247,16 +300,25 @@ last_opt = undefined;
 
 obj_camera.fixated_camera = true;
 
-
-
 options = [
-	["fight", asset_get_index("spr_button_fight_" + string(global.LANG))],
-	["hope", asset_get_index("spr_button_hope_" + string(global.LANG))],
-	["item", asset_get_index("spr_button_item_" + string(global.LANG))],
-	["defend", asset_get_index("spr_button_defend_" + string(global.LANG))]
+	["fight",spr_button_fight_en],
+	["hope",spr_button_hope_en],
+	["item",spr_button_item_en],
+	["defend",spr_button_defend_en],
 ]
 
 option_count = array_length(options);
+setted_up_lang = false;
+
+function setup_lang(){
+	options = [
+		["fight", asset_get_index("spr_button_fight_" + string(global.LANG))],
+		["hope", asset_get_index("spr_button_hope_" + string(global.LANG))],
+		["item", asset_get_index("spr_button_item_" + string(global.LANG))],
+		["defend", asset_get_index("spr_button_defend_" + string(global.LANG))]
+	]
+}
+
 
 	
 //}
@@ -295,11 +357,11 @@ hue_attack_text =  [default_attack_text_hsv[0][0], default_attack_text_hsv[1][0]
 sat_attack_text =  [default_attack_text_hsv[0][1], default_attack_text_hsv[1][1]];
 val_attack_text =  [default_attack_text_hsv[0][2], default_attack_text_hsv[1][2]];
 
-rot_attack_text =  0;
-rot_attack_text_dest =  0;
-size_attack_text_default =  1;
-size_attack_text_big =  1.25;
-size_attack_text = size_attack_text_default;
+rot_text =  0;
+rot_text_dest =  0;
+size_text_default =  1;
+size_text_big =  1.25;
+size_text = size_text_default;
 
 //arrow_x_distance = 0;
 
@@ -357,18 +419,25 @@ available_enemies_attacks = array_create(0);
 var enemies_atks_keys = variable_struct_get_names(ataques_inimigos);
 var count_enemies_atks = array_length(enemies_atks_keys);
 
-
 function load_arrow_distance(){
-	individual_arrow_distance = [];
-	var gamespeed = 60;
-	base_initial_distance = (gamespeed*bmp_seconds*vel_setas)*2 + (gamespeed*time_source_get_time_remaining(time_source_spb)*vel_setas); //
-	distance_between_arrows = (gamespeed*bmp_seconds*vel_setas); //
+	individual_arrow_time = [];
+	pattern_start_time = ceil(audio_sound_get_track_position(mus)/bpm_seconds) *bpm_seconds;
+	var arrow_offset = 4;
 	
-	for (var i = 0; i < array_length(arrow_pat); i++){
-		array_push(individual_arrow_distance, base_initial_distance + distance_between_arrows * i);
-	
-		show_debug_message(individual_arrow_distance);
+	for(var i = 0; i < array_length(arrow_pat); i++){
+		individual_arrow_time[i] = pattern_start_time + (i + arrow_offset) * bpm_seconds;
 	}
+	
+	
+	//var gamespeed = game_get_speed(gamespeed_fps);
+	//base_initial_distance = (gamespeed*bpm_seconds*vel_setas)*2 + (gamespeed*time_source_get_time_remaining(time_source_sphb)*vel_setas); //
+	//distance_between_arrows = (gamespeed*bpm_seconds*vel_setas); //
+	
+	//for (var i = 0; i < array_length(arrow_pat); i++){
+	//	array_push(individual_arrow_distance, base_initial_distance + distance_between_arrows * i);
+	
+	//	show_debug_message(individual_arrow_distance);
+	//}
 }
 
 
@@ -536,6 +605,12 @@ function run_command(_opt){
 	
 }
 
+function add_dance_points(amount){
+	focus_points_amnt_incr = amount;
+	focus_points_dest = clamp(round(focus_points + (focus_points_amnt_incr)), 0, 100);
+	focus_points = focus_points_dest;
+}
+
 function run_arrow_pattern(_attack){
 	switch (_attack){
 		case "normal_attack":
@@ -547,13 +622,14 @@ function run_arrow_pattern(_attack){
 			vel_setas = attack_params.velocity;
 			arrow_timer = arrow_time;
 			
-			focus_points_amnt_incr = 10;
-			focus_points_dest = clamp(round(focus_points + (focus_points_amnt_incr)), 0, 100);
-			focus_points = focus_points_dest;
+			add_dance_points(10);
+
 			load_arrow_distance();
 		break;
 	}
 }
+
+
 
 function load_enemy_attack(){
 	
@@ -654,9 +730,16 @@ function setup_text_draw(text, txt_type, color = undefined){
 	
 	switch(txt_type){
 	case TXT_TYPES.arrow_accuracy:
-		var range_text = 5;
-		text_initial_x_position = arrow_target_x + range_text + target_size/2;
-		text_final_x_position = arrow_target_x - range_text + target_size/2;
+		var range_text = 5
+		text_initial_x_position = arrow_target_x + range_text;
+		text_final_x_position = arrow_target_x;
+		
+		var rot_range = 5
+		rot_text_dest = choose(rot_range, -rot_range)
+		rot_text =  0;
+		
+		size_text = size_text_default
+		
 		alpha_txt_to_draw = 1
 	
 	break;
@@ -681,13 +764,13 @@ function setup_text_draw(text, txt_type, color = undefined){
 		time_source_start(time_source_blink_dmg);
 		
 		
-		var rot_range = 10
-		rot_attack_text_dest = choose(rot_range, -rot_range)
-		rot_attack_text =  0;
+		rot_range = 10
+		rot_text_dest = choose(rot_range, -rot_range)
+		rot_text =  0;
 		
-		size_attack_text = size_attack_text_default
+		size_text = size_text_default
 		
-		scale_pop_effect = array_create(string_length(text_to_draw[0]), - size_attack_text);
+		scale_pop_effect = array_create(string_length(text_to_draw[0]), - size_text);
 		
 
 	break;
