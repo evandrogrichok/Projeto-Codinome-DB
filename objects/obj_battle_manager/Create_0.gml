@@ -319,9 +319,15 @@ function setup_lang(){
 	]
 }
 
-
+opt_height = sprite_get_height(spr_button_item_pt)
 	
 //}
+
+
+larg_barra_hp = 25;
+larg_out_hp = larg_barra_hp + 2;
+altura_barra_hp = 3;
+altura_out_hp = altura_barra_hp+2;
 
 sin_t = 0;
 arrow_timer = 0;
@@ -388,6 +394,18 @@ for (var i = 0; i < quant_inimigos_combo; i++){
 	nomes_inimigos[i] = parametros_inimigos[i].enemy_name;
 	var sprite = asset_get_index(parametros_inimigos[i].sprite)
 	ini_sprites_altura = array_create(quant_inimigos_combo, sprite_get_height(sprite))
+	
+	sprite_ini = parametros_inimigos[i].sprite
+	sprite_ini = asset_get_index(sprite_ini);
+	
+	sprite_ini_dmg = parametros_inimigos[i].sprite_dmg
+	sprite_ini_dmg = asset_get_index(sprite_ini_dmg)
+	
+	sprite_ini_atk = parametros_inimigos[i].sprite_atk
+	sprite_ini_atk = asset_get_index(sprite_ini_atk)
+		
+	sprite_ini_pur = parametros_inimigos[i].sprite_pur
+	sprite_ini_pur = asset_get_index(sprite_ini_pur)
 }
 
 show_debug_message(nomes_inimigos)
@@ -584,6 +602,7 @@ function run_command(_opt){
 //		state = BATTLE_STATES.arrow_pattern
 		run_arrow_pattern("normal_attack");
 		state = BATTLE_STATES.select_enemy;
+		alpha_barra_ini = 1;
 		
 		break;
 		
@@ -927,6 +946,12 @@ chosen_index = 0;
 textbox_chat_id = enemy_sentences[chosen_index]
 
 
+enum ENEMIES_DRAW_STATES{
+	cursed,
+	purified
+}
+
+
 function next_enviroment_sentence(){
 	chosen_index++;
 	chosen_index = (chosen_index + array_length(enemy_sentences)) % array_length(enemy_sentences);
@@ -937,3 +962,56 @@ function next_enviroment_sentence(){
 
 main_textbox_id = scr_open_textbox(textbox_chat_id);
 load_enemy_attack()
+
+
+function check_if_enemy_is_defeated(i){
+	draw_away = lerp(draw_away, 20, 0.01);
+	fade_away += -0.05;
+	
+	var vel_draw_away = 5;
+	var x_ini = x_inimigo[i] + vel_draw_away * draw_away;
+	var y_ini = y_inimigo[i] - vel_draw_away - sin(sin_t*3.5) * 5;
+			
+	part_emitter_region(part_system_stars, part_emitter_stars, x_ini -10, x_ini +10, y_ini -10, y_ini +10, ps_shape_rectangle, ps_distr_linear);
+	part_emitter_burst(part_system_stars, part_emitter_stars, part_type_stars, 20);
+			
+	draw_sprite_ext(sprite_ini_pur, enemies_index[i], x_ini, y_ini, 1, 1, 0, c_white, fade_away);
+			
+	if fade_away <= 0{
+		enemies_draw_defeat_state[i] = 1;
+		draw_away = 0;
+		fade_away = 2;
+				 
+	}
+}
+
+	function define_enemy_position(i, cam_x, cam_y){
+		if enemy_count == 1{ // se houver 1 só, fica centralizado,
+			x_inimigo[i] = cam_x + cam_w/3
+			y_inimigo[i] = cam_y - height_textbox_battle/2;
+		} else { //senão, ele faz calculos
+			var x_padding = 0
+			if (i%2 != 0 && enemy_count>2){
+				x_padding = 20;
+			}
+			x_inimigo[i] = cam_x + cam_w/3 + x_padding;
+			var padding = 10;
+			var first_sprite_height = sprite_get_height(asset_get_index(parametros_inimigos[0].sprite))
+			var available_y_space = cam_h - height_textbox_battle - first_sprite_height;
+		
+			var y_distance = ( available_y_space/enemy_count)*i;
+		
+			y_inimigo[i] =	(cam_y - cam_h/2) + available_y_space/(enemy_count+2) + y_distance + first_sprite_height - opt_height;
+
+		}
+	}
+	
+	
+		function draw_hp_bar_enemy(i, max_hp){
+			draw_sprite_stretched_ext(spr_outline_enemy_hb,0, x_inimigo[i] - larg_out_hp/2 - larg_barra_hp, y_inimigo[i] - sprite_get_height(sprite_ini) - altura_out_hp+1, larg_out_hp, altura_out_hp, c_white,alpha_barra_ini)
+			draw_sprite_stretched_ext(spr_healthbar_enemy,0, x_inimigo[i] - larg_barra_hp/2 - larg_barra_hp, y_inimigo[i] - sprite_get_height(sprite_ini) - altura_barra_hp, (hp_inimigos[i] / max_hp)*larg_barra_hp, altura_barra_hp, #54003e,alpha_barra_ini)
+		}
+		
+		
+		
+	

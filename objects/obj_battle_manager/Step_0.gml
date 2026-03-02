@@ -44,6 +44,17 @@ if (last_beat != beat){
 	screen_effects();
 }
 
+if (alpha_barra_ini > 0 && state != BATTLE_STATES.select_enemy){
+	alpha_barra_ini -= 0.03;
+}
+
+if shake_level > 0 {
+	shake_level -= 0.1
+	shaking = true;
+}else{
+	shaking = false;
+}
+
 //show_debug_message(focus_points_draw);
 
 //localizacao do obj cam
@@ -131,6 +142,14 @@ if target_rot_effect != 0 {
 	target_rot_effect = lerp(target_rot_effect, 0, 0.3);
 }
 
+
+for(var i = 0; i < enemy_count; i++){
+	if state != BATTLE_STATES.enemy_turn{
+		enemies_index[i] = scr_animar_sprite(enemies_index[i], enemies_speed[i], sprite_ini);
+	} else {
+		enemies_index[i] = scr_animar_sprite(enemies_index[i], enemies_speed[i], sprite_ini_atk);
+	}
+}
 can_use = true;
 
 switch (state){
