@@ -6,7 +6,7 @@
         "requirements": ["inimigo1"],
         "type": "time-repeat",
         "repeat_frequency": 20,
-        "duration": 60,
+        "duration": 600,
         "priority": 10
       
       }

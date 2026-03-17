@@ -17,4 +17,4 @@ function circle_and_falling_ice(){
 		instance_create_depth(x_caixa, y_caixa, -1001, obj_circle);
 	}
 }
-
+ 

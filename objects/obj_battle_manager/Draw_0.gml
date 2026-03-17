@@ -103,7 +103,8 @@ draw_set_font(fnt_main);
 //draw_line(cam_x, cam_y - cam_h/2, cam_x, cam_y + cam_h/2);
 
 
-
+//draw_text_ext_transformed(x_inimigo[0], y_inimigo[0], "BONECO DE NEVE", 1, 1000, 1, 1, 10)
+//draw_text(x_inimigo[0], y_inimigo[0], "75%")
 
 
 if (mostrar_limites_de_movimentacao){
@@ -138,25 +139,39 @@ if (mostrar_limites_de_movimentacao){
 //DESENHANDO O INIMIGO
 seta_index = scr_animar_sprite(seta_index, seta_speed, spr_selec_ini); 
 for(var i = 0; i < enemy_count; i++){
-		
-	var max_hp = parametros_inimigos[i].hp
-	var nome = parametros_inimigos[i].enemy_name
-	
-	var off_y_arrow = 17
+	var max_hp = parametros_inimigos[i].hp;
+	var nome = string_upper(parametros_inimigos[i].enemy_name);
+	var off_y_arrow = 17;
 
 	if (hp_inimigos[i] <= 0){
 		if enemies_draw_defeat_state[i] == ENEMIES_DRAW_STATES.cursed{
-			check_if_enemy_is_defeated(i)
+			draw_hp_bar_enemy(i, max_hp, draw_away*4, fade_away);		
+			draw_enemy_name_and_percentage(i, draw_away*4, fade_away)
+
+			enemy_is_defeated(i)
+			
+
+
 		}
+	
 		continue;
 	} else {
+		
+		
+		
+		
 		define_enemy_position(i, cam_x, cam_y);
 		draw_hp_bar_enemy(i, max_hp);
+		
+		//DESENHANDO PORCENTAGEM E NOME
 	
+		draw_enemy_name_and_percentage(i)
+		
+
 	
 		if state == BATTLE_STATES.enemy_turn{
-			scr_shader_outline(sprite_ini_atk, enemies_index[i], 207, 119, 255, black_bg_color_alpha);
-			draw_sprite_ext(sprite_ini_atk, enemies_index[i], x_inimigo[i], y_inimigo[i], 1, 1, 0, c_white, 1);
+			scr_shader_outline(sprite_ini_atk[i], enemies_index[i], 207, 119, 255, black_bg_color_alpha);
+			draw_sprite_ext(sprite_ini_atk[i], enemies_index[i], x_inimigo[i], y_inimigo[i], 1, 1, 0, c_white, 1);
 			shader_reset();
 		} else
 		if shaking && i == opt{
@@ -166,12 +181,12 @@ for(var i = 0; i < enemy_count; i++){
 
 			shake_x = lengthdir_x(shake_level, shake_dir);
 			shake_y = lengthdir_y(shake_level, shake_dir);
-			draw_sprite_ext(sprite_ini_dmg, 0, x_inimigo[i] + shake_x, y_inimigo[i] + shake_y, 1, 1, 0, c_white, 1);
+			draw_sprite_ext(sprite_ini_dmg[i], 0, x_inimigo[i] + shake_x, y_inimigo[i] + shake_y, 1, 1, 0, c_white, 1);
 		} else {
 			if (i == opt && state == BATTLE_STATES.select_enemy){
-				scr_shader_outline(sprite_ini, enemies_index[i], 255, 219, 103, clamp(sin(sin_t*3)/5 + 0.8, 0, 1));
+				scr_shader_outline(sprite_ini[i], enemies_index[i], 255, 219, 103, clamp(sin(sin_t*3)/5 + 0.8, 0, 1));
 
-				draw_sprite_ext(sprite_ini, enemies_index[i], x_inimigo[opt], y_inimigo[opt], 1, 1, 0, c_white, 1);	
+				draw_sprite_ext(sprite_ini[i], enemies_index[i], x_inimigo[opt], y_inimigo[opt], 1, 1, 0, c_white, 1);	
 
 				shader_reset();
 
@@ -179,7 +194,7 @@ for(var i = 0; i < enemy_count; i++){
 				continue;
 			}
 
-			draw_sprite_ext(sprite_ini, enemies_index[i], x_inimigo[i], y_inimigo[i], 1, 1, 0, c_white, 1);
+			draw_sprite_ext(sprite_ini[i], enemies_index[i], x_inimigo[i], y_inimigo[i], 1, 1, 0, c_white, 1);
 		}
 	}
 }
@@ -209,62 +224,10 @@ if state == BATTLE_STATES.arrow_pattern{
 	
 	draw_sprite_ext(spr_alvo_setas, 0,  arrow_target_x, target_size/2 + cam_y-target_size/2,  unit_size_sprite * (target_size + increase_target_size), unit_size_sprite * (target_size + increase_target_size), target_rot_effect, c_white, 1)
 	
-	var quant_setas = array_length(arrow_pat)
-	var start = arrow_to_draw_from
 	
-	for (var i = 0; i < quant_setas; i++){
-		
-		
-		// se o i for igual ao arrow to draw from dai ele atribui o cloosest
-		
 	
-	if arrow_to_draw_from <= i{
-		var current_song_time = audio_sound_get_track_position(mus);
-		var diff = (individual_arrow_time[i] - current_song_time);
-		var dist = diff * vel_setas;
-		
-		switch arrow_pat[i]{
-		
-			case "right":
-				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, (cam_x) + dist, cam_y, 1, 1, 0, c_white, arrows_alpha);
-					if arrow_to_draw_from == i{
-						determine_closest_arrow_xy_pos(cam_x, cam_y, dist, 0);
-					}
-			break;
-			case "left":
-				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, (cam_x) - dist, cam_y, 1, 1, 0, c_white, arrows_alpha);
-					if arrow_to_draw_from == i{
-						determine_closest_arrow_xy_pos(cam_x, cam_y, -dist, 0);
-					}
-			break;
-			
-			case "up":
-				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, cam_x, cam_y - dist, 1, 1, 0, c_white, arrows_alpha);
-					if arrow_to_draw_from == i{
-						determine_closest_arrow_xy_pos(cam_x, cam_y, 0, -dist);
-					}
-			
-			break;
-			
-			case "down":
-				draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, cam_x, cam_y + dist, 1, 1, 0, c_white, arrows_alpha);
-				if arrow_to_draw_from == i{
-						determine_closest_arrow_xy_pos(cam_x, cam_y, 0, +dist);
-				}
-			break;
-			
-		}
-		
-		arrows_alpha -= 1/quant_setas;
-		}
-		arrow_x_distance += sprite_get_width(spr_seta_up) + padding_between_arrows;	
-		//individual_arrow_distance[i] -= vel_setas * global.DELTA_TIME;	
+	
 
-	}
-	var current_song_time = audio_sound_get_track_position(mus);
-	var diff = individual_arrow_time[arrow_to_draw_from] - current_song_time; // a diferenca do tempo da seta menos o tempo atual
-	local_seta_mais_proxima = diff * vel_setas;
-	//draw_rectangle(closest_arrow_x,closest_arrow_y,closest_arrow_x+2, closest_arrow_y+2, false)
 
 }
 
@@ -321,6 +284,7 @@ if text_to_draw[0] != ""{
 		
 		var col = make_colour_hsv(hue_attack_text[0], sat_attack_text[0], val_attack_text[0]);
 		var col2 = make_colour_hsv(hue_attack_text[1], sat_attack_text[1], val_attack_text[1]);
+		
 		
 		var y_correction_for_dmg = 30;
 		for (var i = 0; i < string_length(text_to_draw[0]); i++){

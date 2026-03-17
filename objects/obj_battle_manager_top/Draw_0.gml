@@ -1,9 +1,94 @@
 if instance_exists(obj_battle_manager){
 
+
+
 with(obj_battle_manager){
-		var cam_x = obj_camera.x
-		var cam_y = obj_camera.y
+	
+var _inst_player = obj_player;
+
+
+
+//tamanho do visor da camera
+//var cam_w = camera_get_view_width(view_camera[0]);
+//var cam_h = camera_get_view_height(view_camera[0]);
+//localizacao do obj cam
+var cam_x = obj_camera.x
+var cam_y = obj_camera.y
+//tamanho dos sprites dos botoes, para calculos de distancia e tudo
+
+//tamanho do hudzinho de vida
+
+
+
+//parte >>ESQUERDA<< do alvo setas
+var arrow_target_x = cam_x;
+var increase_target_size = 0;
+//desenhando setas
+
+var arrow_x_distance = 0; 
+var arrows_alpha = 1;
+
+	
+		if (state == BATTLE_STATES.arrow_pattern){
+				var quant_setas = array_length(arrow_pat)
+				var start = arrow_to_draw_from
+	
+				for (var i = 0; i < quant_setas; i++){
 		
+		
+					// se o i for igual ao arrow to draw from dai ele atribui o cloosest
+		
+	
+				if arrow_to_draw_from <= i{
+					var current_song_time = audio_sound_get_track_position(mus); // pega a posição atual da musica
+					var diff = (individual_arrow_time[i] - current_song_time); // no array de tempos das setas, subtrai o tempo atual da musica pegando a diferença
+					var dist = diff * vel_setas; // a distancia é calculada multiplicada pela velocidade das setas 
+		
+					switch arrow_pat[i]{
+		
+						case "right":
+							draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, (cam_x) + dist, cam_y, 1, 1, 0, c_white, arrows_alpha);
+								if arrow_to_draw_from == i{
+									determine_closest_arrow_xy_pos(cam_x, cam_y, dist, 0);
+								}
+						break;
+						case "left":
+							draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, (cam_x) - dist, cam_y, 1, 1, 0, c_white, arrows_alpha);
+								if arrow_to_draw_from == i{
+									determine_closest_arrow_xy_pos(cam_x, cam_y, -dist, 0);
+								}
+						break;
+			
+						case "up":
+							draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, cam_x, cam_y - dist, 1, 1, 0, c_white, arrows_alpha);
+								if arrow_to_draw_from == i{
+									determine_closest_arrow_xy_pos(cam_x, cam_y, 0, -dist);
+								}
+			
+						break;
+			
+						case "down":
+							draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, cam_x, cam_y + dist, 1, 1, 0, c_white, arrows_alpha);
+							if arrow_to_draw_from == i{
+									determine_closest_arrow_xy_pos(cam_x, cam_y, 0, +dist);
+							}
+						break;
+			
+					}
+		
+					arrows_alpha -= 1/quant_setas;
+					}
+					//arrow_x_distance += sprite_get_width(spr_seta_up) + padding_between_arrows;	
+					//individual_arrow_distance[i] -= vel_setas * global.DELTA_TIME;	
+
+				}
+				var current_song_time = audio_sound_get_track_position(mus);
+				var diff = individual_arrow_time[arrow_to_draw_from] - current_song_time; // a diferenca do tempo da seta menos o tempo atual
+				local_seta_mais_proxima = diff * vel_setas;
+				//draw_rectangle(closest_arrow_x,closest_arrow_y,closest_arrow_x+2, closest_arrow_y+2, false)
+		}
+	
+	
 		var _padding = 0
 		var _margin = 5
 	

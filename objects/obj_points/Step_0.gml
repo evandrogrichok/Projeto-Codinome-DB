@@ -1,4 +1,4 @@
-// lembrar de tirar isso daqui
+
 
 
 switch(point_type){

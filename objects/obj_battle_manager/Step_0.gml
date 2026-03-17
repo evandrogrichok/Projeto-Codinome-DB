@@ -29,6 +29,11 @@ if height_textbox_battle != dest_height_textbox_battle{
 	
 	height_textbox_battle = lerp(height_textbox_battle, dest_height_textbox_battle, lerp_speed)
 }
+if enemy_name_appear_effect != 0{
+	var lerp_speed = 0.2
+	enemy_name_appear_effect = lerp(enemy_name_appear_effect, 0, lerp_speed)
+}
+
 
 if (instance_exists(obj_game_manager) && setted_up_lang = false){
 setup_lang();
@@ -42,10 +47,11 @@ beat = floor(audio_sound_get_track_position(mus)/bpm_seconds);
 
 if (last_beat != beat){
 	screen_effects();
+	can_run_attack_script = true;
 }
 
-if (alpha_barra_ini > 0 && state != BATTLE_STATES.select_enemy){
-	alpha_barra_ini -= 0.03;
+if (alpha_barra_ini > 0){
+	lower_alpha_enemy_bar();
 }
 
 if shake_level > 0 {
@@ -145,11 +151,26 @@ if target_rot_effect != 0 {
 
 for(var i = 0; i < enemy_count; i++){
 	if state != BATTLE_STATES.enemy_turn{
-		enemies_index[i] = scr_animar_sprite(enemies_index[i], enemies_speed[i], sprite_ini);
+		enemies_index[i] = scr_animar_sprite(enemies_index[i], enemies_speed[i], sprite_ini[i]);
 	} else {
-		enemies_index[i] = scr_animar_sprite(enemies_index[i], enemies_speed[i], sprite_ini_atk);
+		enemies_index[i] = scr_animar_sprite(enemies_index[i], enemies_speed[i], sprite_ini_atk[i]);
+	}
+	
+	if (hp_inimigos[i] <= 0){
+		if enemies_draw_defeat_state[i] == ENEMIES_DRAW_STATES.cursed{
+				draw_away = lerp(draw_away, 20, 0.01);
+			fade_away += -0.05;
+			
+			if fade_away <= 0{
+			enemies_draw_defeat_state[i] = ENEMIES_DRAW_STATES.purified;
+			draw_away = 0;
+			fade_away = 3;
+			}
+		}
 	}
 }
+
+
 can_use = true;
 
 switch (state){
@@ -195,8 +216,8 @@ switch (state){
 	break;
 	
 	case (BATTLE_STATES.select_enemy):
-	if alpha_barra_ini != 1{
-		alpha_barra_ini = 1;
+	if alpha_barra_ini != 3{
+		alpha_barra_ini = 3; // numero maior pra permanecer mais tempo 100% visivel
 	}
 	
 	if hp_inimigos[opt] <= 0{
@@ -226,6 +247,7 @@ switch (state){
 			   
 			if (hp_inimigos[prox_ini] > 0){
 				opt = prox_ini;
+				enemy_name_appear_effect = enemy_name_appear_px_num;
 				break; // se ele achar, quebra e dai atribui o opt temporario para opt e quebra o loop
 			}
 			
@@ -244,6 +266,7 @@ switch (state){
 			   
 			if (hp_inimigos[prox_ini] > 0){
 				opt = prox_ini;
+				enemy_name_appear_effect = enemy_name_appear_px_num;
 				break;
 			}
 			
@@ -254,10 +277,20 @@ switch (state){
 
 	
 	if accept_key{
+		run_arrow_pattern("normal_attack");
 		next_enemy_to_attack = opt;
 		toggle_textbox(TEXTBOX_PROPERTIES.is_created, false);
+		
+		//se nao tiver caixa de texto
 		state = BATTLE_STATES.arrow_pattern;
-
+		//se tiver
+		// muda o estado pra textbox
+		//cria a caixa de texto atraves de uma função de busca de caixa de texto
+		//ela busca se tiver caixa de texto de acao (x usou ataque dançarino!) ou (x usou pomeranja e recuperou 25 de HP.)
+		//busca se tiver caixa de texto de fala ("ei, x! agora voce vai ver o que é dançar de verdade!")
+		
+		// e o estado textbox muda automaticamente quando a textbox nao existir.
+		
 	}
 		
 	if deny_key{
@@ -268,15 +301,11 @@ switch (state){
 	break;
 	
 	case (BATTLE_STATES.arrow_pattern):
-	
 	alpha_vignette = lerp(alpha_vignette, alpha_vignette_high, 0.1);
 	
 	dist_seta_alvo = point_distance(arrow_target_x, cam_y, closest_arrow_x, closest_arrow_y);	
 	
-	if alpha_barra_ini != 1{
-		alpha_barra_ini = 1;
-	}
-	
+
 	can_draw_texto_acerto = true
 	
 	var quant_setas = array_length(arrow_pat);
@@ -288,10 +317,12 @@ switch (state){
 		var range_text = 5;
 		
 		if (keyboard_check_pressed(key[0]) && array_length(player_arrow_pat) < quant_setas){
-			array_push(player_arrow_pat, [key[1], dist_alvo])
-			if dist_alvo <= 5 {
-				play_arrow_sfx()
-			}
+		var params = undefined;
+			//if dist_alvo <= 3 {
+			//	play_arrow_sfx()
+			//} else {
+			//	play_arrow_sfx()
+			//}
 			
 		
 		target_rot_effect = choose(20, -20);
@@ -299,19 +330,24 @@ switch (state){
 		if (key[1] == arrow_pat[arrow_to_draw_from]){
 			
 			draw_arrow_feedback(dist_alvo);
-			var params = search_for_param_accuracy(dist_alvo);
+			params = search_for_param_accuracy(dist_alvo);
 			setup_text_draw(params[2],TXT_TYPES.arrow_accuracy,params[1]);
+			play_arrow_sfx(true, params[0]);
+			part_type_colour1(part_type_arrow, param_acertar[last_param_index][1]);
+			part_emitter_burst(part_sys_arrow, 0, part_type_arrow, 20);
+			
 			//procurando o parametro certo para desenhar
 		} else {
 			//var params sempre recebe a ultima linha do array pra pegar os parametros de erro, só por organizacao
 			
 			draw_arrow_feedback(dist_alvo);
-			var params = search_for_param_accuracy(dist_alvo, true)			
-			setup_text_draw(params[2],TXT_TYPES.arrow_accuracy, params[1])
+			params = search_for_param_accuracy(dist_alvo, true);
 			
+			setup_text_draw(params[2],TXT_TYPES.arrow_accuracy, params[1])
+			audio_play_sound(snd_arrow_miss, 2, false, 2, 0, .5)
 			
 		}
-		
+		array_push(player_arrow_pat, [key[1], dist_alvo, params[ARRAY_PARAM_INDEXES.dmg_value_mult]])
 		arrow_to_draw_from ++
 		
 		}
@@ -341,9 +377,7 @@ switch (state){
 	
 	
 	
-		if alpha_barra_ini != 1{
-			alpha_barra_ini = 1;
-		}
+
 	
 		if flag_atacando{
 			inst_player.sprite_index = spr_player_attack_horizontal;

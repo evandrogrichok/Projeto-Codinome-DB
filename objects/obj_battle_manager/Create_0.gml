@@ -43,6 +43,9 @@ bonus_xp = 0;
 if !(layer_exists("FX_BATTLE")){
 	layer_create(DEPTH.LOGIC_TOP +1, "FX_BATTLE")
 }
+if !(layer_exists("FX_BATTLE_OBJ")){
+	layer_create(DEPTH.LOGIC_OBJECTS, "FX_BATTLE_OBJ")
+}
 
 global.part_sys_points = part_system_create_layer("FX_BATTLE", false);
 global.part_emitter_points = part_emitter_create(global.part_sys_points);
@@ -56,6 +59,23 @@ part_type_alpha3(global.part_type_points, 1, 1, 0);
 part_type_colour1(global.part_type_points, c_aqua);
 part_type_direction(global.part_type_points, 0, 360, 0, 0);
 part_emitter_relative(global.part_sys_points, global.part_emitter_points, false);
+
+
+arrow_target_x = obj_camera.x;
+highlight_color = #FFD44C;
+part_sys_arrow = part_system_create_layer("FX_BATTLE_OBJ", false);
+part_emitter_arrow = part_emitter_create(part_sys_arrow);
+part_type_arrow = part_type_create();
+part_type_sprite(part_type_arrow, spr_particle_hope, false, false, false);
+part_type_size(part_type_arrow, 1.5, 2 , 0, false);
+part_type_life(part_type_arrow, 50, 70);
+part_type_alpha3(part_type_arrow, 1, 1, 0);
+part_type_colour1(part_type_arrow, #FFDB67);
+part_type_blend(part_type_arrow, false);
+part_type_direction(part_type_arrow, 0, 360, 0, 0);
+part_type_speed(part_type_arrow, 1.4, 1.6, -0.05, 0);
+part_emitter_relative(part_sys_arrow, part_emitter_arrow, false);
+part_emitter_region(part_sys_arrow, 0, arrow_target_x, arrow_target_x, obj_camera.y, obj_camera.y, pt_shape_square, ps_distr_gaussian);
 
 
 
@@ -188,29 +208,23 @@ show_debug_message(bpm_seconds)
 
 mus = audio_play_sound(snd_stardust, 10, true, .8);
 
-function play_arrow_sfx(){
+function play_arrow_sfx(correct_input, dist){
 	var song_current_time = audio_sound_get_track_position(mus);
 	var float_beat = song_current_time/bpm_seconds;
-	var current_beat = round(song_current_time/bpm_seconds);
+	var current_beat = 
+	(song_current_time/bpm_seconds);
 	var diff_sec = (current_beat - float_beat) * bpm_seconds;
+	var sound_to_play = param_acertar[last_param_index][3];
+	var perfect_distance_range = param_acertar[0][0]
 	
-	show_debug_message(diff_sec)
 	
-	
-	if dist_seta_alvo <= 3 && (diff_sec)>0{
-			
-	var ts_sfx = time_source_create(time_source_game, diff_sec, time_source_units_seconds, function(){audio_play_sound(snd_arrow, 5, false, 2)});
-	time_source_start(ts_sfx);
-			
-		
+	if (diff_sec>0 && dist <= perfect_distance_range){
+		var ts_sfx = time_source_create(time_source_game, diff_sec, time_source_units_seconds, function(){audio_play_sound(snd_arrow, 5, false, 2)});
+		time_source_start(ts_sfx);
 	} else {
-		audio_play_sound(snd_arrow, 5, false, 2)
+		audio_play_sound(sound_to_play, 5, false, 2);
 	}
-	
-	
-
-
-}
+} 
 
 
 can_lower_dmg_txt_alpha = false;
@@ -258,12 +272,20 @@ black_bg_color_alpha = 0;
 
 //futuramente adicionar nesse array o texto em ingles também, que no for vai ser scaneado com uma variavel global de definicao de linguagem
 //sempre deixar os parametros de erro como errou!
+enum ARRAY_PARAM_INDEXES{
+	distance,
+	color,
+	string_param,
+	sound,
+	dmg_value_mult
+}
+
 param_acertar = [
-	[3, #0cf2cc, "perfeito!" ],
-	[10, #35e8a7, "ótimo!"],
-	[15, #b8ff96, "ok"],
-	[1000, #fff896, "longe..."],
-	[-1, #f56464, "errou..."]
+	[3, #0cf2cc, "perfeito!", snd_arrow, 1],
+	[6, #35e8a7, "ótimo!", snd_arrow, .8],
+	[10, #b8ff96, "ok", snd_arrow, .5],
+	[1000, #fff896, "longe...", snd_arrow_miss, .2],
+	[-1, #f56464, "errou...", snd_arrow_miss, .2]
 ]
 
 x_lim_setas = -(cam_h/2 - 20);
@@ -387,6 +409,13 @@ hp_inimigos = array_create(quant_inimigos_combo);
 enemies_enviromental_sentences = array_create(quant_inimigos_combo);
 nomes_inimigos = array_create(quant_inimigos_combo);
 show_debug_message(inimigos_combo)
+sprite_ini = [];
+sprite_ini_dmg = [];
+sprite_ini_atk = [];
+sprite_ini_pur = [];
+
+width_pct = array_create(quant_inimigos_combo, undefined);
+
 
 for (var i = 0; i < quant_inimigos_combo; i++){
 	parametros_inimigos[i] = variable_struct_get(dados_inimigos, inimigos_combo[i]);
@@ -395,17 +424,17 @@ for (var i = 0; i < quant_inimigos_combo; i++){
 	var sprite = asset_get_index(parametros_inimigos[i].sprite)
 	ini_sprites_altura = array_create(quant_inimigos_combo, sprite_get_height(sprite))
 	
-	sprite_ini = parametros_inimigos[i].sprite
-	sprite_ini = asset_get_index(sprite_ini);
+	sprite_ini[i] = parametros_inimigos[i].sprite
+	sprite_ini[i] = asset_get_index(sprite_ini[i]);
 	
-	sprite_ini_dmg = parametros_inimigos[i].sprite_dmg
-	sprite_ini_dmg = asset_get_index(sprite_ini_dmg)
+	sprite_ini_dmg[i] = parametros_inimigos[i].sprite_dmg
+	sprite_ini_dmg[i] = asset_get_index(sprite_ini_dmg[i])
 	
-	sprite_ini_atk = parametros_inimigos[i].sprite_atk
-	sprite_ini_atk = asset_get_index(sprite_ini_atk)
+	sprite_ini_atk[i] = parametros_inimigos[i].sprite_atk
+	sprite_ini_atk[i] = asset_get_index(sprite_ini_atk[i])
 		
-	sprite_ini_pur = parametros_inimigos[i].sprite_pur
-	sprite_ini_pur = asset_get_index(sprite_ini_pur)
+	sprite_ini_pur[i] = parametros_inimigos[i].sprite_pur
+	sprite_ini_pur[i] = asset_get_index(sprite_ini_pur[i])
 }
 
 show_debug_message(nomes_inimigos)
@@ -421,7 +450,7 @@ enemies_index = array_create(quant_inimigos_combo, 0);
 enemies_index_atk = array_create(quant_inimigos_combo, 0);
 enemies_draw_defeat_state = array_create(quant_inimigos_combo, 0);
 draw_away = 0;
-fade_away = 2;
+fade_away = 3;
 seta_index = 0;
 seta_speed = 1;
 
@@ -439,23 +468,15 @@ var count_enemies_atks = array_length(enemies_atks_keys);
 
 function load_arrow_distance(){
 	individual_arrow_time = [];
-	pattern_start_time = ceil(audio_sound_get_track_position(mus)/bpm_seconds) *bpm_seconds;
-	var arrow_offset = 4;
+	pattern_start_time = ceil(audio_sound_get_track_position(mus)/bpm_seconds) *bpm_seconds; //pega o tempo exato da musica do proximo beat no momento que a função é executada
+	var arrow_offset = 4; // quantidade de beats iniciais de espaço
 	
 	for(var i = 0; i < array_length(arrow_pat); i++){
-		individual_arrow_time[i] = pattern_start_time + (i + arrow_offset) * bpm_seconds;
+		individual_arrow_time[i] = pattern_start_time + (i + arrow_offset) * bpm_seconds; // aqui ele pega o tempo exato da proxima beat + a quantidade de beats desejada
+																					  	  // a mais + incrementação de beats por indice
 	}
 	
-	
-	//var gamespeed = game_get_speed(gamespeed_fps);
-	//base_initial_distance = (gamespeed*bpm_seconds*vel_setas)*2 + (gamespeed*time_source_get_time_remaining(time_source_sphb)*vel_setas); //
-	//distance_between_arrows = (gamespeed*bpm_seconds*vel_setas); //
-	
-	//for (var i = 0; i < array_length(arrow_pat); i++){
-	//	array_push(individual_arrow_distance, base_initial_distance + distance_between_arrows * i);
-	
-	//	show_debug_message(individual_arrow_distance);
-	//}
+
 }
 
 
@@ -506,7 +527,6 @@ player_hud_height = sprite_get_height(spr_player_hud_inventory);
 player_hud_width = sprite_get_width(spr_player_hud_inventory);
 portrait_width = sprite_get_width(spr_player_portrait);
 
-highlight_color = #FFD44C;
 
 //part_system_stars = part_system_create(part_stars)
 //emitter = part_emitter_create(part_system_stars)
@@ -551,7 +571,7 @@ part_emitter_relative(part_system_stars, part_emitter_stars, true)
 
 //part_emitter_relative(part_system_hope, part_emitter_hope, true)
 alpha_options = array_create(option_count, 1);
-arrow_target_x = obj_camera.x;
+draw_away_hp_bar = 0;
 ene_dist_y = 20;
 attack_timer = undefined;
 runned_attack_action = false;
@@ -563,6 +583,8 @@ selected_item = undefined;
 inventory_arrow_index = 0;
 inventory_arrow_speed = 1;
 
+enemy_name_appear_px_num = 10
+enemy_name_appear_effect = enemy_name_appear_px_num;
 can_use = true;
 inventory_options = ["Sim", "Não"]
 
@@ -571,7 +593,7 @@ enum INVENTORY_DIRECTIONS {
 	down,
 	up
 }
-
+last_param_index = undefined;
 push_inventory_dir = INVENTORY_DIRECTIONS.up;
 inventory_draw_from = 0;
 
@@ -600,8 +622,8 @@ function run_command(_opt){
 	switch (_opt){
 		case 0:
 //		state = BATTLE_STATES.arrow_pattern
-		run_arrow_pattern("normal_attack");
 		state = BATTLE_STATES.select_enemy;
+		enemy_name_appear_effect = 20;
 		alpha_barra_ini = 1;
 		
 		break;
@@ -805,6 +827,36 @@ function draw_arrow_feedback(dist_alvo){
 	arrow_feedback_draw = [arrow_pat[arrow_to_draw_from], dist_alvo]
 	alpha_feedback = 1
 }
+		function draw_enemy_name_and_percentage(i, draw_away = 0, alpha = alpha_barra_ini){
+				var max_hp = parametros_inimigos[i].hp;
+	var nome = string_upper(parametros_inimigos[i].enemy_name);
+	var off_y_arrow = 17;
+	
+					var max_width_name = string_width(return_longest_word(nome));
+					var pct = clamp(round(((max_hp - hp_inimigos[i]) / max_hp) * 100), 0, 100)
+					var scale_pct = 1.5;
+					var sprite_height_enemy = sprite_get_height(sprite_ini[i]);
+					var sprite_width_enemy = sprite_get_width(sprite_ini[i]);
+					var percentage_text = (string(pct) + "%")
+					var width_percentage_update = string_width(percentage_text)* scale_pct
+			
+			
+			if !is_real(width_pct[i]){
+		
+				width_pct[i] = width_percentage_update
+			} else {
+				width_pct[i] = lerp(width_pct[i], width_percentage_update, .1);
+			}
+			var name_and_porcentage_x = x_inimigo[i] - width_pct[i] - sprite_width_enemy/2 - padding_hp_bar_and_enemy
+
+	
+			draw_set_valign(fa_middle)
+			draw_angled_text(percentage_text, name_and_porcentage_x +draw_away, y_inimigo[i]- sprite_height_enemy/2, max_width_name, #ff2887, #ff2887, #ff7928, #ff7928, alpha, scale_pct, scale_pct);
+			if opt == i{
+				draw_angled_text(nome, name_and_porcentage_x - padding_hp_bar_and_enemy - max_width_name + enemy_name_appear_effect + draw_away, y_inimigo[i] - sprite_height_enemy/2, max_width_name, #ff2887, #ff2887, #ff7928, #ff7928, alpha, 1, 1, 1);
+			}
+			draw_set_valign(fa_bottom)
+		}
 
 function search_for_param_accuracy(dist_alvo, is_missed_arrow = false){
 	if is_missed_arrow{
@@ -815,6 +867,7 @@ function search_for_param_accuracy(dist_alvo, is_missed_arrow = false){
 	for(var i = 0; i < array_length(param_acertar)-1; i++){
 		var params = param_acertar[i];
 		if dist_alvo < params[0]{
+			last_param_index = i;
 			return param_acertar[i]
 		}
 	}
@@ -829,33 +882,20 @@ function reset_arrow_pattern_vars(arrow_count){
 max_distance_arrow = 100;
 
 function calculate_damage(arrow_count){
-	var miss_amount = 0;
-	var max_dmg_porc = max_dmg/100;
-	var base_dmg = max_dmg
-	var total_distance = 0;
-	var tolerated_distance = 5
+	var base_dmg = max_dmg;
+	var per_arrow_dmg = max_dmg/arrow_count;
+	var total_dmg = 0;
 	
-	var base_maximum_distance = 100;
+	
+	
 		
 	for (var i = 0; i < arrow_count; i++){
-		if player_arrow_pat[i][0] != arrow_pat[i]{
-			miss_amount++;
-		} 
-		
-		if player_arrow_pat[i][1] > tolerated_distance{
-			total_distance += player_arrow_pat[i][1];
-		}
+		total_dmg += per_arrow_dmg * player_arrow_pat[i][2]; //  player_arrow_pat[2] é o multiplicador
 		
 	}
 	
-	show_debug_message(total_distance);
 	
-	total_distance = ((total_distance/arrow_count) / base_maximum_distance) * (max_dmg_porc * 30);
-	
-	var clamped_distance_discount = clamp(total_distance, 0, max_dmg_porc * 30);
-	var clamped_dmg_discount = clamp(max_dmg_porc * (10 * miss_amount), 0, max_dmg_porc * 50)
-	
-	return (round(base_dmg - clamped_distance_discount - clamped_dmg_discount));	
+	return (round(total_dmg));	
 }
 
 function reload_alive_enemies_array(){
@@ -964,9 +1004,8 @@ main_textbox_id = scr_open_textbox(textbox_chat_id);
 load_enemy_attack()
 
 
-function check_if_enemy_is_defeated(i){
-	draw_away = lerp(draw_away, 20, 0.01);
-	fade_away += -0.05;
+function enemy_is_defeated(i){
+
 	
 	var vel_draw_away = 5;
 	var x_ini = x_inimigo[i] + vel_draw_away * draw_away;
@@ -975,14 +1014,8 @@ function check_if_enemy_is_defeated(i){
 	part_emitter_region(part_system_stars, part_emitter_stars, x_ini -10, x_ini +10, y_ini -10, y_ini +10, ps_shape_rectangle, ps_distr_linear);
 	part_emitter_burst(part_system_stars, part_emitter_stars, part_type_stars, 20);
 			
-	draw_sprite_ext(sprite_ini_pur, enemies_index[i], x_ini, y_ini, 1, 1, 0, c_white, fade_away);
-			
-	if fade_away <= 0{
-		enemies_draw_defeat_state[i] = 1;
-		draw_away = 0;
-		fade_away = 2;
-				 
-	}
+	draw_sprite_ext(sprite_ini_pur[i], enemies_index[i], x_ini, y_ini, 1, 1, 0, c_white, fade_away);
+
 }
 
 	function define_enemy_position(i, cam_x, cam_y){
@@ -1006,12 +1039,99 @@ function check_if_enemy_is_defeated(i){
 		}
 	}
 	
+		padding_hp_bar_and_enemy = 20;
+		function draw_hp_bar_enemy(i, max_hp, draw_away = 0, alpha = alpha_barra_ini){
+			
 	
-		function draw_hp_bar_enemy(i, max_hp){
-			draw_sprite_stretched_ext(spr_outline_enemy_hb,0, x_inimigo[i] - larg_out_hp/2 - larg_barra_hp, y_inimigo[i] - sprite_get_height(sprite_ini) - altura_out_hp+1, larg_out_hp, altura_out_hp, c_white,alpha_barra_ini)
-			draw_sprite_stretched_ext(spr_healthbar_enemy,0, x_inimigo[i] - larg_barra_hp/2 - larg_barra_hp, y_inimigo[i] - sprite_get_height(sprite_ini) - altura_barra_hp, (hp_inimigos[i] / max_hp)*larg_barra_hp, altura_barra_hp, #54003e,alpha_barra_ini)
+			var pct = (hp_inimigos[i] / max_hp);
+			var height_sprite = sprite_get_height(spr_bar_enemy_pure);
+			var width_sprite = sprite_get_width(spr_bar_enemy_pure);
+			
+			var bar_x = x_inimigo[i] - padding_hp_bar_and_enemy;
+			var bar_y = y_inimigo[i] - height_sprite;
+			
+			pct = (hp_inimigos[i] / max_hp);
+			
+			draw_sprite_part_ext(spr_bar_enemy_pure, 0, 0, clamp(pct * height_sprite, 0, height_sprite), width_sprite, height_sprite, bar_x + draw_away, bar_y + clamp(pct * height_sprite, 0, height_sprite), 1, 1, c_white, alpha);
+			draw_sprite_part_ext(spr_bar_enemy_cons, 0, 0, 0, width_sprite, (pct * height_sprite),bar_x + draw_away, bar_y, 1, 1, c_white, alpha);
+			//draw_sprite_stretched_ext(spr_outline_enemy_hb,0, x_inimigo[i] - larg_out_hp/2 - larg_barra_hp, y_inimigo[i] - sprite_get_height(sprite_ini) - altura_out_hp+1, larg_out_hp, altura_out_hp, c_white,alpha_barra_ini)
+			//draw_sprite_stretched_ext(spr_healthbar_enemy,0, bar_x + 1, bar_y, altura_barra_hp, pct * 31, #54003e,alpha_barra_ini)
+		}
+		
+		function lower_alpha_enemy_bar(){
+				if state == BATTLE_STATES.attacking
+					return;
+				if state == BATTLE_STATES.select_enemy
+					return;
+				if state == BATTLE_STATES.arrow_pattern
+					return;
+					
+				alpha_barra_ini -= 0.03;
 		}
 		
 		
+function draw_angled_text(_string, _x, _y, max_width, c1, c2, c3, c4, alpha, x_scale= 1, y_scale = 1, sin_mult = 0, per_char_add_y = -1, line_break_height = 10){
+	
+
+	per_char_added_width = 0
+	line_break = 0;
+	per_char_add_y_total = 0;
+	
+
+	
+	for (var i = 0; i < string_length(_string); i++){
+	var char =  string_copy(_string, i+1, 1)
+	
+
 		
+		show_debug_message(per_char_added_width);
+	
+	draw_text_transformed_colour(_x + per_char_added_width, _y + per_char_add_y_total + line_break * line_break_height + sin(sin_t)*sin_mult, char, x_scale, y_scale, 0, c1, c2, c3, c4, alpha);
+	per_char_added_width += string_width(char) * x_scale;
+	
+	if per_char_added_width > max_width && char == " "{
+
+		per_char_added_width = 0;
+		per_char_add_y_total = 0;
+		line_break++;
+		continue;
+	}
+	per_char_add_y_total += per_char_add_y;
+
+
+}
+
+
+}
+
+function return_longest_word(_string){
+var current_word = "";
+var longest_word = "";
+var longest_word_length = 0;
+var current_word_length = 0;
+	for (var i = 0; i < string_length(_string); i++){
+		var char = string_copy(_string, i+1, 1);
+		if char == " "{
+			if current_word_length > longest_word_length{
+				longest_word = current_word;
+				longest_word_length = current_word_length;
+			}
+			current_word = "";
+			current_word_length = 0;
+			continue;
+		}
+		
+			current_word += char;
+			current_word_length ++;
+			
+	}
+	
+	
+			if current_word_length > longest_word_length{
+
+				longest_word = current_word;
+				longest_word_length = current_word_length;
+			}
+	return longest_word;
+}
 	
