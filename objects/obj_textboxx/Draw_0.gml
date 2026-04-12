@@ -61,10 +61,8 @@ if (draw_char < string_length(current_text[page])){
 	
 } else 
 if (draw_char >= string_length(current_text[page]) && tecla_confirmar){
-	if current_type == "chat"{
-		page++;
-		draw_char = 0;
-		runned_every_page = false;
+	if (current_flip_page == true){
+		next_page()
 	}
 	
 	if current_type == "decision"{

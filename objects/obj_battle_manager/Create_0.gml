@@ -11,6 +11,9 @@ for (var i = 0; i < array_length(manager_aux_obj); i++){
 
 scr_can_move_tweaker(-1);
 
+textbox_queue = [new _msg("Cael usou 'Dançar'! Os bonecos de neve parecem estar se lembrando de algo.", "battle_event")];
+
+
 enum BATTLE_STATES{
 	main_menu,
 	item_menu,
@@ -20,7 +23,8 @@ enum BATTLE_STATES{
 	enemy_turn,
 	attacking,
 	battle_won,
-	wait_time
+	wait_time,
+	reading_event_textbox
 }
 
 enum TXT_TYPES{
@@ -194,8 +198,10 @@ function screen_effects(){
 	var idx = irandom(array_length(vignette_beat_colors) -1);
 	
 	color_vignette_beat = vignette_beat_colors[idx]
-	alpha_vignette_beat = 1;
+	alpha_vignette_beat = .8;
 };
+
+
 
 bpm_seconds = time_bpm_to_seconds(music_parameters.bpm)
 show_debug_message(bpm_seconds)
@@ -1134,4 +1140,12 @@ var current_word_length = 0;
 			}
 	return longest_word;
 }
-	
+
+function add_textbox_queue(_message){
+	array_push(textbox_queue, _message);
+}
+
+//scr_open_textbox_custom(textbox_queue);
+function run_queue_textbox(){
+
+}

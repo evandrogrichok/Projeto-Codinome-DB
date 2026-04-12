@@ -1,4 +1,6 @@
 depth = DEPTH.UI_BASE;
+
+if (custom_message == false){
 var file = file_text_open_read("dialogos.json");
 var json_string = "";
 while (!file_text_eof(file)) {
@@ -12,10 +14,11 @@ var data = json_parse(json_string);
 
 
 dialogo = variable_struct_get(data, dialogo_id); 
+show_debug_message(dialogo)
+show_debug_message("CUCYUCGIASDUHD")
+}
 
 
-
-show_debug_message("oi");
 options = [""];
 option_pos = 0;
 
@@ -49,6 +52,11 @@ for (var p = 0; p < array_length(dialogo); p++){
 		textbox_heigth_lim[p] = 60;
 		break;
 		case "battle":
+		textbox_heigth_lim[p] = 45;
+		textbox_heigth = 45
+		textbox_width = 320;
+		break;
+		case "battle_event":
 		textbox_heigth_lim[p] = 45;
 		textbox_heigth = 45
 		textbox_width = 320;
@@ -96,6 +104,7 @@ current_speaker = "noone";
 current_color = "c_white";
 current_page = 0;
 current_type = "text";
+current_flip_page = true;
 
 
 
@@ -104,7 +113,8 @@ defaults = {
 	current_sound : "snd_text_default",
 	current_textbox : "spr_textbox",
 	current_speaker : "noone",
-	current_color : "c_white"
+	current_color : "c_white",
+	current_flip_page : true
 }
 runned_every_page = false;
 
@@ -157,7 +167,7 @@ function setup_page_variables(){
 	}
 
 	
-	var properties_to_check = ["sound", "textbox", "location", "color", "speaker"];
+	var properties_to_check = ["sound", "textbox", "location", "color", "speaker", "flip_page"];
 	
 	
 	for(var i = 0; i < array_length(properties_to_check); i++){
@@ -181,6 +191,12 @@ function setup_page_variables(){
 					value = variable_struct_get(defaults, "current_" + key);
 				}
 				current_textbox = value;
+			break;
+			case "flip_page":
+				if asset_get_index(value) == -1{
+					value = variable_struct_get(defaults, "current_" + key);
+				}
+				current_flip_page = value;
 			break;
 			case "location":
 				current_location = value;
@@ -351,3 +367,15 @@ linebreaks_setted_up = true;
 
 show_debug_message(" criei")
 
+
+function next_page(){
+		if current_type == "battle"
+		return;
+		
+		if current_type == "decision"
+		return;
+	
+		page++;
+		draw_char = 0;
+		runned_every_page = false;
+}

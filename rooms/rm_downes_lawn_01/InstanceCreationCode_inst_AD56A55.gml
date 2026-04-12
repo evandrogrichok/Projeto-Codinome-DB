@@ -1,1 +1,1 @@
-text_id = "dialogo1";
+text_id = "dialogo1"

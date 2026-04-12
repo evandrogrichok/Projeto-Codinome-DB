@@ -141,12 +141,18 @@ if text_to_draw[0] != ""{
 sin_t += 0.05
 
 if alpha_vignette_beat > 0 {
-alpha_vignette_beat = lerp(alpha_vignette_beat, .5, 0.2);
+alpha_vignette_beat = lerp(alpha_vignette_beat, .6, 0.2);
 }
 
 if target_rot_effect != 0 {
 	target_rot_effect = lerp(target_rot_effect, 0, 0.3);
 }
+
+if (keyboard_check_pressed(vk_space))
+{
+    screen_save("screenshot.png");
+}
+
 
 
 for(var i = 0; i < enemy_count; i++){
@@ -277,12 +283,16 @@ switch (state){
 
 	
 	if accept_key{
-		run_arrow_pattern("normal_attack");
-		next_enemy_to_attack = opt;
+
 		toggle_textbox(TEXTBOX_PROPERTIES.is_created, false);
 		
-		//se nao tiver caixa de texto
-		state = BATTLE_STATES.arrow_pattern;
+			state = BATTLE_STATES.arrow_pattern;
+			run_arrow_pattern("normal_attack");
+			next_enemy_to_attack = opt;
+		
+			
+			
+
 		//se tiver
 		// muda o estado pra textbox
 		//cria a caixa de texto atraves de uma função de busca de caixa de texto
@@ -297,6 +307,17 @@ switch (state){
 		focus_points -= focus_points_amnt_incr
 		state = BATTLE_STATES.main_menu;
 	}
+	
+	break;
+	
+	case (BATTLE_STATES.reading_event_textbox):
+		
+		if !instance_exists(obj_textboxx){
+			run_arrow_pattern("normal_attack");
+			next_enemy_to_attack = opt;
+			state = next_state;
+			array_delete(textbox_queue, 0, array_length(textbox_queue));
+		}
 	
 	break;
 	
@@ -411,14 +432,23 @@ switch (state){
 			
 			enemy_count_alive = array_length(inimigos_vivos);
 			
-			if enemy_count_alive > 0{
-				go_to_wait_time_state(BATTLE_STATES.enemy_turn);
-				load_enemy_attack();
-				state = BATTLE_STATES.wait_time;
-				inst_player.sprite_index = spr_player_idle_battle;
+			
+			if (textbox_queue == []){
+				
+			
+				if enemy_count_alive > 0{
+					go_to_wait_time_state(BATTLE_STATES.enemy_turn);
+					load_enemy_attack();
+					state = BATTLE_STATES.wait_time;
+					inst_player.sprite_index = spr_player_idle_battle;
+				} else {
+					go_to_wait_time_state(BATTLE_STATES.battle_won);
+					inst_player.sprite_index = spr_player_finish;
+				}
 			} else {
-				go_to_wait_time_state(BATTLE_STATES.battle_won);
-				inst_player.sprite_index = spr_player_finish;
+				
+				scr_open_textbox_custom(textbox_queue);
+			
 			}
 		}
 	break;
