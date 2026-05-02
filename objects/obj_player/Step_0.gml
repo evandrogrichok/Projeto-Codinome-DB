@@ -116,12 +116,34 @@ if global.can_move >= 0{
 			hope_sprite_scale_fast_increase = 1.5;
 			values.cooldown = 5
 			
-
 			part_emitter_region(part_sys_hope, part_emitter, x-2, x+2, (y-10)-2, (y-10)+2, ps_shape_rectangle, ps_distr_linear);
 			part_type_speed(part_type_hope, .2, 1.5, 0, 0);
 			part_type_direction(part_type_hope, degrees_directon -20 -180, degrees_directon +20 - 180, 0, 0);
 			part_emitter_relative(part_sys_hope, part_emitter, false);
 			part_emitter_burst(part_sys_hope, part_emitter, part_type_hope, 10)
+			
+			if (instance_exists(obj_battle_manager)){
+				with (obj_battle_manager){
+					
+					
+				if (check_if_on_beat()){
+				add_dance_points(5);
+				
+				
+				var texts = variable_struct_get(on_beat_messages, global.LANG);
+				var random_num = irandom(array_length(texts) - 1);
+				var text = texts[random_num];
+				
+				setup_text_draw(text, TXT_TYPES.on_beat, c_white)
+				}
+				
+				
+				
+				
+								
+				}
+				
+			}
 
 		}
 	}

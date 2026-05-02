@@ -44,6 +44,7 @@ pattern_start_time = audio_sound_get_track_position(mus);
 
 var last_beat = beat;
 beat = floor(audio_sound_get_track_position(mus)/bpm_seconds);
+beat_time = floor(audio_sound_get_track_position(mus)/bpm_seconds) * bpm_seconds;
 
 if (last_beat != beat){
 	screen_effects();
@@ -94,6 +95,22 @@ if text_to_draw[0] != ""{
 	}
 
 	break;
+	case TXT_TYPES.on_beat:
+	rot_text = lerp(rot_text, rot_text_dest, 0.2);
+	size_text = lerp(size_text, size_text_big, 0.2);
+	
+	if alpha_txt_to_draw > 0{
+		if (state != BATTLE_STATES.enemy_turn){
+			alpha_txt_to_draw = 0;
+			reset_text_to_draw(TXT_TYPES.on_beat);
+		} else {
+		alpha_txt_to_draw -= 0.02;		
+		}
+	} else {
+		reset_text_to_draw(TXT_TYPES.on_beat);
+	}
+
+	break;
 	
 	case TXT_TYPES.enemy_damage:
 	if alpha_txt_to_draw > 0{
@@ -136,6 +153,8 @@ if text_to_draw[0] != ""{
 	break;
 	}
 
+	
+
 }
 
 sin_t += 0.05
@@ -157,12 +176,12 @@ if (keyboard_check_pressed(vk_space))
 
 for(var i = 0; i < enemy_count; i++){
 	if state != BATTLE_STATES.enemy_turn{
-		enemies_index[i] = scr_animar_sprite(enemies_index[i], enemies_speed[i], sprite_ini[i]);
+		enemies_index[i] = scr_animar_sprite(enemies_index[i], enemies_speed[i], enemies_data[i].sprite_ini);
 	} else {
-		enemies_index[i] = scr_animar_sprite(enemies_index[i], enemies_speed[i], sprite_ini_atk[i]);
+		enemies_index[i] = scr_animar_sprite(enemies_index[i], enemies_speed[i], enemies_data[i].sprite_ini_atk);
 	}
 	
-	if (hp_inimigos[i] <= 0){
+	if (enemies_data[i].current_hp <= 0){
 		if enemies_draw_defeat_state[i] == ENEMIES_DRAW_STATES.cursed{
 				draw_away = lerp(draw_away, 20, 0.01);
 			fade_away += -0.05;
@@ -226,7 +245,7 @@ switch (state){
 		alpha_barra_ini = 3; // numero maior pra permanecer mais tempo 100% visivel
 	}
 	
-	if hp_inimigos[opt] <= 0{
+	if enemies_data[opt].current_hp <= 0{
 		var tentativas = 0; 
 		var prox_ini = opt; // um apontador para procurar pelo prox inimigo, como se fosse um opt temporario falso
 			
@@ -234,7 +253,7 @@ switch (state){
 			prox_ini = (prox_ini + 1) % enemy_count; 
 			tentativas ++; 
 			   
-			if (hp_inimigos[prox_ini] > 0){
+			if ( enemies_data[prox_ini].current_hp > 0){
 				opt = prox_ini;
 				break; 
 			}
@@ -251,7 +270,7 @@ switch (state){
 			prox_ini = (prox_ini + 1) % enemy_count; // procura pelo proximo inimigo com vida
 			tentativas ++; //quando ele procurar por um ele aumenta a quantidade de tentativas 
 			   
-			if (hp_inimigos[prox_ini] > 0){
+			if (enemies_data[prox_ini].current_hp > 0){
 				opt = prox_ini;
 				enemy_name_appear_effect = enemy_name_appear_px_num;
 				break; // se ele achar, quebra e dai atribui o opt temporario para opt e quebra o loop
@@ -270,7 +289,7 @@ switch (state){
 			prox_ini = (prox_ini - 1 + enemy_count) % enemy_count;
 			tentativas ++;
 			   
-			if (hp_inimigos[prox_ini] > 0){
+			if (enemies_data[prox_ini].current_hp > 0){
 				opt = prox_ini;
 				enemy_name_appear_effect = enemy_name_appear_px_num;
 				break;
@@ -307,17 +326,6 @@ switch (state){
 		focus_points -= focus_points_amnt_incr
 		state = BATTLE_STATES.main_menu;
 	}
-	
-	break;
-	
-	case (BATTLE_STATES.reading_event_textbox):
-		
-		if !instance_exists(obj_textboxx){
-			run_arrow_pattern("normal_attack");
-			next_enemy_to_attack = opt;
-			state = next_state;
-			array_delete(textbox_queue, 0, array_length(textbox_queue));
-		}
 	
 	break;
 	
@@ -389,14 +397,18 @@ switch (state){
 		reset_arrow_pattern_vars(quant_setas);
 		
 		state = BATTLE_STATES.attacking
+		
+		
+		var dance_messages_lang = variable_struct_get(dance_messages, global.LANG)
+		var random_number = irandom(array_length(dance_messages_lang) - 1);
+		
+		add_message_to_queue(dance_messages_lang[random_number]);
 		flag_atacando = true;
 	}
 	
 	break;
 	
 	case BATTLE_STATES.attacking:
-	
-	
 	
 
 	
@@ -409,46 +421,52 @@ switch (state){
 		if inst_player.image_index >= inst_player.image_number-1 {
 			var range_text = 10;
 			
-			if (hp_inimigos[opt] - dmg <= 0){
+			if (enemies_data[opt].current_hp - dmg <= 0){
 				audio_play_sound(snd_glitter, 3, false);
 			}
 			
-			hp_inimigos[opt] -= dmg;
+			enemies_data[opt].current_hp -= dmg;
 			
 			
 			setup_text_draw(dmg, TXT_TYPES.enemy_damage)
 			
 			
-			if hp_inimigos[opt] > 0{
+			if enemies_data[opt].current_hp > 0{
 				shake_level = 3
 			}
 			
 
+			if (textbox_queue != []){
+				id_textbox_queue = scr_open_textbox_custom(textbox_queue);
+			}
+			state = BATTLE_STATES.textbox_event;
+			
+			dest_height_textbox_battle = default_height_textbox_battle;
 			
 			//ATUALIZANDO ARRAY DE INIMIGOS VIVOS
 		
 			//deleta os inimigos que tinha antes
 			reload_alive_enemies_array()
+
+		}
+	break;
+	
+	case BATTLE_STATES.textbox_event:
+
+
+		
+		if !instance_exists(id_textbox_queue){
+			textbox_queue = [];
+			dest_height_textbox_battle = 0;
 			
-			enemy_count_alive = array_length(inimigos_vivos);
-			
-			
-			if (textbox_queue == []){
-				
-			
-				if enemy_count_alive > 0{
-					go_to_wait_time_state(BATTLE_STATES.enemy_turn);
-					load_enemy_attack();
-					state = BATTLE_STATES.wait_time;
-					inst_player.sprite_index = spr_player_idle_battle;
-				} else {
-					go_to_wait_time_state(BATTLE_STATES.battle_won);
-					inst_player.sprite_index = spr_player_finish;
-				}
+			if (array_length(inimigos_vivos) > 0){
+				go_to_wait_time_state(BATTLE_STATES.enemy_turn);
+				load_enemy_attack();
+				state = BATTLE_STATES.wait_time;
+				inst_player.sprite_index = spr_player_idle_battle;
 			} else {
-				
-				scr_open_textbox_custom(textbox_queue);
-			
+				go_to_wait_time_state(BATTLE_STATES.battle_won);
+				inst_player.sprite_index = spr_player_finish;
 			}
 		}
 	break;

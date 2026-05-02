@@ -1,5 +1,7 @@
 depth = DEPTH.LOGIC_OBJECTS;
 
+
+
 bullet_damage = 5;
 initial_y = y;
 

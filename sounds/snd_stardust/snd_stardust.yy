@@ -10,7 +10,7 @@
   "compression":0,
   "compressionQuality":4,
   "conversionMode":0,
-  "duration":70.4,
+  "duration":108.19141,
   "exportDir":"",
   "name":"snd_stardust",
   "parent":{

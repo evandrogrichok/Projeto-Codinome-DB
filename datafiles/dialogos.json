@@ -29,7 +29,8 @@
         "textbox": "spr_textbox_battle",
         "location": 3,
         "type": "battle",
-        "text": "<wave>Três bonecos de neve bloquearam o caminho!</wave>"
+        "text": "<wave>Três bonecos de neve bloquearam o caminho!</wave>",
+        "flip_page": 0
       }
 
     ],
@@ -40,7 +41,9 @@
         "textbox": "spr_textbox_battle",
         "location": 3,
         "type": "battle",
+        "flip_page": 0,
         "text": "<wave>Snowy se pergunta quando isso vai acabar...</wave>"
+        
       }
     ],
 
@@ -50,6 +53,7 @@
         "textbox": "spr_textbox_battle",
         "location": 3,
         "type": "battle",
+        "flip_page": 0,
         "text": "<shake>Será que dá pra ligar o aquecedor?</shake>"
       }
       
@@ -60,6 +64,7 @@
         "textbox": "spr_textbox_battle",
         "location": 3,
         "type": "battle",
+        "flip_page": 0,
         "text": "Você se prepara para seu próximo passo de dança."
       }
       

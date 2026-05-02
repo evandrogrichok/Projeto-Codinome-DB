@@ -10,7 +10,7 @@
   "compression":0,
   "compressionQuality":4,
   "conversionMode":0,
-  "duration":2.5714285,
+  "duration":1.5,
   "exportDir":"",
   "name":"snd_pick_point_big",
   "parent":{

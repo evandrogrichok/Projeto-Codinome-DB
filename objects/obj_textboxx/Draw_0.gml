@@ -92,26 +92,17 @@ var y_textbox = camera_get_view_y(view_camera[0]);
 var w_cam = camera_get_view_width(view_camera[0]);
 var h_cam = camera_get_view_height(view_camera[0]);
 
-
-
-
-
-
- 
 var option_offset = 40;
 var top_offset = find_offset_by_location(current_location);
 
 
-
-
-
 if (current_speaker != "noone"){
 	portrait_x_offset = 72;
-	x_padding = (w_cam - textbox_width + portraitbox_size)/2;
+    var border_portrait = 2;
 	
-
-	draw_sprite_stretched_ext(asset_get_index(current_textbox), 0, x_textbox - portraitbox_size + x_padding - padding_btwn_speaker_txtbox / 2, y_textbox + top_offset, portraitbox_size, portraitbox_size, c_white,1)
-	draw_sprite_stretched_ext(asset_get_index(current_speaker), 0, x_textbox - portraitbox_size + x_padding - padding_btwn_speaker_txtbox / 2, y_textbox + top_offset, portraitbox_size, portraitbox_size, c_white,1)
+	x_padding = (w_cam - textbox_width + portraitbox_size + padding_btwn_speaker_txtbox)/2;	
+	draw_sprite_part_ext(asset_get_index(current_speaker), 0, (64 + border_portrait - portraitbox_size)/2,(64+ border_portrait  - portraitbox_size)/2, portraitbox_size - border_portrait , portraitbox_size - border_portrait ,border_portrait/2 + x_textbox - portraitbox_size + x_padding - padding_btwn_speaker_txtbox / 2, border_portrait/2 + y_textbox + top_offset,1, 1, c_white,1)
+	draw_sprite_stretched_ext(asset_get_index(spr_border), 0, x_textbox - portraitbox_size + x_padding - padding_btwn_speaker_txtbox / 2, y_textbox + top_offset , portraitbox_size , portraitbox_size , c_white,1)
 } else {
 
 	x_padding = (w_cam - textbox_width)/2;
@@ -126,7 +117,7 @@ var y_options = y_textbox + top_offset + option_offset;
 var x_text = padding_x_text + x_textbox + x_padding + padding_btwn_speaker_txtbox/2;
 var y_text = y_textbox + padding_y_text;
 var c_textbox = asset_get_index(current_textbox)
-draw_sprite_stretched_ext(asset_get_index(current_textbox), 0, x_textbox + x_padding + padding_btwn_speaker_txtbox/2, y_textbox + top_offset, textbox_width, textbox_heigth, c_white, 1);
+draw_sprite_stretched_ext(asset_get_index(current_textbox), 0, x_textbox + x_padding, y_textbox + top_offset, textbox_width, textbox_heigth, c_white, 1);
 
 if (current_type == "decision"){
 	
@@ -216,8 +207,11 @@ for (var i = 0; i < array_length(page_breaks); i++){
 	if current_type == "decision"{
 		x_text = x_textbox + x_padding + textbox_width/2 - string_width(string_copy(current_text[page],start_char, break_char - start_char))/2;
 	} else
-	if current_type == "battle"{
-		x_text = x_textbox + textbox_width/2 - string_width(string_copy(current_text[page],start_char, break_char - start_char))/2;
+if current_type == "battle"{
+		x_text = x_textbox + x_padding + textbox_width/2 - string_width(string_copy(current_text[page],start_char, break_char - start_char))/2;
+	} else
+	if current_type == "battle_event"{
+		x_text = x_textbox + x_padding + textbox_width/2 - string_width(string_copy(current_text[page],start_char, break_char - start_char))/2;
 	}
 	
 	

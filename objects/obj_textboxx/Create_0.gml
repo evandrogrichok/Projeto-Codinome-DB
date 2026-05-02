@@ -14,6 +14,12 @@ var data = json_parse(json_string);
 
 
 dialogo = variable_struct_get(data, dialogo_id); 
+
+if dialogo == undefined {
+	show_error("DIÁLOGO NAO ENCONTRADO/NÃO FORMATADO CORRETAMENTE. VERIFIQUE SE O USO DE NEW _MSG FUNCITION ESTÁ CORRETO OU SE O ID EXISTE NO ARQUIVO DE DIÁLOGOS.", true);
+}
+
+
 show_debug_message(dialogo)
 show_debug_message("CUCYUCGIASDUHD")
 }
@@ -45,58 +51,7 @@ x_padding = (camera_get_view_width(view_camera[0]) - textbox_width)/2;
 
 
 
-//CONFIGURAÇÃO DE TAMANHO DE CAIXA DE DIÁLOGO
-for (var p = 0; p < array_length(dialogo); p++){
-	switch dialogo[p].type{
-		case "chat":
-		textbox_heigth_lim[p] = 60;
-		break;
-		case "battle":
-		textbox_heigth_lim[p] = 45;
-		textbox_heigth = 45
-		textbox_width = 320;
-		break;
-		case "battle_event":
-		textbox_heigth_lim[p] = 45;
-		textbox_heigth = 45
-		textbox_width = 320;
-		break;
-		case "decision":
-		textbox_heigth_lim[p] = 80;
-		break;
-	}
-	//show_debug_message(textbox_heigth_lim[p])
-}
-
-portraitbox_size = 60 //altura
-
-line_sep = 12; //separação da linha
-border = 7;
-
-padding_x_text = 7;
-padding_y_text = 5;
-
-
-line_width = textbox_width - border * 2 - padding_x_text;// onde quebrar
-line_breaks = [];
-linebreaks_setted_up = false;
-interpreter_setted_up = false;
-break_char = undefined;
-text_x_offset = 0;
-my_color = undefined
-
-
-text_pause_timer = 0;
-text_pause_time = 15;
-
-sound_delay_amount = 5;
-sound_delay = 0;
-
-draw_char = 0;
-vel_escrita = 1;
-page = 0;
-
-
+//CONFIGURAÇÃO INICIAL DE TAMANHO DE CAIXA DE DIÁLOGO
 current_location = 0;
 current_sound = "snd_text_default";
 current_textbox = "spr_textbox";
@@ -116,6 +71,63 @@ defaults = {
 	current_color : "c_white",
 	current_flip_page : true
 }
+page = 0;
+current_page = dialogo[page];
+current_type = current_page.type;
+
+function determine_textbox_size_by_type(){
+	if (current_type == "battle" || current_type == "battle_event") {
+    if (current_speaker != "noone") {
+        textbox_width = 260
+    } else {
+
+        textbox_width = 310; 
+    }
+    textbox_heigth = 49;
+	} else if (current_type == "decision") {
+	    textbox_width = 220; // O seu padrão
+	    textbox_heigth = 80;
+	} else {
+	    // Chat normal
+	    textbox_width = 220;
+	    textbox_heigth = 60;
+	   
+	}
+	textbox_heigth_lim[page] = textbox_heigth;
+}
+
+determine_textbox_size_by_type();
+
+
+
+line_sep = 12; //separação da linha
+border = 7;
+
+padding_x_text = 7;
+padding_y_text = 5;
+
+
+line_width = textbox_width - border * 2 - padding_x_text;// onde quebrar
+line_breaks = [];
+linebreaks_setted_up = false;
+interpreter_setted_up = false;
+break_char = undefined;
+text_x_offset = 0;
+my_color = undefined
+
+
+text_pause_timer = 0;
+text_pause_time = 12;
+
+sound_delay_amount = 5;
+sound_delay = 0;
+
+draw_char = 0;
+vel_escrita = 1;
+
+
+
+
 runned_every_page = false;
 
 colors = ds_map_create();
@@ -134,7 +146,7 @@ function check_pause(_char) {
 function find_offset_by_location(_location){
 	switch (_location){
 		case 3:
-			return 135;
+			return 130;
 		case 2:
 			return 10;
 		case 1: 
@@ -179,6 +191,7 @@ function setup_page_variables(){
 			value = variable_struct_get(defaults, "current_" + key);
 		}
 		
+
 		switch(key){
 			case "sound":
 				if asset_get_index(value) == -1{
@@ -192,14 +205,11 @@ function setup_page_variables(){
 				}
 				current_textbox = value;
 			break;
-			case "flip_page":
-				if asset_get_index(value) == -1{
-					value = variable_struct_get(defaults, "current_" + key);
-				}
-				current_flip_page = value;
-			break;
 			case "location":
 				current_location = value;
+			break;
+			case "flip_page":
+				current_flip_page = value;
 			break;
 			case "color":
 				current_color = value;
@@ -214,6 +224,11 @@ function setup_page_variables(){
 			break;
 		}
 	}
+	
+	determine_textbox_size_by_type();
+
+	line_width = textbox_width - padding_x_text;
+	show_debug_message("CURRENT FLIP PAGE = " + string (current_flip_page))
 	runned_every_page = true;
 }
 
@@ -224,7 +239,6 @@ function setup_page_variables(){
 //	if key = 
 
 //}
-
 
 
 for (var i = 0; i < 150; i++){
@@ -327,9 +341,9 @@ for (var p = 0; p < array_length(dialogo); p++){//percorrer as paginas
 	var start_char = 1; //inicializa o comeco da contagem
 	var page_type = dialogo[p].type;
 	
-	if page_type == "decision"{
-		line_width = 150;
-	}
+	//if page_type == "decision"{
+	//	line_width = 150;
+	//}
 	
 	for(var c = 1; c < string_length(current_text[p]); c++){// percorre os caracteres do texto da pag
 		
@@ -379,3 +393,8 @@ function next_page(){
 		draw_char = 0;
 		runned_every_page = false;
 }
+
+portraitbox_size = textbox_heigth;
+
+show_debug_message("abab")
+show_debug_message(portraitbox_size)

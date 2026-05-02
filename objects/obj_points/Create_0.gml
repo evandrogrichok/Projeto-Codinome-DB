@@ -11,9 +11,30 @@ enum POINT_STATES{
 	normal
 }
 
-point_type = POINT_TYPES.tiny;
+enum POINT_BULLET_TYPE{
+	none,
+	spikes
+}
+
+//point_type = POINT_TYPES.tiny;
+
+
+
 if point_type == undefined{instance_destroy();}
 global.sin_t_points = 0;
+
+if point_bullet_type == POINT_BULLET_TYPE.spikes{
+	audio_play_sound(snd_tsiu, 1, false);
+	
+	
+	if is_array(info_passthrough) && array_length(info_passthrough) > 0 {
+		y_final = info_passthrough[0];
+	}
+	
+	y_speed = 2;
+}
+
+
 
 if (point_type == POINT_TYPES.breakable){
 	solid = true;

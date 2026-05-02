@@ -35,14 +35,14 @@ enum DEPTH {
 setup_objects = [
 	obj_player,
 	obj_camera,
-	obj_game_menu
+	obj_game_menu,
 ]
 
 
 for (var i = 0; i < array_length(setup_objects); i++){
 	var inst = setup_objects[i]
 	if !instance_exists(inst){
-		instance_create_layer(300, 300, "Instances", inst)
+		instance_create_layer(819, 157, "Instances", inst)
 	}
 }
 

@@ -2,8 +2,7 @@
     "inimigo1":
       {
         "hp": 30,
-        "defense_points:": 0,
-        "attack_points:": 0,
+        "defense_pts": 0,
         "enemy_name": "Boneco de Neve",
         "sprite": "spr_objetoplaceholder_atacavel",
         "sprite_dmg": "spr_objetoplaceholder_atacavel_dmg",
@@ -15,8 +14,7 @@
     "inimigo2":
       {
         "hp": 60,
-        "defense_points:": 0,
-        "attack_points:": 0,
+        "defense_pts:": 0,
         "enemy_name": "Suporte de Neve",
         "sprite": "spr_objetoplaceholder_atacavel",
         "sprite_dmg": "spr_objetoplaceholder_atacavel_dmg",

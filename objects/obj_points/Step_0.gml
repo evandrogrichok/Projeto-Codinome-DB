@@ -19,7 +19,7 @@ switch(point_type){
 	default:
 	if ((place_meeting(x, y, obj_player)) && state == POINT_STATES.normal){
 		
-		audio_play_sound(point_type_sound, 2, false, 1, 0, random_range(0.8, 1.2));
+		audio_play_sound(point_type_sound, 2, false, 1, 0, choose(1, 1.122, 1.26, 1.5));
 		fx_particle(point_type_size);
 		state = POINT_STATES.collected;
 		time_source_start(ts);
@@ -35,5 +35,25 @@ if (state == POINT_STATES.collected && can_disappear){
 
 	if alpha <= 0 {
 		instance_destroy();
+	}
+}
+
+
+
+
+switch(point_bullet_type){
+	case POINT_BULLET_TYPE.spikes:
+	 if y < y_final{
+		y_speed = lerp(y_speed, 1, .2);
+		y += y_speed
+	 }
+	 
+	
+	break;
+}
+
+if instance_exists(obj_battle_manager){
+	if obj_battle_manager.state != BATTLE_STATES.enemy_turn{
+	 instance_destroy();
 	}
 }

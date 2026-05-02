@@ -112,16 +112,16 @@ var arrows_alpha = 1;
 		var player_hud_y = cam_y + cam_h/2 - player_hud_height - _margin - height_textbox_battle;
 				
 		var hud_padding = 3;
-		var hud_margin_y = 2;
+		var hud_margin_y = 3;
 				
 		var hp_x_offset = 16;
 		var hp_count_x_offset = hp_x_offset - 10;
 		var portrait_offset = 3;
 				
 		var hp_bar_size = 43;
-		var hp_bar_height = 7;
+		var hp_bar_height = 5;
 				
-		var hp_bar_y_offset = 11
+		var hp_bar_y_offset = 13
 		var hp_bar_x_correction = 1;
 			
 				
@@ -174,7 +174,7 @@ if (state == BATTLE_STATES.item_menu || state == BATTLE_STATES.hope_menu || stat
 	
 }
 
-var alt_focus_points = 2;
+var alt_focus_points = 6;
 var padding_hud = 5;
 var alt_hud = sprite_get_height(spr_player_hud);
 draw_set_font(fnt_tiny);
@@ -184,8 +184,9 @@ var y_base_info = cam_y + cam_h/2 - alt_hud - padding_hud - _margin - height_tex
 
 draw_text( x_base_info, y_base_info - string_height("A")/2, "DP:");
 
-draw_sprite_stretched_ext(spr_hopebar, 0,x_base_info + width_texto_dp + padding_hud, y_base_info, tam_hud - width_texto_dp - padding_hud, alt_focus_points, c_black, 0.5);
-draw_sprite_stretched(spr_hopebar, 0, x_base_info + width_texto_dp + padding_hud, y_base_info, (focus_points_draw / max_focus_points) * (tam_hud - width_texto_dp - padding_hud), alt_focus_points);
+draw_rectangle_colour(x_base_info + width_texto_dp + padding_hud, y_base_info - alt_focus_points/2, x_base_info + width_texto_dp + padding_hud + tam_hud - width_texto_dp - padding_hud,  y_base_info - alt_focus_points/2 + alt_focus_points, #000F38, #000F38, #000F38, #000F38, false);
+draw_sprite_stretched(spr_hopebar, 0, x_base_info + width_texto_dp + padding_hud, y_base_info - alt_focus_points/2, (focus_points_draw / max_focus_points) * (tam_hud - width_texto_dp - padding_hud), alt_focus_points);
+draw_sprite_stretched(spr_layout_dance_points, 0, x_base_info + width_texto_dp + padding_hud-1, y_base_info - alt_focus_points/2, tam_hud - width_texto_dp - padding_hud+2, alt_focus_points);
 
 
 //	var range = 10;

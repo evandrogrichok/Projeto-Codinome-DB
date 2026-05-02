@@ -11,8 +11,74 @@ for (var i = 0; i < array_length(manager_aux_obj); i++){
 
 scr_can_move_tweaker(-1);
 
-textbox_queue = [new _msg("Cael usou 'Dançar'! Os bonecos de neve parecem estar se lembrando de algo.", "battle_event")];
 
+dance_messages = {
+	
+	pt: [
+new _msg("A luz dos vitrais colore o chão... mas algo nela parece <wave>cansado</wave>.", "battle_event", spr_textbox_battle,,,,,3),
+
+new _msg("Partículas de poeira flutuam no ar, como se <wave>dançassem sozinhas</wave>.", "battle_event", spr_textbox_battle,,,,,3),
+new _msg("Uau... olha essas cores... parece que a luz tá <wave>viva</wave>...", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
+
+new _msg("Tem tanta poeira... será que ninguém vem aqui faz <wave>muito tempo</wave>?", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
+
+new _msg("Esses livros... dá vontade de <wave>ler todos</wave>...", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
+
+new _msg("Você sentiu isso? Pareceu que o lugar <wave>respondeu</wave>...", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
+
+new _msg("É estranho... mas não parece perigoso... só <wave>triste</wave>.", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
+
+new _msg("Hehe... a poeira até que é bonita quando brilha assim...", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
+
+new _msg("Essas janelas são lindas... será que alguém fez isso com <wave>muito carinho</wave>?", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
+
+new _msg("Eu acho que esse lugar só... foi <wave>esquecido</wave>.", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
+
+new _msg("Por um segundo eu achei que vi algo se mexer... mas acho que foi <wave>imaginação</wave>...", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
+
+new _msg("Mesmo quieto assim... parece que tem <wave>muita coisa acontecendo</wave>...", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
+
+new _msg("Um leve tremor percorre o ambiente... <shake>quase imperceptível</shake>.", "battle_event", spr_textbox_battle,,,,,3),
+	],
+	
+	en: [
+	new _msg("Cael usou 'Dançar'! Os bonecos de neve parecem estar se <wave>lembrando de algo!</wave>", "battle_event",spr_textbox_battle,,,,,3),
+	],
+}
+
+on_beat_messages = {
+    pt: [
+        "Na batida!",
+        "Boa!",
+        "Isso!",
+        "Perfeito!",
+        "Suave!",
+        "Hit!",
+        "Mandou bem!",
+        "Nice!"
+    ],
+    
+    en: [
+        "On beat!",
+        "That's it!",
+        "Hit!",
+        "Look at you!",
+        "Nice!",
+        "Perfect!",
+        "Smooth!"
+    ]
+}
+
+
+
+
+textbox_queue = [];
+
+
+
+function add_message_to_queue(new_message){
+	array_push(textbox_queue, new_message);
+}
 
 enum BATTLE_STATES{
 	main_menu,
@@ -24,12 +90,14 @@ enum BATTLE_STATES{
 	attacking,
 	battle_won,
 	wait_time,
+	textbox_event,
 	reading_event_textbox
 }
 
 enum TXT_TYPES{
 	arrow_accuracy,
-	enemy_damage
+	enemy_damage,
+	on_beat
 }
 
 max_focus_points = 100;
@@ -203,6 +271,7 @@ function screen_effects(){
 
 
 
+
 bpm_seconds = time_bpm_to_seconds(music_parameters.bpm)
 show_debug_message(bpm_seconds)
 //time_source_spb = time_source_create(time_source_game, bpm_seconds, time_source_units_seconds, function(){with (self){ count_beat()}},[undefined],-1)
@@ -232,6 +301,22 @@ function play_arrow_sfx(correct_input, dist){
 	}
 } 
 
+function check_if_on_beat(){
+	var current_music_time = audio_sound_get_track_position(mus);
+	show_debug_message("CURRENT music time: " + string(current_music_time))
+	var min_range = beat_time - (bpm_seconds/2);
+	var max_range = beat_time + (bpm_seconds/2);
+		show_debug_message("min: " + string(min_range))
+		show_debug_message("max: " + string(max_range))
+	if (current_music_time >= min_range && current_music_time <= max_range){
+	
+	show_debug_message("NA BATIDA")
+	return true;
+
+	}
+	
+	return false;
+}
 
 can_lower_dmg_txt_alpha = false;
 //Vm = ΔS / Δt
@@ -295,7 +380,7 @@ param_acertar = [
 ]
 
 x_lim_setas = -(cam_h/2 - 20);
-default_height_textbox_battle = 40;
+default_height_textbox_battle = 46;
 dest_height_textbox_battle = default_height_textbox_battle;
 height_textbox_battle = default_height_textbox_battle;
 arrow_pat = []; // armazena no padrão de setas correto.
@@ -410,6 +495,10 @@ inimigos_combo = adversario.enemies;
 
 var quant_inimigos_combo = array_length(inimigos_combo);
 //guarda a vida, sprites,... de cada um dos inimigos do combo
+
+
+
+enemies_data = array_create(quant_inimigos_combo);
 parametros_inimigos = array_create(quant_inimigos_combo);
 hp_inimigos = array_create(quant_inimigos_combo);
 enemies_enviromental_sentences = array_create(quant_inimigos_combo);
@@ -424,26 +513,41 @@ width_pct = array_create(quant_inimigos_combo, undefined);
 
 
 for (var i = 0; i < quant_inimigos_combo; i++){
-	parametros_inimigos[i] = variable_struct_get(dados_inimigos, inimigos_combo[i]);
-	hp_inimigos[i] = parametros_inimigos[i].hp;
-	nomes_inimigos[i] = parametros_inimigos[i].enemy_name;
-	var sprite = asset_get_index(parametros_inimigos[i].sprite)
-	ini_sprites_altura = array_create(quant_inimigos_combo, sprite_get_height(sprite))
-	
-	sprite_ini[i] = parametros_inimigos[i].sprite
-	sprite_ini[i] = asset_get_index(sprite_ini[i]);
-	
-	sprite_ini_dmg[i] = parametros_inimigos[i].sprite_dmg
-	sprite_ini_dmg[i] = asset_get_index(sprite_ini_dmg[i])
-	
-	sprite_ini_atk[i] = parametros_inimigos[i].sprite_atk
-	sprite_ini_atk[i] = asset_get_index(sprite_ini_atk[i])
+	var data_enemies = variable_struct_get(dados_inimigos, inimigos_combo[i])
+	enemies_data[i] = {
+		//read only data
+		hp_max : data_enemies.hp,
+		enemy_name : data_enemies.enemy_name,
+		defense_points : data_enemies.defense_pts,
+		sprite_ini : asset_get_index(data_enemies.sprite),
+		sprite_ini_dmg : asset_get_index(data_enemies.sprite_dmg),
+		sprite_ini_atk : asset_get_index(data_enemies.sprite_atk),
+		sprite_ini_pur : asset_get_index(data_enemies.sprite_pur),
 		
-	sprite_ini_pur[i] = parametros_inimigos[i].sprite_pur
-	sprite_ini_pur[i] = asset_get_index(sprite_ini_pur[i])
+		//modifiable data
+		current_hp : data_enemies.hp
+		
+	}
+	
+	
+	//hp_inimigos[i] = parametros_inimigos[i].hp;
+	//nomes_inimigos[i] = parametros_inimigos[i].enemy_name;
+	//var sprite = asset_get_index(parametros_inimigos[i].sprite)
+	//ini_sprites_altura = array_create(quant_inimigos_combo, sprite_get_height(sprite))
+	
+	//sprite_ini[i] = parametros_inimigos[i].sprite
+	//sprite_ini[i] = asset_get_index(sprite_ini[i]);
+	
+	//sprite_ini_dmg[i] = parametros_inimigos[i].sprite_dmg
+	//sprite_ini_dmg[i] = asset_get_index(sprite_ini_dmg[i])
+	
+	//sprite_ini_atk[i] = parametros_inimigos[i].sprite_atk
+	//sprite_ini_atk[i] = asset_get_index(sprite_ini_atk[i])
+		
+	//sprite_ini_pur[i] = parametros_inimigos[i].sprite_pur
+	//sprite_ini_pur[i] = asset_get_index(sprite_ini_pur[i])
 }
 
-show_debug_message(nomes_inimigos)
 
 x_inimigo = array_create(quant_inimigos_combo);
 y_inimigo = array_create(quant_inimigos_combo);
@@ -486,7 +590,7 @@ function load_arrow_distance(){
 }
 
 
-show_debug_message(variable_struct_get(ataques_inimigos, enemies_atks_keys[0]))
+
 
 
 //SETUP INICIAL DOS ATAQUES DISPONÍVEIS. =====
@@ -762,15 +866,20 @@ function reset_text_to_draw(txt_type){
 		text_to_draw = ["",""]
 		
 		break;
+		case TXT_TYPES.on_beat:
+		text_to_draw = ["",""]
+		
+		break;
 		case TXT_TYPES.enemy_damage:
 		text_to_draw = ["",""]
+		array_delete(scale_pop_effect, 0, array_length(scale_pop_effect)-1);
 		can_lower_dmg_txt_alpha = false;
 		blink_dmg = true;
 		break;
 	}
 }
 
-function setup_text_draw(text, txt_type, color = undefined){
+function setup_text_draw(text, txt_type, color = c_white){
 	text_to_draw_color = color;
 	text_to_draw[0] = text;
 	text_to_draw[1] = txt_type;
@@ -821,6 +930,32 @@ function setup_text_draw(text, txt_type, color = undefined){
 		
 
 	break;
+	case TXT_TYPES.on_beat:
+		
+		var l_keys = global.LEFT_KEY_HOLD;
+		var r_keys = global.RIGHT_KEY_HOLD;
+		var last_used_key = (l_keys - r_keys);
+		
+		range_text = 8;
+		alpha_txt_to_draw = 1
+		can_lower_dmg_txt_alpha = false;
+		
+		text_initial_x_position = obj_player.x + range_text;
+		text_final_x_position = obj_player.x - range_text;
+		
+		text_to_draw_color = color;
+		
+		time_source_alpha_control = time_source_create(time_source_game, 1, time_source_units_seconds, function(){with (self){ can_lower_dmg_txt_alpha = true}})
+		time_source_start(time_source_alpha_control);
+		
+		rot_range = 4
+		rot_text_dest = rot_range * last_used_key;
+		rot_text =  0;
+		
+		var initial_text_size = .5;
+		size_text = initial_text_size;
+	
+	break;
 	}
 
 	
@@ -834,15 +969,15 @@ function draw_arrow_feedback(dist_alvo){
 	alpha_feedback = 1
 }
 		function draw_enemy_name_and_percentage(i, draw_away = 0, alpha = alpha_barra_ini){
-				var max_hp = parametros_inimigos[i].hp;
-	var nome = string_upper(parametros_inimigos[i].enemy_name);
+				var max_hp = enemies_data[i].hp_max;
+	var nome = string_upper(enemies_data[i].enemy_name);
 	var off_y_arrow = 17;
 	
 					var max_width_name = string_width(return_longest_word(nome));
-					var pct = clamp(round(((max_hp - hp_inimigos[i]) / max_hp) * 100), 0, 100)
+					var pct = clamp(round(((max_hp - enemies_data[i].current_hp) / max_hp) * 100), 0, 100)
 					var scale_pct = 1.5;
-					var sprite_height_enemy = sprite_get_height(sprite_ini[i]);
-					var sprite_width_enemy = sprite_get_width(sprite_ini[i]);
+					var sprite_height_enemy = sprite_get_height(enemies_data[i].sprite_ini);
+					var sprite_width_enemy = sprite_get_width(enemies_data[i].sprite_ini);
 					var percentage_text = (string(pct) + "%")
 					var width_percentage_update = string_width(percentage_text)* scale_pct
 			
@@ -910,8 +1045,9 @@ function reload_alive_enemies_array(){
 			array_delete(inimigos_vivos, 0,array_length(inimigos_vivos));
 			//percorre adicionando os inimigos se eles estiverem com mais que 0 de vida
 			for (var e = 0; e < enemy_count; e++){
-				if hp_inimigos[e] > 0{
+				if enemies_data[e].current_hp > 0{
 					array_push(inimigos_vivos, inimigos_combo[e])
+
 				} 
 			}
 }
@@ -1010,7 +1146,7 @@ main_textbox_id = scr_open_textbox(textbox_chat_id);
 load_enemy_attack()
 
 
-function enemy_is_defeated(i){
+function if_enemy_is_defeated(i){
 
 	
 	var vel_draw_away = 5;
@@ -1020,7 +1156,7 @@ function enemy_is_defeated(i){
 	part_emitter_region(part_system_stars, part_emitter_stars, x_ini -10, x_ini +10, y_ini -10, y_ini +10, ps_shape_rectangle, ps_distr_linear);
 	part_emitter_burst(part_system_stars, part_emitter_stars, part_type_stars, 20);
 			
-	draw_sprite_ext(sprite_ini_pur[i], enemies_index[i], x_ini, y_ini, 1, 1, 0, c_white, fade_away);
+	draw_sprite_ext(enemies_data[i].sprite_ini_pur, enemies_index[i], x_ini, y_ini, 1, 1, 0, c_white, fade_away);
 
 }
 
@@ -1035,7 +1171,7 @@ function enemy_is_defeated(i){
 			}
 			x_inimigo[i] = cam_x + cam_w/3 + x_padding;
 			var padding = 10;
-			var first_sprite_height = sprite_get_height(asset_get_index(parametros_inimigos[0].sprite))
+			var first_sprite_height = sprite_get_height(enemies_data[0].sprite_ini)
 			var available_y_space = cam_h - height_textbox_battle - first_sprite_height;
 		
 			var y_distance = ( available_y_space/enemy_count)*i;
@@ -1049,14 +1185,14 @@ function enemy_is_defeated(i){
 		function draw_hp_bar_enemy(i, max_hp, draw_away = 0, alpha = alpha_barra_ini){
 			
 	
-			var pct = (hp_inimigos[i] / max_hp);
+			var pct = (enemies_data[i].current_hp / max_hp);
 			var height_sprite = sprite_get_height(spr_bar_enemy_pure);
 			var width_sprite = sprite_get_width(spr_bar_enemy_pure);
 			
 			var bar_x = x_inimigo[i] - padding_hp_bar_and_enemy;
 			var bar_y = y_inimigo[i] - height_sprite;
 			
-			pct = (hp_inimigos[i] / max_hp);
+			pct = (enemies_data[i].current_hp / max_hp);
 			
 			draw_sprite_part_ext(spr_bar_enemy_pure, 0, 0, clamp(pct * height_sprite, 0, height_sprite), width_sprite, height_sprite, bar_x + draw_away, bar_y + clamp(pct * height_sprite, 0, height_sprite), 1, 1, c_white, alpha);
 			draw_sprite_part_ext(spr_bar_enemy_cons, 0, 0, 0, width_sprite, (pct * height_sprite),bar_x + draw_away, bar_y, 1, 1, c_white, alpha);
@@ -1089,8 +1225,7 @@ function draw_angled_text(_string, _x, _y, max_width, c1, c2, c3, c4, alpha, x_s
 	var char =  string_copy(_string, i+1, 1)
 	
 
-		
-		show_debug_message(per_char_added_width);
+
 	
 	draw_text_transformed_colour(_x + per_char_added_width, _y + per_char_add_y_total + line_break * line_break_height + sin(sin_t)*sin_mult, char, x_scale, y_scale, 0, c1, c2, c3, c4, alpha);
 	per_char_added_width += string_width(char) * x_scale;
