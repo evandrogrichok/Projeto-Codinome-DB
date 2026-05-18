@@ -1,246 +1,265 @@
+draw_set_font(fnt_main);
+draw_set_valign(fa_top);
+draw_set_halign(fa_left);
+var portrait_x_offset = 0;
 
-tecla_confirmar = keyboard_check_pressed(vk_enter) || keyboard_check_pressed(ord("Z"));
+//draw_text(obj_player.x, obj_player.y, string(textbox_heigth))
 
-//local da textbox na camera
-textbox_x = camera_get_view_x(view_camera[0]);
-textbox_y = camera_get_view_y(view_camera[0]) + 100;
 
-// setup pra ter certeza de que a caixa se iniciou
+if !runned_every_page{
+	setup_page_variables();
+}
 
-if setup == false {
+//show_debug_message(current_sound)
+//show_debug_message(current_textbox)
+//show_debug_message(current_location)
+//show_debug_message(current_color)
+//show_debug_message(current_emotion)
+
+
+var tecla_confirmar = keyboard_check_pressed(vk_enter) || keyboard_check_pressed(ord("Z"));
+
+
+//pegando os breaks de cada linha e guardando em um subarray de array
+
+
+
+if textbox_heigth != textbox_heigth_lim[page]{
+	var spd_lerp = .2;
+	textbox_heigth = lerp(textbox_heigth, textbox_heigth_lim[page], spd_lerp)
+}
+
+if !interpreter_setted_up{
+	text_interpreter();
+}
+//show_debug_message(current_text[page])
+//show_debug_message(char_effects[page])
+
+
+if (draw_char < string_length(current_text[page])){
+	var check_char = (string_char_at(current_text[page], draw_char));
 	
+	if (text_pause_timer > 0){
+		text_pause_timer--
+	}
 	
-	setup = true
-	draw_set_font(fnt_main)
-	draw_set_valign(fa_top);
-	draw_set_halign(fa_left)
-	
-	//loop pelas paginas
-	for(var p = 0; p < page_number; p++){
-		text_length[p] = string_length(text[p])
-		// achar a localização que a caixa de texto vai ficar no eixo x
-
-		
-		//16 97 16 232
-		//quando houver personagens falando na esquerda
-		text_x_offset[p] = 97;
-		portrait_x_offset[p] = 16;
-		//quando houver personagens falando na direita
-		if speaker_side[p] == -1{
-			text_x_offset[p] = 16;
-			portrait_x_offset[p] = 232;
-		}
-			
-		// quando nao houver personagens falando (centralizar)
-		if speaker_sprite[p] == noone{
-		text_x_offset[p] = 56;
-		}
-		
-		// setando caracteres individualmente e encontrando onde as linhas de texto tem que quebrar
-		for (var c = 0; c < text_length[p]; c++){
-			
-			var _char_pos = c+1;
-			// armazenar caracteres individuais no "char" array
-			char[c, p] = string_char_at(text[p], _char_pos);
-			
-			// adquirir comprimento da linha de texto
-			var _txt_up_to_char = string_copy(text[p], 1, _char_pos);
-			var _current_txt_w = string_width(_txt_up_to_char) - string_width(char[c, p]);
-			
-			// saber qual o ultimo espaço disponivel antes de quebrar
-			if char[c, p] == " " {
-				last_free_space = _char_pos + 1
-			}
-			//quebras de linha
-			if _current_txt_w - line_break_offset[p] > line_width{
-			    line_break_pos[line_break_num[p] , p] = last_free_space;
-			    line_break_num[p]++;
-			    var _txt_up_to_last_space = string_copy( text[p], 1, last_free_space );
-			    var _last_free_space_string = string_char_at(text[p], last_free_space );
-			    line_break_offset[p] = string_width( _txt_up_to_last_space ) - string_width( _last_free_space_string );
-			}
-			
-		}
-		// coordenadas pra cada caractere
-	
-		for (var c = 0; c < text_length[p]; c++){
-			var _char_pos = c+1;
-			var _txt_x = textbox_x + text_x_offset[p] + border;
-			var _txt_y = textbox_y + border;
-			// adquirir comprimento da linha de texto
-			var _txt_up_to_char = string_copy(text[p], 1, _char_pos);
-			var _current_txt_w = string_width(_txt_up_to_char) - string_width(char[c, p]);
-			var _txt_line = 0;
-			
-			for (var lb = 0; lb< line_break_num[p]; lb++){
+	if (text_pause_timer <= 0){
+		draw_char += vel_escrita;
+     	
+		play_text_sound(current_sound);
 				
-				if _char_pos >= line_break_pos[lb, p]{
-			    var _str_copy = string_copy( text[p], line_break_pos[lb, p], _char_pos-line_break_pos[lb, p] );
-			    _current_txt_w = string_width( _str_copy );
-
-			    //record the "line" this character should be on
-			    _txt_line = lb+1; //+1 since lb starts at 0
-				}
-			}
-		
-			char_x[c, p] = _txt_x + _current_txt_w;
-			char_y[c, p] = _txt_y + _txt_line*line_sep;
-		
-		}
-		
-		
-	}
-	
-}
-	
-
-
-// escrevendo o texto
-if text_pause_timer<= 0{
-if draw_char < text_length[page]{
-	draw_char += text_speed;
-	draw_char = clamp(draw_char, 0, text_length[page]);
-	var _check_char = string_char_at(text[page], draw_char);
-	if _check_char == "."{
+		if  (check_pause(check_char) && text_pause_timer <= 0){
 		text_pause_timer = text_pause_time;
-		if !audio_is_playing(snd[page]){
-		audio_play_sound(snd[page], 8, false)
-		}
-	} else{
-		// som de fala
-		if snd_count < snd_delay {
-			snd_count++;
-			
-		} else{
-			snd_count = 0;
-			audio_play_sound(snd[page], 8, false)
+		
 		}
 	}
 	
-}	
+	if tecla_confirmar && runned_once{
+		draw_char = string_length(current_text[page])
+		text_pause_timer = 0; // garante que não vai ficar travado
+	} 
+	
+} else 
+if (draw_char >= string_length(current_text[page]) && tecla_confirmar){
+	if (current_flip_page == true){
+		next_page()
+	}
+	
+	if current_type == "decision"{
+		instance_destroy();
+		scr_can_move_tweaker(+1);
+		//show_debug_message(string(option_link_id[option_pos]))
+		scr_open_textbox(string(option_link_id[option_pos]))		
+	}
+}
+
+if page >= array_length(dialogo){
+	ds_map_destroy(colors);
+	instance_destroy();
+	scr_can_move_tweaker(+1);
+	exit;
+	
+}
+
+if (!linebreaks_setted_up){
+carregar_line_breaks();
+}
+
+
+
+var x_textbox = camera_get_view_x(view_camera[0]);
+var y_textbox = camera_get_view_y(view_camera[0]);
+var w_cam = camera_get_view_width(view_camera[0]);
+var h_cam = camera_get_view_height(view_camera[0]);
+
+var option_offset = 40;
+var top_offset = find_offset_by_location(current_location);
+
+
+if (current_emotion != "noone"){
+	portrait_x_offset = 72;
+    var border_portrait = 2;
+	
+	x_padding = (w_cam - textbox_width + portraitbox_size + padding_btwn_emotion_txtbox)/2;	
+	draw_sprite_part_ext(asset_get_index(current_emotion), 0, (64 + border_portrait - portraitbox_size)/2,(64+ border_portrait  - portraitbox_size)/2, portraitbox_size - border_portrait , portraitbox_size - border_portrait ,border_portrait/2 + x_textbox - portraitbox_size + x_padding - padding_btwn_emotion_txtbox / 2, border_portrait/2 + y_textbox + top_offset,1, 1, c_white,1)
+	draw_sprite_stretched_ext(asset_get_index(spr_border), 0, x_textbox - portraitbox_size + x_padding - padding_btwn_emotion_txtbox / 2, y_textbox + top_offset , portraitbox_size , portraitbox_size , c_white,1)
 } else {
-	text_pause_timer--;
+
+	x_padding = (w_cam - textbox_width)/2;
 }
 
-// passar pelas paginas 
+var x_options = x_textbox + x_padding;
+var three_options_y_offset = 0;
+var three_option_selection_y_offset = 0;
+var y_options = y_textbox + top_offset + option_offset;
 
-if tecla_confirmar{
-	if draw_char == text_length[page]{
-		// proxima pagina
-		if page < page_number-1{
-			page++;
-			draw_char = 0;
-		} else {
-			// linkar o texto
-			if option_number > 0 {
-				create_textbox(option_link_id[option_pos])
+//desenhandoc caixa de texto
+var x_text = padding_x_text + x_textbox + x_padding + padding_btwn_emotion_txtbox/2;
+var y_text = y_textbox + padding_y_text;
+var c_textbox = asset_get_index(current_textbox)
+draw_sprite_stretched_ext(asset_get_index(current_textbox), 0, x_textbox + x_padding, y_textbox + top_offset, textbox_width, textbox_heigth, c_white, 1);
+
+if (current_type == "decision"){
+	
+	options = current_page.options;
+	var options_quant = array_length(options);
+	var op_border = 20;
+	var op_spacing = 2;
+	var y_spacing = 0;
+	var area_options = textbox_width;
+	var center = area_options/2 + x_textbox + x_padding; 
+	var positions = array_create(options_quant);
+	
+	
+	if (options_quant == 3){
+	
+		var text_width_op0 = string_width(options[0]);
+		var text_width_op1 = string_width(options[1]);
+		var text_width_op2 = string_width(options[2]);
+		
+		var top_width = text_width_op0 + text_width_op2;
+		y_spacing = 15;
+		
+		positions[0] = [center - top_width/2 + text_width_op0/2 - op_spacing, y_options] ;
+		positions[1] = [center + top_width/2 - text_width_op2/2 + op_spacing, y_options];
+		positions[2] = [center, y_options + y_spacing];
+	} else {
+		for (var op = 0; op < options_quant; op++){
+			var text_width_op = string_width(options[op])
+			if (op % 2 != 0 ){
+				text_width_op *= -1;
+				op_spacing *= -1;
+			} else {
+				op_spacing = 7;
 			}
-			instance_destroy();
+			if (op >= 2){
+				y_spacing = 15;
+			}
+			positions[op] = [center - text_width_op/2 - op_spacing, y_options + y_spacing];
 		}
-	}
-}
-	if draw_char < text_length[page] && (keyboard_check_pressed(vk_shift) || keyboard_check_pressed(ord("X"))){
-			draw_char = text_length[page];
-	
-	}
-
-
-
-
-
-
-// desenhando a caixa de texto
-var _txtb_x =  textbox_x + text_x_offset[page];
-var _txtb_y =  textbox_y;
-txtb_img += txtb_img_spd;
-txtb_spr_w = sprite_get_width(txtb_spr[page]);
-txtb_spr_h = sprite_get_height(txtb_spr[page]);
-
-//desenhar caixa de retrato do personagem
-if speaker_sprite[page] != noone{
-	sprite_index = speaker_sprite[page];
-	if draw_char == text_length[page]{
-		image_index = 0
-	}
-	var _speaker_x = textbox_x + portrait_x_offset[page];
-	if speaker_side[page] == -1 {
-		_speaker_x += sprite_width
-	}
-	//desenhar o personagem
-	draw_sprite_ext(txtb_spr[page], txtb_img, textbox_x + portrait_x_offset[page], textbox_y, sprite_width/txtb_spr_w, sprite_height/txtb_spr_h, 0, c_white, 1);
-	draw_sprite_ext(sprite_index, image_index, _speaker_x, textbox_y, speaker_side[page], 1, 0, c_white, 1);
-	
 }
 
+	
 
-// fundo da caixa de texto
-draw_sprite_ext(txtb_spr[page], txtb_img, _txtb_x, _txtb_y, textbox_width/txtb_spr_w, textbox_heigth/txtb_spr_h, 0, c_white, 1);
-
-
-
-// opcoes
-
-if draw_char == text_length[page] && page == page_number -1{
+	if draw_char == string_length(current_text[page]){
 	
 	//selecionar as opcoes
-	option_pos += keyboard_check_pressed(vk_down) - keyboard_check_pressed(vk_up);
-	option_pos = clamp(option_pos, 0, option_number - 1);
-	myimage_index = (myimage_index + myimage_speed / (game_get_speed(gamespeed_fps) / sprite_get_speed(spr_player_portrait))) % sprite_get_number(spr_player_portrait);
+	option_pos += keyboard_check_pressed(vk_right) - keyboard_check_pressed(vk_left);
+	option_pos = clamp(option_pos, 0, options_quant - 1);
 	
 	
-	var _op_space = 15;
-	var _op_bord = 4;
-	for (var op = 0; op < option_number; op++){
-		// caixas de opcao
-		var _o_w = string_width(option[op]) + _op_bord *2;
-		draw_sprite_ext(txtb_spr[page], txtb_img, _txtb_x + 16, _txtb_y - _op_space * option_number + _op_space*op, _o_w/txtb_spr_w,(_op_space-1)/txtb_spr_h, 0, c_white, 1);
-		
-		// seta
-		if option_pos == op{
-		draw_sprite(spr_seta_txt, 0, _txtb_x, _txtb_y - _op_space * option_number + _op_space*op)
-		}
-		
-		//texto das opcoes
-		draw_text(_txtb_x + 16 + _op_bord, _txtb_y - _op_space * option_number + _op_space*op + 2, option[op])
-	}
-}
+	draw_sprite_stretched(spr_seta_txt, 0, positions[option_pos][0] - string_width(options[option_pos])/2 , positions[option_pos][1] - 2, string_width(options[option_pos]) + 3, 16);
+	
+			draw_set_halign(fa_center);
+for (var op = 0; op < options_quant; op++){
+	
+		//show_debug_message("DESENHOU");
+		var pos = positions[op];
+		var text = options[op];
+		draw_text(pos[0], pos[1], text);
 
-
-// desenhar o texto
-for(var c = 0; c< draw_char; c++){
-	// ------------- coisas especiais ---------------- \\
-	
-	//floating text
-	var _float_y = 0
-	if float_text[c, page] == true{
-		float_dir[c, page] += -6;
-		_float_y =  dsin(float_dir[c, page])
-	}
-	//shake text
-	var _shake_x = 0;
-	var _shake_y = 0;
-	
-	if shake_text[c, page] == true{
-		shake_timer[c, page]--;
-		if shake_timer[c, page] <= 2 {
-			shake_timer[c, page] = irandom_range(4,8);
-			shake_dir[c, page] = irandom(360)
-			_shake_x = lengthdir_x(1, shake_dir[c,page])
-			_shake_y = lengthdir_y(1, shake_dir[c,page])
-		}
 
 	}
 	
-	draw_text_color(char_x[c, page] + _shake_x, char_y[c, page] + _shake_y + _float_y, char[c, page], col_1[c, page], col_2[c, page], col_3[c, page], col_4[c, page], 1);
+	draw_text_color(positions[option_pos][0], positions[option_pos][1], options[option_pos], #FFD44C,#FFD44C,#FFD44C,#FFD44C,1);
+	draw_set_halign(fa_left);
 	
 }
 
 
+}
+
+var text_y_offset = 0;
+var start_char = 1;
+var page_breaks = line_breaks[page];
 
 
 
+for (var i = 0; i < array_length(page_breaks); i++){
+	
 
+	
+    var break_char = page_breaks[i];
+    if (break_char > draw_char) break_char = draw_char;
 
+    var text_x_offset = 0; // acumulador da linha
+	
+	if current_type == "decision"{
+		x_text = x_textbox + x_padding + textbox_width/2 - string_width(string_copy(current_text[page],start_char, break_char - start_char))/2;
+	} else
+if current_type == "battle"{
+		x_text = x_textbox + x_padding + textbox_width/2 - string_width(string_copy(current_text[page],start_char, break_char - start_char))/2;
+	} else
+	if current_type == "battle_event"{
+		x_text = x_textbox + x_padding + textbox_width/2 - string_width(string_copy(current_text[page],start_char, break_char - start_char))/2;
+	}
+	
+	
+    for (var c = start_char; c <= break_char; c++){
+	
+        var ch = string_char_at(current_text[page], c);
+		
+        var x_off = 0;
+		var y_off = text_y_offset;
+		var wave_y = 0;
+		var my_color = "c_white";
+        if (array_contains(char_effects[page][c-1], "shake")){ // shake
+			
+            x_off += random_range(-0.5,0.5);
+            y_off += random_range(-0.5,0.5);
+        }
+		
+        if (array_contains(char_effects[page][c-1], "wave")){ // wave
+			wave_dir[c-1] += -10
+			wave_y = dsin(wave_dir[c-1]);
 
+        }
+		
+        if (array_contains(char_effects[page][c-1], "color")){ // wave
+			my_color = current_color;
+        }
+		
+        if (array_contains(char_effects[page][c-1], "item")){ 
+			my_color = "c_yellow_main";
+        }
+		
+        draw_text_color(x_text + text_x_offset + x_off,
+                  y_text + top_offset + y_off + wave_y,
+                  ch,  colors[? my_color], colors[? my_color], colors[? my_color], colors[? my_color], 1);
+
+        text_x_offset += string_width(ch); // aqui você avança a posição horizontal
+	
+
+    }
+
+    start_char = break_char + 1;
+    text_y_offset += line_sep; // desce pra próxima linha
+	
+}
+
+if !runned_once{
+runned_once = true
+
+}
 
 

@@ -6,7 +6,7 @@ myimage_index = scr_animar_sprite(myimage_index, myimage_speed, spr_player_portr
 //draw_text(x,y, opt)
 //draw_text(x,y+20, arrow_timer);
 
-var _inst_player = obj_player;
+var _inst_player = inst_player;
 
 
 
@@ -14,8 +14,8 @@ var _inst_player = obj_player;
 //var cam_w = camera_get_view_width(view_camera[0]);
 //var cam_h = camera_get_view_height(view_camera[0]);
 //localizacao do obj cam
-var cam_x = obj_camera.x
-var cam_y = obj_camera.y
+var cam_x = inst_camera.x
+var cam_y = inst_camera.y
 //tamanho dos sprites dos botoes, para calculos de distancia e tudo
 
 //tamanho do hudzinho de vida
@@ -39,7 +39,7 @@ var arrow_x_distance = 0;
 var arrows_alpha = 1;
 
 //INIMIGOS
-var enemy_count = array_length(inimigos_combo);
+var enemy_count = array_length(enemies_combo);
 //var alive_enemies_count = array_length(inimigos_vivos);
 
 var u_keys = global.UP_KEY;
@@ -49,8 +49,16 @@ var vertical_opt_changer = (d_keys) - (u_keys) ;
 draw_set_font(fnt_tiny);
 var padd = 0;
 
-//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "versao exclusiva para teste", 0.5, 0.5, 0)
-//padd++;
+draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, width_pct[0], 0.5, 0.5, 0)
+padd++;
+draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, clamp(round(((enemies_data[0].hp_max - enemies_data[0].current_hp) / enemies_data[0].hp_max) * 100), 0, 100), 0.5, 0.5, 0)
+padd++;
+draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, enemies_data[0].current_hp, 0.5, 0.5, 0)
+padd++;
+draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, index_dmg, 0.5, 0.5, 0)
+padd++;
+draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, index_dmg, 0.5, 0.5, 0)
+padd++;
 //draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "Z- ação/dash X- cancelar C/esc- menu", 0.5, 0.5, 0)
 //padd++;
 //draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "f10- andar por aí :D", 0.5, 0.5, 0)
@@ -59,26 +67,30 @@ var padd = 0;
 //padd++;
 //draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "setas/wasd- mover", 0.5, 0.5, 0)
 //padd++;
-draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BEAT: " + string(beat), 0.5, 0.5, 0)
-padd++;
-draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BEAT TIME	: " + string(beat_time), 0.5, 0.5, 0)
-padd++;
-draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BAR: " + string(bar), 0.5, 0.5, 0)
-padd++;
-draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BPM: " + string(music_parameters.bpm), 0.5, 0.5, 0)
-padd++;
-//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BPM: " + string(time_source_get_time_remaining(time_source_sphb)), 0.5, 0.5, 0)
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BEAT: " + string(beat), 0.5, 0.5, 0)
+//padd++;
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BEAT TIME	: " + string(beat_time), 0.5, 0.5, 0)
+//padd++;
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BAR: " + string(bar), 0.5, 0.5, 0)
+//padd++;
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BPM: " + string(music_parameters.bpm), 0.5, 0.5, 0)
+//padd++;
+////draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "BPM: " + string(time_source_get_time_remaining(time_source_sphb)), 0.5, 0.5, 0)
 //padd++;
 //draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "DT: " + string(delta_time/16666), 0.5, 0.5, 0)
 //padd++;
 //draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "can: " + string(can_lower_dmg_txt_alpha), 0.5, 0.5, 0)
-//padd++;
+////padd++;
 
-draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "inis vivo: " + string(inimigos_vivos), 0.5, 0.5, 0)
-padd++;
-draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "inis x: " + string(x_inimigo[0]), 0.5, 0.5, 0)
-padd++;
-draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "inis y: " + string(y_inimigo[0]), 0.5, 0.5, 0)
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "inis vivo: " + string(inimigos_vivos), 0.5, 0.5, 0)
+//padd++;
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "inis x: " + string(x_inimigo[0]), 0.5, 0.5, 0)
+//padd++;
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "inis y: " + string(y_inimigo[0]), 0.5, 0.5, 0)
+//padd++;
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "fade away: " + string(fade_away[0]), 0.5, 0.5, 0)
+//padd++;
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "draw away: " + string(draw_away[0]), 0.5, 0.5, 0)
 //padd++;
 //draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "level: " + string(_inst_player.values.level), 0.5, 0.5, 0)
 //padd++;
@@ -124,7 +136,7 @@ if (mostrar_limites_de_movimentacao){
 	var w_bbox_p = sprite_get_bbox_right(_inst_player.sprite_index) - sprite_get_bbox_left(_inst_player.sprite_index);
 	var h_bbox_p = sprite_get_bbox_bottom(_inst_player.sprite_index) - sprite_get_bbox_top(_inst_player.sprite_index);
 	
-	if (state == BATTLE_STATES.wait_time){
+	if (state == BATTLE_STATES.transition_enemy_turn){
 		
 		draw_sprite_stretched_ext(spr_barriers, 0, pos_x - largura_caixa/2, pos_y - altura_caixa/2, largura_caixa, altura_caixa, c_white, clamp(sin(sin_t * 3)/2 + fade_in_alpha, 0, 1));
 	
@@ -139,7 +151,8 @@ if (mostrar_limites_de_movimentacao){
 		
 	}
 }
-
+				var merge_amount =.5
+var color_selec = merge_color(area_properties.ui_secondary_colors[0], area_properties.ui_secondary_colors[1], merge_amount);
 //DESENHANDO O INIMIGO
 seta_index = scr_animar_sprite(seta_index, seta_speed, spr_selec_ini); 
 for(var i = 0; i < enemy_count; i++){
@@ -149,16 +162,14 @@ for(var i = 0; i < enemy_count; i++){
 
 	if (enemies_data[i].current_hp <= 0){
 		if enemies_draw_defeat_state[i] == ENEMIES_DRAW_STATES.cursed{
-			draw_hp_bar_enemy(i, max_hp, draw_away*4, fade_away);		
-			draw_enemy_name_and_percentage(i, draw_away*4, fade_away)
-
+			draw_hp_bar_enemy(i, max_hp, draw_away[i]*4, fade_away[i]);		
+			draw_enemy_name(i, draw_away[i]*4, fade_away[i]);
+			draw_enemy_percentage(i, draw_away[i]*4, fade_away[i]);
 			if_enemy_is_defeated(i)
 
-		}
-	
+		} 
 		continue;
 	} else {
-		
 		
 		
 		
@@ -166,13 +177,12 @@ for(var i = 0; i < enemy_count; i++){
 		draw_hp_bar_enemy(i, max_hp);
 		
 		//DESENHANDO PORCENTAGEM E NOME
-	
-		draw_enemy_name_and_percentage(i)
-		
+		draw_enemy_name(i)
+		draw_enemy_percentage(i)
 
 	
 		if state == BATTLE_STATES.enemy_turn{
-			scr_shader_outline(enemies_data[i].sprite_ini_atk, enemies_index[i], 207, 119, 255, black_bg_color_alpha);
+			scr_shader_outline(enemies_data[i].sprite_ini_atk, enemies_index[i], color_get_red(color_selec), color_get_green(color_selec), color_get_blue(color_selec), black_bg_color_alpha);
 			draw_sprite_ext(enemies_data[i].sprite_ini_atk, enemies_index[i], x_inimigo[i], y_inimigo[i], 1, 1, 0, c_white, 1);
 			shader_reset();
 		} else
@@ -186,17 +196,25 @@ for(var i = 0; i < enemy_count; i++){
 			draw_sprite_ext(enemies_data[i].sprite_ini_dmg, 0, x_inimigo[i] + shake_x, y_inimigo[i] + shake_y, 1, 1, 0, c_white, 1);
 		} else {
 			if (i == opt && state == BATTLE_STATES.select_enemy){
-				scr_shader_outline(enemies_data[i].sprite_ini, enemies_index[i], 255, 219, 103, clamp(sin(sin_t*3)/5 + 0.8, 0, 1));
 
+				
+				draw_sprite_ext(spr_selec_ini, seta_index, x_inimigo[opt], y_inimigo[opt], 1, 1, 0, color_selec, clamp(sin(sin_t*3)/5 + 0.8, 0, 1));	
+				
+				
+				scr_shader_outline(enemies_data[i].sprite_ini, enemies_index[i], color_get_red(color_selec), color_get_green(color_selec), color_get_blue(color_selec), clamp(sin(sin_t*3)/5 + 0.8, 0, 1));
+
+				
 				draw_sprite_ext(enemies_data[i].sprite_ini, enemies_index[i], x_inimigo[opt], y_inimigo[opt], 1, 1, 0, c_white, 1);	
 
 				shader_reset();
 
-				draw_sprite_ext(spr_selec_ini, seta_index, x_inimigo[opt] - sprite_get_width(spr_selec_ini)/2, y_inimigo[opt] - sprite_get_height(enemies_data[opt].sprite_ini) - off_y_arrow, 1, 1, 0, c_white, 1);		
+				
 				continue;
 			}
-
+		
 			draw_sprite_ext(enemies_data[i].sprite_ini, enemies_index[i], x_inimigo[i], y_inimigo[i], 1, 1, 0, c_white, 1);
+
+			
 		}
 	}
 }
@@ -274,7 +292,11 @@ if text_to_draw[0] != ""{
 	case TXT_TYPES.arrow_accuracy:
 		draw_set_halign(fa_center)
 		draw_set_valign(fa_middle)
+		
+		
 		draw_text_transformed_color(text_initial_x_position, cam_y - target_size - 5, text_to_draw[0],1,size_text,rot_text,text_to_draw_color,text_to_draw_color,text_to_draw_color,text_to_draw_color, alpha_txt_to_draw)
+		
+		
 		draw_set_halign(fa_left)
 		draw_set_valign(fa_top)
 	
@@ -289,7 +311,12 @@ if text_to_draw[0] != ""{
 		
 		
 		var y_correction_for_dmg = 30;
-		for (var i = 0; i < string_length(text_to_draw[0]); i++){
+				var draw_count = min(
+		    string_length(dmg_copy_string),
+		    array_length(scale_pop_effect)
+		);
+
+		for (var i = 0; i < draw_count; i++){
 			var wave_effect_speed = 2;
 			var wave_effect_char_start_difference = 20;
 			var wave_effect_multiplier = 2;
@@ -300,7 +327,7 @@ if text_to_draw[0] != ""{
 			
 			
 		
-			draw_text_transformed_color(text_initial_x_position + char_padding, y_inimigo[opt] - y_correction_for_dmg + sin_math, single_char,size_text , size_text + scale_pop_effect[i], rot_text,col,col,col2,col2,alpha_txt_to_draw)
+			draw_text_transformed_color(text_initial_x_position + char_padding, 30 + y_inimigo[opt] - y_correction_for_dmg + sin_math, single_char,size_text , size_text + scale_pop_effect[i], rot_text,col,col,col2,col2,alpha_txt_to_draw)
 		}
 		draw_set_font(fnt_main)
 		draw_set_halign(fa_left)
@@ -311,7 +338,7 @@ if text_to_draw[0] != ""{
 		draw_set_halign(fa_center)
 		draw_set_font(fnt_tiny)
 		
-		draw_text_transformed_color(obj_player.x, obj_player.y - 20, text_to_draw[0], 1, size_text, rot_text,highlight_color,text_to_draw_color,highlight_color,text_to_draw_color, alpha_txt_to_draw)
+		draw_text_transformed_color(inst_player.x, inst_player.y - 20, text_to_draw[0], 1, size_text, rot_text,highlight_color,text_to_draw_color,highlight_color,text_to_draw_color, alpha_txt_to_draw)
 		
 	
 		draw_set_font(fnt_main)
@@ -321,6 +348,14 @@ if text_to_draw[0] != ""{
 	break;
 	}
 
+}
+
+if (state == BATTLE_STATES.attacking_power){
+
+	
+	if (power_to_cast == global.DANCE_POWERS_DATA.tap_dance){
+		draw_sprite(spr_bang, bang_index, x_inimigo[opt] - sprite_get_width(enemies_data[opt].sprite_ini)/2 + random_pos_x, y_inimigo[opt]+ random_pos_y - sprite_get_height(enemies_data[opt].sprite_ini)/2);
+	}
 }
 //local_seta_mais_proxima = (spawn_setas + (sprite_get_width(spr_seta_up) + padding_between_arrows) * arrow_to_draw_from)-(sprite_get_width(spr_seta_up)/2)
 

@@ -1,3 +1,9 @@
+event_inherited();
+var is_cutscene = false;
+if (instance_exists(obj_cutscene_manager)){
+	is_cutscene = global.cutscene_active
+}
+
 //if mouse_check_button(mb_left){
 //global.DEBUG_PLAYER_DRAG = true;
 //x =  mouse_x - pdx; 
@@ -9,6 +15,15 @@
 //pdx = mouse_x - x
 //pdy = mouse_y - y
 //}
+
+if (x_scale_blob != 1){
+	x_scale_blob = lerp(x_scale_blob, 1, 0.2);
+}
+
+if (y_scale_blob != 1){
+	y_scale_blob = lerp(y_scale_blob, 1, 0.2);
+}
+
 
 global.BLEND_COLOR_PLAYER = make_colour_rgb(global.BLEND_COLOR_PLAYER_R, global.BLEND_COLOR_PLAYER_G, global.BLEND_COLOR_PLAYER_B);
 
@@ -51,24 +66,6 @@ tecla_confirmar = keyboard_check_pressed(vk_enter) || keyboard_check_pressed(ord
 
 
 
-// permissao de andar
-//if
-//	(instance_exists(obj_textbox) or
-//	instance_exists(obj_textboxx) or
-//	global.menu_ativo or
-//	global.itens_menu or
-//	global.config_menu or
-//	cutscene_char or
-//	obj_room_manager.transition_alpha != 0)
-	
-//{
-//	global.can_move = false
-//	moving = false;
-//} else {
-//	global.can_move = true
-//}
-
-
 
 
 
@@ -92,11 +89,10 @@ if tecla_confirmar{
 
 
 
-if global.can_move >= 0{
+if global.can_move >= 0 && !is_cutscene{
 	
+
 	//scr_checagem_interacao();
-
-
 	moving = false;
 	
 	if global.ACCEPT_KEY{

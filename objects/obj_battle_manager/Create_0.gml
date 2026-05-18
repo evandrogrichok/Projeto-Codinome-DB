@@ -1,5 +1,29 @@
 depth = DEPTH.LOGIC_OBJECTS
 
+inst_player = get_instance("player");
+inst_camera = get_instance("camera");
+
+ataques             = load_json_file("attacks.json");
+dados_inimigos      = load_json_file("enemies.json");
+combinacao_inimigos = load_json_file("enemy_pattern.json");
+ataques_inimigos    = load_json_file("enemies_attacks.json");
+music_data          = load_json_file("musicas.json");
+area_properties     = global.areas_properties[$ global.current_area];
+
+if (
+is_undefined(ataques) ||
+is_undefined(dados_inimigos) ||
+is_undefined(combinacao_inimigos) ||
+is_undefined(ataques_inimigos) ||
+is_undefined(music_data)
+) 
+{
+    show_debug_message("Erro crítico: Falha ao carregar arquivos de dados!");
+}
+
+
+
+
 manager_aux_obj = [obj_battle_manager_bg, obj_battle_manager_top];
 manager_aux_obj_depths = [DEPTH.LOGIC_BEHIND, DEPTH.LOGIC_TOP];
 
@@ -10,41 +34,8 @@ for (var i = 0; i < array_length(manager_aux_obj); i++){
 }
 
 scr_can_move_tweaker(-1);
-
-
-dance_messages = {
-	
-	pt: [
-new _msg("A luz dos vitrais colore o chão... mas algo nela parece <wave>cansado</wave>.", "battle_event", spr_textbox_battle,,,,,3),
-
-new _msg("Partículas de poeira flutuam no ar, como se <wave>dançassem sozinhas</wave>.", "battle_event", spr_textbox_battle,,,,,3),
-new _msg("Uau... olha essas cores... parece que a luz tá <wave>viva</wave>...", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
-
-new _msg("Tem tanta poeira... será que ninguém vem aqui faz <wave>muito tempo</wave>?", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
-
-new _msg("Esses livros... dá vontade de <wave>ler todos</wave>...", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
-
-new _msg("Você sentiu isso? Pareceu que o lugar <wave>respondeu</wave>...", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
-
-new _msg("É estranho... mas não parece perigoso... só <wave>triste</wave>.", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
-
-new _msg("Hehe... a poeira até que é bonita quando brilha assim...", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
-
-new _msg("Essas janelas são lindas... será que alguém fez isso com <wave>muito carinho</wave>?", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
-
-new _msg("Eu acho que esse lugar só... foi <wave>esquecido</wave>.", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
-
-new _msg("Por um segundo eu achei que vi algo se mexer... mas acho que foi <wave>imaginação</wave>...", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
-
-new _msg("Mesmo quieto assim... parece que tem <wave>muita coisa acontecendo</wave>...", "battle_event", spr_textbox_battle,,,,spr_personagem1fala,3),
-
-new _msg("Um leve tremor percorre o ambiente... <shake>quase imperceptível</shake>.", "battle_event", spr_textbox_battle,,,,,3),
-	],
-	
-	en: [
-	new _msg("Cael usou 'Dançar'! Os bonecos de neve parecem estar se <wave>lembrando de algo!</wave>", "battle_event",spr_textbox_battle,,,,,3),
-	],
-}
+adversario = combinacao_inimigos.combo1;
+encounter_dialogue = adversario.encounter_dialogue;
 
 on_beat_messages = {
     pt: [
@@ -72,12 +63,18 @@ on_beat_messages = {
 
 
 
-textbox_queue = [];
+textbox_queue = undefined;
 
 
+
+//inst_player = obj_player;
+
+spd_fp_draw = 0.25;
+textbox_num = 0;
 
 function add_message_to_queue(new_message){
-	array_push(textbox_queue, new_message);
+	textbox_queue = new_message;
+	textbox_num++;
 }
 
 enum BATTLE_STATES{
@@ -91,7 +88,12 @@ enum BATTLE_STATES{
 	battle_won,
 	wait_time,
 	textbox_event,
-	reading_event_textbox
+	reading_event_textbox,
+	transition_enemy_turn,
+	transition_main_menu,
+	power_menu,
+	transition_battle_won,
+	attacking_power
 }
 
 enum TXT_TYPES{
@@ -101,7 +103,7 @@ enum TXT_TYPES{
 }
 
 max_focus_points = 100;
-focus_points = 0;
+focus_points = 100;
 focus_points_draw = 0;
 focus_points_amnt_incr = 0;
 focus_points_dest = 0;
@@ -133,7 +135,7 @@ part_type_direction(global.part_type_points, 0, 360, 0, 0);
 part_emitter_relative(global.part_sys_points, global.part_emitter_points, false);
 
 
-arrow_target_x = obj_camera.x;
+arrow_target_x = inst_camera.x;
 highlight_color = #FFD44C;
 part_sys_arrow = part_system_create_layer("FX_BATTLE_OBJ", false);
 part_emitter_arrow = part_emitter_create(part_sys_arrow);
@@ -147,65 +149,15 @@ part_type_blend(part_type_arrow, false);
 part_type_direction(part_type_arrow, 0, 360, 0, 0);
 part_type_speed(part_type_arrow, 1.4, 1.6, -0.05, 0);
 part_emitter_relative(part_sys_arrow, part_emitter_arrow, false);
-part_emitter_region(part_sys_arrow, 0, arrow_target_x, arrow_target_x, obj_camera.y, obj_camera.y, pt_shape_square, ps_distr_gaussian);
 
 
-
-var file = file_text_open_read("attacks.json");
-var json_string = "";
-while (!file_text_eof(file)) {
-    json_string += file_text_read_string(file);
-    file_text_readln(file);
+function emmit_arrow_particles(){
+	part_emitter_region(part_sys_arrow, 0, arrow_target_x, arrow_target_x, arrow_target_y, arrow_target_y, pt_shape_square, ps_distr_gaussian);
+	part_type_colour1(part_type_arrow, param_acertar[last_param_index][1]);
+	part_emitter_burst(part_sys_arrow, 0, part_type_arrow, 20);
 }
-file_text_close(file);
-
-var data = json_parse(json_string);
-ataques = data;
 
 
-file = file_text_open_read("enemies.json");
-json_string = "";
-while (!file_text_eof(file)) {
-    json_string += file_text_read_string(file);
-    file_text_readln(file);
-}
-file_text_close(file);
-
-data = json_parse(json_string);
-dados_inimigos = data;
-
-file = file_text_open_read("enemy_pattern.json");
-json_string = "";
-while (!file_text_eof(file)) {
-    json_string += file_text_read_string(file);
-    file_text_readln(file);
-}
-file_text_close(file);
-
-data = json_parse(json_string);
-combinacao_inimigos = data;
-
-file = file_text_open_read("enemies_attacks.json");
-json_string = "";
-while (!file_text_eof(file)) {
-    json_string += file_text_read_string(file);
-    file_text_readln(file);
-}
-file_text_close(file);
-
-data = json_parse(json_string);
-ataques_inimigos = data;
-
-file = file_text_open_read("musicas.json");
-json_string = "";
-while (!file_text_eof(file)) {
-    json_string += file_text_read_string(file);
-    file_text_readln(file);
-}
-file_text_close(file);
-
-data = json_parse(json_string);
-music_data = data;
 
 music_parameters = music_data.Main
 
@@ -260,7 +212,7 @@ ts_index_increase = undefined;
 alpha_vignette_beat = 0;
 color_vignette_beat = c_white;
 
-vignette_beat_colors = [ #95e6ff, #4eb4ff, #85ffcc]
+vignette_beat_colors = [ area_properties.ui_primary_colors[0]];
 
 function screen_effects(){
 	var idx = irandom(array_length(vignette_beat_colors) -1);
@@ -281,7 +233,7 @@ show_debug_message(bpm_seconds)
 //time_source_sfx_arrow = time_source_create(time_source_game,  time_source_get_time_remaining(time_source_spb), time_source_units_seconds, function(){audio_play_sound(snd_arrow, 5, false, 2)});
 
 
-mus = audio_play_sound(snd_stardust, 10, true, .8);
+mus = audio_play_sound(snd_stardust, 10, true, 0);
 
 function play_arrow_sfx(correct_input, dist){
 	var song_current_time = audio_sound_get_track_position(mus);
@@ -338,6 +290,9 @@ sprite_player_hud_height = sprite_get_height(spr_player_hud);
 target_size = 20;
 padding_between_arrows = 10;
 
+default_max_width_angled_text = 512;
+scale_pct = 1.5;
+
 xyvar = [
 	[0, -1],
 	[0,  1],
@@ -346,6 +301,18 @@ xyvar = [
 ]
 
 target_rot_effect = 0;
+
+
+
+player_dance_sprites = [
+	spr_player_dance_0,
+	spr_player_dance_1,
+	spr_player_dance_2,
+	spr_player_dance_3
+]
+
+last_random_dance_sprite = undefined;
+random_dance_sprite = undefined;
 
 keys = [
 	[vk_up, "up"],
@@ -371,12 +338,15 @@ enum ARRAY_PARAM_INDEXES{
 	dmg_value_mult
 }
 
+
+var p = area_properties.ui_primary_colors;
+var s = area_properties.ui_secondary_colors;
 param_acertar = [
-	[3, #0cf2cc, "perfeito!", snd_arrow, 1],
-	[6, #35e8a7, "ótimo!", snd_arrow, .8],
-	[10, #b8ff96, "ok", snd_arrow, .5],
-	[1000, #fff896, "longe...", snd_arrow_miss, .2],
-	[-1, #f56464, "errou...", snd_arrow_miss, .2]
+	[3, p[0], "perfeito!", snd_arrow, 1],
+	[6, merge_colour(p[0], p[1], .5), "ótimo!", snd_arrow, .8],
+	[10, p[1], "ok", snd_arrow, .5],
+	[1000, s[1], "longe...", snd_arrow_miss, .2],
+	[-1, s[0], "errou...", snd_arrow_miss, .2]
 ]
 
 x_lim_setas = -(cam_h/2 - 20);
@@ -396,13 +366,14 @@ next_state = undefined;
 mostrar_limites_de_movimentacao = false;
 
 
-position_player = array_create(state_num, array_create(2,0));
-position_player[0] = [obj_camera.x - 75,  round(obj_camera.y - height_textbox_battle/2)];
-spawn_setas = obj_camera.x +80;
+//position_player = array_create(state_num, array_create(2,0));
+//position_player[0] = [inst_camera.x - 75,  round(inst_camera.y - height_textbox_battle/2)];
+player_initial_position = [inst_camera.x - (inst_camera.x/5)*3, inst_camera.y - inst_camera.y/5*2];
+spawn_setas = inst_camera.x +80;
 local_seta_mais_proxima = 0;
 
 flag_atacando = false
-obj_player.sprite_index = spr_player_idle_battle;
+inst_player.sprite_index = spr_player_idle_battle;
 
 scr_can_move_tweaker(-1);
 
@@ -411,7 +382,7 @@ state = BATTLE_STATES.main_menu;
 opt = 0;
 last_opt = undefined;
 
-obj_camera.fixated_camera = true;
+inst_camera.fixated_camera = true;
 
 options = [
 	["fight",spr_button_fight_en],
@@ -431,6 +402,8 @@ function setup_lang(){
 		["defend", asset_get_index("spr_button_defend_" + string(global.LANG))]
 	]
 }
+
+opt_count = array_length(options);
 
 opt_height = sprite_get_height(spr_button_item_pt)
 	
@@ -486,34 +459,34 @@ size_text = size_text_default;
 
 
 //carrega adversario(s)
-adversario = combinacao_inimigos.combo1;
-enemy_sentences = adversario.enviromental_sentences_ids;
+
+enemy_sentences = adversario.environmental_sentences_ids;
 
 //armazena os adversarios 
-inimigos_combo = adversario.enemies;
+enemies_combo = adversario.enemies;
+enemy_count = array_length(enemies_combo)
 
-
-var quant_inimigos_combo = array_length(inimigos_combo);
 //guarda a vida, sprites,... de cada um dos inimigos do combo
 
 
 
-enemies_data = array_create(quant_inimigos_combo);
-parametros_inimigos = array_create(quant_inimigos_combo);
-hp_inimigos = array_create(quant_inimigos_combo);
-enemies_enviromental_sentences = array_create(quant_inimigos_combo);
-nomes_inimigos = array_create(quant_inimigos_combo);
-show_debug_message(inimigos_combo)
+enemies_data = array_create(enemy_count);
+parametros_inimigos = array_create(enemy_count);
+hp_inimigos = array_create(enemy_count);
+enemies_enviromental_sentences = array_create(enemy_count);
+nomes_inimigos = array_create(enemy_count);
+show_debug_message(enemies_combo)
 sprite_ini = [];
 sprite_ini_dmg = [];
 sprite_ini_atk = [];
 sprite_ini_pur = [];
 
-width_pct = array_create(quant_inimigos_combo, undefined);
+width_pct = array_create(enemy_count, undefined);
 
 
-for (var i = 0; i < quant_inimigos_combo; i++){
-	var data_enemies = variable_struct_get(dados_inimigos, inimigos_combo[i])
+for (var i = 0; i < enemy_count; i++){
+	var data_enemies = variable_struct_get(dados_inimigos, enemies_combo[i])
+	
 	enemies_data[i] = {
 		//read only data
 		hp_max : data_enemies.hp,
@@ -523,44 +496,35 @@ for (var i = 0; i < quant_inimigos_combo; i++){
 		sprite_ini_dmg : asset_get_index(data_enemies.sprite_dmg),
 		sprite_ini_atk : asset_get_index(data_enemies.sprite_atk),
 		sprite_ini_pur : asset_get_index(data_enemies.sprite_pur),
+
 		
 		//modifiable data
 		current_hp : data_enemies.hp
 		
 	}
 	
-	
-	//hp_inimigos[i] = parametros_inimigos[i].hp;
-	//nomes_inimigos[i] = parametros_inimigos[i].enemy_name;
-	//var sprite = asset_get_index(parametros_inimigos[i].sprite)
-	//ini_sprites_altura = array_create(quant_inimigos_combo, sprite_get_height(sprite))
-	
-	//sprite_ini[i] = parametros_inimigos[i].sprite
-	//sprite_ini[i] = asset_get_index(sprite_ini[i]);
-	
-	//sprite_ini_dmg[i] = parametros_inimigos[i].sprite_dmg
-	//sprite_ini_dmg[i] = asset_get_index(sprite_ini_dmg[i])
-	
-	//sprite_ini_atk[i] = parametros_inimigos[i].sprite_atk
-	//sprite_ini_atk[i] = asset_get_index(sprite_ini_atk[i])
-		
-	//sprite_ini_pur[i] = parametros_inimigos[i].sprite_pur
-	//sprite_ini_pur[i] = asset_get_index(sprite_ini_pur[i])
 }
 
 
-x_inimigo = array_create(quant_inimigos_combo);
-y_inimigo = array_create(quant_inimigos_combo);
+x_inimigo = array_create(enemy_count);
+y_inimigo = array_create(enemy_count);
 
 old_player_xy =[0,0]
 next_enemy_to_attack = 0;
 alpha_barra_ini = 0;
-enemies_speed = array_create(quant_inimigos_combo, 1);
-enemies_index = array_create(quant_inimigos_combo, 0);
-enemies_index_atk = array_create(quant_inimigos_combo, 0);
-enemies_draw_defeat_state = array_create(quant_inimigos_combo, 0);
-draw_away = 0;
-fade_away = 3;
+enemies_speed = array_create(enemy_count, 1);
+enemies_index = array_create(enemy_count, 0);
+enemies_index_atk = array_create(enemy_count, 0);
+enemies_draw_defeat_state = array_create(enemy_count, 0);
+draw_away = array_create(enemy_count, 0);
+fade_away = array_create(enemy_count, 3);
+pct_enemy_purify = array_create(enemy_count, 0);
+percentage_text_enemy = array_create(enemy_count, "0%");
+
+power_menu_width = 100;
+power_menu_height = 100;
+
+
 seta_index = 0;
 seta_speed = 1;
 
@@ -600,7 +564,7 @@ for (var i = 0; i < count_enemies_atks; i++){
 	var atk_requirements = atk.requirements;
 
 
-	if(array_contains_ext(inimigos_combo, atk_requirements, false)){
+	if(array_contains_ext(enemies_combo, atk_requirements, false)){
 		array_push(available_enemies_attacks, atk);
 	}
 }
@@ -681,7 +645,7 @@ part_emitter_relative(part_system_stars, part_emitter_stars, true)
 
 //part_emitter_relative(part_system_hope, part_emitter_hope, true)
 alpha_options = array_create(option_count, 1);
-draw_away_hp_bar = 0;
+//draw_away_hp_bar = 0;
 ene_dist_y = 20;
 attack_timer = undefined;
 runned_attack_action = false;
@@ -711,8 +675,8 @@ caixa_valores = {
 	default_box: {
 			caixa_tamanho: 215,
 			caixa_altura: 100,
-			caixa_posicao_x: obj_camera.x-30,
-			caixa_posicao_y: obj_camera.y+10
+			caixa_posicao_x: inst_camera.x-30,
+			caixa_posicao_y: inst_camera.y+10
 
 	}
 }
@@ -721,11 +685,17 @@ current_attack = undefined;
 //aqui eu vou ter que criar uma mascara de colisao invertida eu acho...
 //
 
-
-for (var e = 0; e < quant_inimigos_combo; e++){
-	if hp_inimigos[e] > 0{
-		array_push(inimigos_vivos, inimigos_combo[e])
+draw_set_font(fnt_main);
+for (var i = 0; i < enemy_count; i++){
+	if hp_inimigos[i] > 0{
+		array_push(inimigos_vivos, enemies_combo[i])
 	}
+	pct_enemy_purify[i] = clamp(round(((enemies_data[i].hp_max - enemies_data[i].current_hp) / enemies_data[i].hp_max) * 100), 0, 100);
+	percentage_text_enemy[i] = (string(pct_enemy_purify[i]) + "%")
+	max_width_name[i] = string_width(return_longest_word(string_upper(enemies_data[i].enemy_name)));
+
+	update_percentage_enemy_text_width(i);
+	show_debug_message(max_width_name);
 }
 
 function run_command(_opt){
@@ -736,6 +706,9 @@ function run_command(_opt){
 		enemy_name_appear_effect = 20;
 		alpha_barra_ini = 1;
 		
+		break;
+		case 1:
+		state = BATTLE_STATES.power_menu;
 		break;
 		
 		case 2:
@@ -766,9 +739,15 @@ function run_arrow_pattern(_attack){
 	switch (_attack){
 		case "normal_attack":
 			var attack_params = variable_struct_get(ataques, _attack)
-			show_debug_message(attack_params);
-			array_copy(arrow_pat, 0, attack_params.arrow_pattern, 0, array_length(attack_params.arrow_pattern));
-			show_debug_message(arrow_pat);
+			var directions = ["up", "down", "left", "right"];
+			
+			arrow_pat = []
+			
+			for (var i = 0; i < 4; i++){
+				var r = irandom(array_length(directions)-1);
+				array_push(arrow_pat, directions[r]);
+			}
+
 			max_dmg = attack_params.damage;
 			vel_setas = attack_params.velocity;
 			arrow_timer = arrow_time;
@@ -831,33 +810,54 @@ function load_enemy_attack(){
 }
 
 
-function check_level_up_player(){
-	var inst_player = obj_player;
-	
-	var current_level = inst_player.values.level;
-	var current_level_array_control = current_level-1;
-	
-	var exp_gain = power(current_level, xp_gain_constant);
-	var gold_gain = power(current_level, gold_gain_constant);
-
-	var current_xp = inst_player.values.xp; 
-	var exp_necessary_next_level = obj_game_manager.level_tiers[current_level_array_control+1];
-	
-	var level_up_calc = exp_gain + current_xp - exp_necessary_next_level[0];
-	
-	inst_player.values.gold += gold_gain
-	
-	if level_up_calc >= 0{
-		
-		inst_player.values.level++;
-		inst_player.values.xp = level_up_calc;
-	} else {
-		inst_player.values.xp += exp_gain;
-	}
-	
+function calc_xp(level){
+    return power(level, xp_gain_constant);
 }
 
-time_source_alpha_control = undefined;
+function add_xp(inst, amount){
+    inst.values.xp += amount;
+}
+
+function try_level_up(inst){
+
+    var next_level = inst.values.level + 1;
+    var required_xp = obj_game_manager.level_tiers[$ "level_" + string(next_level)];
+
+    if inst.values.xp < required_xp {
+        return false;
+    }
+
+    inst.values.level++;
+    inst.values.xp -= required_xp;
+
+    return true;
+}
+
+function run_xp(inst){
+    var xp = calc_xp(inst.values.level);
+    add_xp(inst, xp);
+    try_level_up(inst);
+	return xp;
+}
+
+
+function calc_gold(level){
+    return power(level, gold_gain_constant);
+}
+
+function add_gold(inst, amount){
+    inst.values.gold += amount;
+}
+
+
+function run_gold(inst){
+    var gold = calc_gold(inst.values.level);
+    add_gold(inst, gold);
+    return gold;
+}
+
+
+
 blink_dmg = true;
 
 function reset_text_to_draw(txt_type){
@@ -872,11 +872,88 @@ function reset_text_to_draw(txt_type){
 		break;
 		case TXT_TYPES.enemy_damage:
 		text_to_draw = ["",""]
-		array_delete(scale_pop_effect, 0, array_length(scale_pop_effect)-1);
+		scale_pop_effect = [];
+		index_dmg = 0;
 		can_lower_dmg_txt_alpha = false;
-		blink_dmg = true;
+		blink_dmg = [false, false];
+		alpha_txt_to_draw = 1;
 		break;
 	}
+}
+
+
+
+dmg_char_timer = 0;
+dmg_char_delay = 10;
+
+dmg_alpha_timer = [];
+dmg_alpha_delay = 60;
+
+dmg_blink_timer = [];
+dmg_blink_delay = 10;
+
+function text_arrow_accuracy(){
+var range_text = 5
+	text_initial_x_position = arrow_target_x + range_text;
+	text_final_x_position = arrow_target_x;
+		
+	var rot_range = 5
+	rot_text_dest = choose(rot_range, -rot_range)
+	rot_text =  0;
+		
+	size_text = size_text_default;
+		
+	alpha_txt_to_draw = 1
+}
+
+function text_enemy_damage(){
+	index_dmg = 0;
+	dmg_char_timer = 0;
+	range_text = 8;
+	alpha_txt_to_draw = 1
+		
+	can_lower_dmg_txt_alpha = false;
+		
+	text_initial_x_position = x_inimigo[opt] + range_text;
+	text_final_x_position = x_inimigo[opt] - range_text;
+		
+	hue_attack_text =  [default_attack_text_hsv[0][0], default_attack_text_hsv[1][0]];
+	sat_attack_text =  [default_attack_text_hsv[0][1], default_attack_text_hsv[1][1]];
+	val_attack_text =  [default_attack_text_hsv[0][2], default_attack_text_hsv[1][2]];
+		
+	can_lower_dmg_txt_alpha = false;
+	blink_dmg = [true, true];
+
+	dmg_alpha_timer = 0;
+	dmg_blink_timer = [0, 0];
+		
+	rot_range = 10
+	rot_text_dest = choose(rot_range, -rot_range)
+	rot_text =  0;
+		
+	size_text = size_text_default
+		
+	scale_pop_effect = array_create(string_length(text_to_draw[0]), - size_text);
+}
+
+function text_on_beat(){
+	var l_keys = global.LEFT_KEY_HOLD;
+	var r_keys = global.RIGHT_KEY_HOLD;
+	var last_used_key = (l_keys - r_keys);
+		
+	range_text = 8;
+	alpha_txt_to_draw = 1
+	can_lower_dmg_txt_alpha = false;
+		
+	text_initial_x_position = inst_player.x + range_text;
+	text_final_x_position = inst_player.x - range_text;
+		
+	rot_range = 4
+	rot_text_dest = rot_range * last_used_key;
+	rot_text =  0;
+		
+	var initial_text_size = .5;
+	size_text = initial_text_size;
 }
 
 function setup_text_draw(text, txt_type, color = c_white){
@@ -886,79 +963,15 @@ function setup_text_draw(text, txt_type, color = c_white){
 	
 	switch(txt_type){
 	case TXT_TYPES.arrow_accuracy:
-		var range_text = 5
-		text_initial_x_position = arrow_target_x + range_text;
-		text_final_x_position = arrow_target_x;
-		
-		var rot_range = 5
-		rot_text_dest = choose(rot_range, -rot_range)
-		rot_text =  0;
-		
-		size_text = size_text_default
-		
-		alpha_txt_to_draw = 1
-	
+	text_arrow_accuracy();
 	break;
 	case TXT_TYPES.enemy_damage:
-		range_text = 8;
-		alpha_txt_to_draw = 1
-		
-		can_lower_dmg_txt_alpha = false;
-		
-		text_initial_x_position = x_inimigo[opt] + range_text;
-		text_final_x_position = x_inimigo[opt] - range_text;
-		
-		hue_attack_text =  [default_attack_text_hsv[0][0], default_attack_text_hsv[1][0]];
-		sat_attack_text =  [default_attack_text_hsv[0][1], default_attack_text_hsv[1][1]];
-		val_attack_text =  [default_attack_text_hsv[0][2], default_attack_text_hsv[1][2]];
-		
-
-		
-		time_source_alpha_control = time_source_create(time_source_game, 1, time_source_units_seconds, function(){with (self){ can_lower_dmg_txt_alpha = true}})
-		time_source_start(time_source_alpha_control);
-		time_source_blink_dmg = time_source_create(time_source_game, 1, time_source_units_frames, function(){with (self){ blink_dmg = false}})
-		time_source_start(time_source_blink_dmg);
-		
-		
-		rot_range = 10
-		rot_text_dest = choose(rot_range, -rot_range)
-		rot_text =  0;
-		
-		size_text = size_text_default
-		
-		scale_pop_effect = array_create(string_length(text_to_draw[0]), - size_text);
-		
-
+	text_enemy_damage();
 	break;
 	case TXT_TYPES.on_beat:
-		
-		var l_keys = global.LEFT_KEY_HOLD;
-		var r_keys = global.RIGHT_KEY_HOLD;
-		var last_used_key = (l_keys - r_keys);
-		
-		range_text = 8;
-		alpha_txt_to_draw = 1
-		can_lower_dmg_txt_alpha = false;
-		
-		text_initial_x_position = obj_player.x + range_text;
-		text_final_x_position = obj_player.x - range_text;
-		
-		text_to_draw_color = color;
-		
-		time_source_alpha_control = time_source_create(time_source_game, 1, time_source_units_seconds, function(){with (self){ can_lower_dmg_txt_alpha = true}})
-		time_source_start(time_source_alpha_control);
-		
-		rot_range = 4
-		rot_text_dest = rot_range * last_used_key;
-		rot_text =  0;
-		
-		var initial_text_size = .5;
-		size_text = initial_text_size;
-	
+	text_on_beat();
 	break;
-	}
-
-	
+	}	
 }
 
 function draw_arrow_feedback(dist_alvo){
@@ -968,36 +981,47 @@ function draw_arrow_feedback(dist_alvo){
 	arrow_feedback_draw = [arrow_pat[arrow_to_draw_from], dist_alvo]
 	alpha_feedback = 1
 }
-		function draw_enemy_name_and_percentage(i, draw_away = 0, alpha = alpha_barra_ini){
-				var max_hp = enemies_data[i].hp_max;
-	var nome = string_upper(enemies_data[i].enemy_name);
-	var off_y_arrow = 17;
-	
-					var max_width_name = string_width(return_longest_word(nome));
-					var pct = clamp(round(((max_hp - enemies_data[i].current_hp) / max_hp) * 100), 0, 100)
-					var scale_pct = 1.5;
-					var sprite_height_enemy = sprite_get_height(enemies_data[i].sprite_ini);
-					var sprite_width_enemy = sprite_get_width(enemies_data[i].sprite_ini);
-					var percentage_text = (string(pct) + "%")
-					var width_percentage_update = string_width(percentage_text)* scale_pct
-			
-			
-			if !is_real(width_pct[i]){
-		
-				width_pct[i] = width_percentage_update
-			} else {
-				width_pct[i] = lerp(width_pct[i], width_percentage_update, .1);
-			}
-			var name_and_porcentage_x = x_inimigo[i] - width_pct[i] - sprite_width_enemy/2 - padding_hp_bar_and_enemy
 
+
+
+function draw_enemy_percentage(i, draw_away = 0, alpha = alpha_barra_ini, scale = scale_pct, color1 = #ff2887, color2 = #ff7928){
+	var percentage_text = percentage_text_enemy[i];
+	var sprite_height_enemy = sprite_get_height(enemies_data[i].sprite_ini);
+	var sprite_width_enemy = sprite_get_width(enemies_data[i].sprite_ini);
+	var porcentage_x = x_inimigo[i] - width_pct[i] - sprite_width_enemy/2 - padding_hp_bar_and_enemy;
+			
+	draw_set_valign(fa_middle);
+	draw_angled_text(percentage_text, porcentage_x + draw_away, y_inimigo[i]- sprite_height_enemy/2, default_max_width_angled_text, color1, color1, color2, color2, alpha, scale, scale);
+	draw_set_valign(fa_bottom);
+}
+		
+function update_percentage_enemy_text_width(i){
+	draw_set_font(fnt_main);
+	var percentage_text =  percentage_text_enemy[i];
+	var width_percentage_update = string_width(percentage_text)* scale_pct;
 	
-			draw_set_valign(fa_middle)
-			draw_angled_text(percentage_text, name_and_porcentage_x +draw_away, y_inimigo[i]- sprite_height_enemy/2, max_width_name, #ff2887, #ff2887, #ff7928, #ff7928, alpha, scale_pct, scale_pct);
-			if opt == i{
-				draw_angled_text(nome, name_and_porcentage_x - padding_hp_bar_and_enemy - max_width_name + enemy_name_appear_effect + draw_away, y_inimigo[i] - sprite_height_enemy/2, max_width_name, #ff2887, #ff2887, #ff7928, #ff7928, alpha, 1, 1, 1);
-			}
-			draw_set_valign(fa_bottom)
-		}
+	if (!is_real(width_pct[i])){
+		width_pct[i] = width_percentage_update;
+	} else {
+		width_pct[i] = lerp(width_pct[i], width_percentage_update, .1);
+	}
+}
+		
+
+
+function draw_enemy_name(i, draw_away = 0, alpha = alpha_barra_ini){
+	var off_y_arrow = 17;
+	var sprite_height_enemy = sprite_get_height(enemies_data[i].sprite_ini);
+	var sprite_width_enemy = sprite_get_width(enemies_data[i].sprite_ini);
+	var name_x = x_inimigo[i] - sprite_width_enemy/2 - padding_hp_bar_and_enemy - width_pct[i]/2;
+			
+	draw_set_valign(fa_middle)
+	if opt == i{
+		draw_angled_text(string_upper(enemies_data[i].enemy_name), name_x - padding_hp_bar_and_enemy - max_width_name[i] + enemy_name_appear_effect + draw_away, y_inimigo[i] - sprite_height_enemy/2, max_width_name[i], #ff2887, #ff2887, #ff7928, #ff7928, alpha, 1, 1, 1);
+	}
+	draw_set_valign(fa_bottom)
+}
+
 
 function search_for_param_accuracy(dist_alvo, is_missed_arrow = false){
 	if is_missed_arrow{
@@ -1015,9 +1039,10 @@ function search_for_param_accuracy(dist_alvo, is_missed_arrow = false){
 }
 
 function reset_arrow_pattern_vars(arrow_count){
-		array_delete(player_arrow_pat,0,arrow_count);
-		spawn_setas = obj_camera.x +80;
-		arrow_to_draw_from = 0;
+	array_delete(player_arrow_pat,0,arrow_count);
+	spawn_setas = inst_camera.x +80;
+	arrow_to_draw_from = 0;
+
 }
 
 max_distance_arrow = 100;
@@ -1026,30 +1051,23 @@ function calculate_damage(arrow_count){
 	var base_dmg = max_dmg;
 	var per_arrow_dmg = max_dmg/arrow_count;
 	var total_dmg = 0;
-	
-	
-	
 		
 	for (var i = 0; i < arrow_count; i++){
 		total_dmg += per_arrow_dmg * player_arrow_pat[i][2]; //  player_arrow_pat[2] é o multiplicador
 		
 	}
 	
-	
 	return (round(total_dmg));	
 }
 
 function reload_alive_enemies_array(){
-			
-			enemy_count = array_length(inimigos_combo)
-			array_delete(inimigos_vivos, 0,array_length(inimigos_vivos));
-			//percorre adicionando os inimigos se eles estiverem com mais que 0 de vida
-			for (var e = 0; e < enemy_count; e++){
-				if enemies_data[e].current_hp > 0{
-					array_push(inimigos_vivos, inimigos_combo[e])
-
-				} 
-			}
+	array_delete(inimigos_vivos, 0,array_length(inimigos_vivos));
+	//percorre adicionando os inimigos se eles estiverem com mais que 0 de vida
+	for (var e = 0; e < enemy_count; e++){
+		if enemies_data[e].current_hp > 0{
+			array_push(inimigos_vivos, enemies_combo[e]);
+		} 
+	}
 }
 
 //function setup_key_enemy_attack(){
@@ -1086,41 +1104,30 @@ function setup_enemy_turn_settings(){
 	setup_enemy_turn = true;
 }
 
+transition_wait_time[BATTLE_STATES.transition_enemy_turn] = 120;
+transition_wait_time[BATTLE_STATES.transition_battle_won] = 5;
+transition_wait_time[BATTLE_STATES.transition_main_menu] = 60;
+default_wait_time = 60;
+wait_time = 60;
 
-function go_to_wait_time_state(_next_state){
-	var wait_time = 60;
+function state_transition(new_state){
+	wait_time = default_wait_time;
 	
-	if (_next_state == BATTLE_STATES.enemy_turn){
-		wait_time = 120;
+	if !(is_undefined(transition_wait_time[new_state])){
+	wait_time = transition_wait_time[new_state];
 	}
 	
-	state = BATTLE_STATES.wait_time;
+	state = new_state;
 	wait_timer = wait_time;
-	next_state = _next_state;
 }
 
-enum TEXTBOX_PROPERTIES{
-	is_visible,
-	is_created,
-}
-
-function toggle_textbox(property, value){
-	switch(property){
-	case TEXTBOX_PROPERTIES.is_visible:
-		main_textbox_id.visible = value
-	break;
+function wait_time_over(){
+	wait_timer--;
 	
-	case TEXTBOX_PROPERTIES.is_created:
-		if value == true{
-			main_textbox_id = scr_open_textbox(textbox_chat_id);
-			dest_height_textbox_battle = default_height_textbox_battle
-		} else 
-		if value == false{
-			instance_destroy(main_textbox_id);
-			dest_height_textbox_battle = 0;
-		}
-	break;
+	if (wait_timer <= 0){
+		return true;
 	}
+	return false;
 }
 
 chosen_index = 0;
@@ -1134,11 +1141,21 @@ enum ENEMIES_DRAW_STATES{
 }
 
 
-function next_enviroment_sentence(){
+function next_environment_sentence(){
 	chosen_index++;
 	chosen_index = (chosen_index + array_length(enemy_sentences)) % array_length(enemy_sentences);
 	chosen_index = clamp(chosen_index, 1, array_length(enemy_sentences))
 	textbox_chat_id = enemy_sentences[chosen_index]
+}
+
+function create_environmental_textbox(){
+	main_textbox_id = scr_open_textbox(textbox_chat_id);
+	dest_height_textbox_battle = default_height_textbox_battle
+}
+
+function destroy_environmental_textbox(){
+	instance_destroy(main_textbox_id);
+	dest_height_textbox_battle = 0;
 }
 
 
@@ -1150,137 +1167,211 @@ function if_enemy_is_defeated(i){
 
 	
 	var vel_draw_away = 5;
-	var x_ini = x_inimigo[i] + vel_draw_away * draw_away;
+	var x_ini = x_inimigo[i] + vel_draw_away * draw_away[i];
 	var y_ini = y_inimigo[i] - vel_draw_away - sin(sin_t*3.5) * 5;
 			
 	part_emitter_region(part_system_stars, part_emitter_stars, x_ini -10, x_ini +10, y_ini -10, y_ini +10, ps_shape_rectangle, ps_distr_linear);
 	part_emitter_burst(part_system_stars, part_emitter_stars, part_type_stars, 20);
 			
-	draw_sprite_ext(enemies_data[i].sprite_ini_pur, enemies_index[i], x_ini, y_ini, 1, 1, 0, c_white, fade_away);
+	draw_sprite_ext(enemies_data[i].sprite_ini_pur, enemies_index[i], x_ini, y_ini, 1, 1, 0, c_white, fade_away[i]);
+	show_debug_message(fade_away[i])
 
 }
 
-	function define_enemy_position(i, cam_x, cam_y){
-		if enemy_count == 1{ // se houver 1 só, fica centralizado,
-			x_inimigo[i] = cam_x + cam_w/3
-			y_inimigo[i] = cam_y - height_textbox_battle/2;
-		} else { //senão, ele faz calculos
-			var x_padding = 0
-			if (i%2 != 0 && enemy_count>2){
-				x_padding = 20;
-			}
-			x_inimigo[i] = cam_x + cam_w/3 + x_padding;
-			var padding = 10;
-			var first_sprite_height = sprite_get_height(enemies_data[0].sprite_ini)
-			var available_y_space = cam_h - height_textbox_battle - first_sprite_height;
+function define_enemy_position(i, cam_x, cam_y){
+	if enemy_count == 1{ // se houver 1 só, fica centralizado,
+		x_inimigo[i] = cam_x + cam_w/3
+		y_inimigo[i] = cam_y - height_textbox_battle/2;
+	} else { //senão, ele faz calculos
+		var x_padding = 0
+		if (i%2 != 0 && enemy_count>2){
+			x_padding = 20;
+		}
+		x_inimigo[i] = cam_x + cam_w/3 + x_padding;
+		var padding = 10;
+		var first_sprite_height = sprite_get_height(enemies_data[0].sprite_ini)
+		var available_y_space = cam_h - height_textbox_battle - first_sprite_height;
 		
-			var y_distance = ( available_y_space/enemy_count)*i;
+		var y_distance = ( available_y_space/enemy_count)*i;
 		
-			y_inimigo[i] =	(cam_y - cam_h/2) + available_y_space/(enemy_count+2) + y_distance + first_sprite_height - opt_height;
+		y_inimigo[i] =	(cam_y - cam_h/2) + available_y_space/(enemy_count+2) + y_distance + first_sprite_height - opt_height;
 
-		}
 	}
+}
 	
-		padding_hp_bar_and_enemy = 20;
-		function draw_hp_bar_enemy(i, max_hp, draw_away = 0, alpha = alpha_barra_ini){
-			
-	
-			var pct = (enemies_data[i].current_hp / max_hp);
-			var height_sprite = sprite_get_height(spr_bar_enemy_pure);
-			var width_sprite = sprite_get_width(spr_bar_enemy_pure);
-			
-			var bar_x = x_inimigo[i] - padding_hp_bar_and_enemy;
-			var bar_y = y_inimigo[i] - height_sprite;
-			
-			pct = (enemies_data[i].current_hp / max_hp);
-			
-			draw_sprite_part_ext(spr_bar_enemy_pure, 0, 0, clamp(pct * height_sprite, 0, height_sprite), width_sprite, height_sprite, bar_x + draw_away, bar_y + clamp(pct * height_sprite, 0, height_sprite), 1, 1, c_white, alpha);
-			draw_sprite_part_ext(spr_bar_enemy_cons, 0, 0, 0, width_sprite, (pct * height_sprite),bar_x + draw_away, bar_y, 1, 1, c_white, alpha);
-			//draw_sprite_stretched_ext(spr_outline_enemy_hb,0, x_inimigo[i] - larg_out_hp/2 - larg_barra_hp, y_inimigo[i] - sprite_get_height(sprite_ini) - altura_out_hp+1, larg_out_hp, altura_out_hp, c_white,alpha_barra_ini)
-			//draw_sprite_stretched_ext(spr_healthbar_enemy,0, bar_x + 1, bar_y, altura_barra_hp, pct * 31, #54003e,alpha_barra_ini)
-		}
+		padding_hp_bar_and_enemy = 30;
 		
-		function lower_alpha_enemy_bar(){
-				if state == BATTLE_STATES.attacking
-					return;
-				if state == BATTLE_STATES.select_enemy
-					return;
-				if state == BATTLE_STATES.arrow_pattern
-					return;
+function draw_hp_bar_enemy(i, max_hp, draw_away = 0, alpha = alpha_barra_ini){
+			
+	
+	var pct = (enemies_data[i].current_hp / max_hp);
+	var height_sprite = sprite_get_height(spr_bar_enemy_pure);
+	var width_sprite = sprite_get_width(spr_bar_enemy_pure);
+			
+	var bar_x = x_inimigo[i] - padding_hp_bar_and_enemy;
+	var bar_y = y_inimigo[i] - height_sprite;
+			
+	pct = (enemies_data[i].current_hp / max_hp);
+			
+	draw_sprite_part_ext(spr_bar_enemy_pure, 0, 0, clamp(pct * height_sprite, 0, height_sprite), width_sprite, height_sprite, bar_x + draw_away, bar_y + clamp(pct * height_sprite, 0, height_sprite), 1, 1, c_white, alpha);
+	draw_sprite_part_ext(spr_bar_enemy_cons, 0, 0, 0, width_sprite, (pct * height_sprite),bar_x + draw_away, bar_y, 1, 1, c_white, alpha);
+}
+		
+function lower_alpha_enemy_bar(){
+		if state == BATTLE_STATES.attacking
+			return;
+		if state == BATTLE_STATES.select_enemy
+			return;
+		if state == BATTLE_STATES.arrow_pattern
+			return;
 					
-				alpha_barra_ini -= 0.03;
+		alpha_barra_ini -= 0.03;
+}
+		
+		alpha_ui_player_default = 1.5;
+		alpha_ui_player_low = .5;
+		alpha_ui_player_target = 1.5;
+		alpha_ui_player = alpha_ui_player_default;
+		alpha_barra_ini_default = 2.5;
+
+function state_select_enemy(accept_key, deny_key, u_keys, d_keys){
+	if alpha_barra_ini != alpha_barra_ini_default{
+		alpha_barra_ini = alpha_barra_ini_default; // numero maior pra permanecer mais tempo 100% visivel
+	}		
+
+	select_enemy_controller(accept_key, deny_key, u_keys, d_keys);
+	
+	if accept_key{
+		next_enemy_to_attack = opt;
+		instance_destroy(main_textbox_id);
+		if casting_power{
+			state = BATTLE_STATES.attacking_power;
+			focus_points -= power_to_cast.dp_cost;
+		} else {
+			run_arrow_pattern("normal_attack");
+			state = BATTLE_STATES.arrow_pattern;
 		}
-		
-		
-function draw_angled_text(_string, _x, _y, max_width, c1, c2, c3, c4, alpha, x_scale= 1, y_scale = 1, sin_mult = 0, per_char_add_y = -1, line_break_height = 10){
-	
-
-	per_char_added_width = 0
-	line_break = 0;
-	per_char_add_y_total = 0;
-	
-
-	
-	for (var i = 0; i < string_length(_string); i++){
-	var char =  string_copy(_string, i+1, 1)
-	
-
-
-	
-	draw_text_transformed_colour(_x + per_char_added_width, _y + per_char_add_y_total + line_break * line_break_height + sin(sin_t)*sin_mult, char, x_scale, y_scale, 0, c1, c2, c3, c4, alpha);
-	per_char_added_width += string_width(char) * x_scale;
-	
-	if per_char_added_width > max_width && char == " "{
-
-		per_char_added_width = 0;
-		per_char_add_y_total = 0;
-		line_break++;
-		continue;
 	}
-	per_char_add_y_total += per_char_add_y;
-
-
-}
-
-
-}
-
-function return_longest_word(_string){
-var current_word = "";
-var longest_word = "";
-var longest_word_length = 0;
-var current_word_length = 0;
-	for (var i = 0; i < string_length(_string); i++){
-		var char = string_copy(_string, i+1, 1);
-		if char == " "{
-			if current_word_length > longest_word_length{
-				longest_word = current_word;
-				longest_word_length = current_word_length;
-			}
-			current_word = "";
-			current_word_length = 0;
-			continue;
-		}
 		
-			current_word += char;
-			current_word_length ++;
+	if deny_key{
+		focus_points -= focus_points_amnt_incr
+		state = BATTLE_STATES.main_menu;
+	}
+}
+
+function select_enemy_controller(accept_key, deny_key, u_keys, d_keys){
+	
+	if enemies_data[opt].current_hp <= 0{
+		var tentativas = 0; 
+		var prox_ini = opt; // um apontador para procurar pelo prox inimigo, como se fosse um opt temporario falso
+			
+		do{
+			prox_ini = (prox_ini + 1) % enemy_count; 
+			tentativas ++; 
+			   
+			if ( enemies_data[prox_ini].current_hp > 0){
+				opt = prox_ini;
+				break; 
+			}
+			
+		} until (tentativas >=  enemy_count); // isso continua ate a quantidade de tentativas ser igual a quant inimigos
+	}
+	
+
+	if d_keys{
+		var tentativas = 0; // contador para ver quantas vezes ele ja procurou por um inimigo com vida
+		var prox_ini = opt; // um apontador para procurar pelo prox inimigo, como se fosse um opt temporario falso
+			
+		do{
+			prox_ini = (prox_ini + 1) % enemy_count; // procura pelo proximo inimigo com vida
+			tentativas ++; //quando ele procurar por um ele aumenta a quantidade de tentativas 
+			   
+			if (enemies_data[prox_ini].current_hp > 0){
+				opt = prox_ini;
+				enemy_name_appear_effect = enemy_name_appear_px_num;
+				break; // se ele achar, quebra e dai atribui o opt temporario para opt e quebra o loop
+			}
+			
+		} until (tentativas >=  enemy_count); // isso continua ate a quantidade de tentativas ser igual a quant inimigos
 			
 	}
 	
-	
-			if current_word_length > longest_word_length{
-
-				longest_word = current_word;
-				longest_word_length = current_word_length;
+	if u_keys{
+			
+		var tentativas = 0;
+		var prox_ini = opt;
+			
+		do{
+			prox_ini = (prox_ini - 1 + enemy_count) % enemy_count;
+			tentativas ++;
+			   
+			if (enemies_data[prox_ini].current_hp > 0){
+				opt = prox_ini;
+				enemy_name_appear_effect = enemy_name_appear_px_num;
+				break;
 			}
-	return longest_word;
+			
+		} until (tentativas >=  enemy_count);
+
+	}
 }
 
-function add_textbox_queue(_message){
-	array_push(textbox_queue, _message);
+function state_main_menu(opt_changer, l_keys, r_keys, accept_key, deny_key){
+	
+	
+	
+	//===== CONTROLADOR DE OPÇÕES
+	opt += opt_changer;
+	opt = (opt + opt_count) mod opt_count;
+	
+	if opt_changer != 0{
+		audio_play_sound(snd_key, 3, false);
+	}
+		
+	b_subimage = array_create(opt_count, 0)
+	b_subimage[opt] = 1;
+
+	//ENVIAR OPCAO		
+	if accept_key{
+	run_command(opt)
+	opt = 0;
+	}
+	
+	inst_player.teleport_to(player_initial_position[0], player_initial_position[1], "absolute");
 }
 
-//scr_open_textbox_custom(textbox_queue);
-function run_queue_textbox(){
+casting_power = false;
+power_to_cast = undefined;
+count_tap_dance = 0;
+bang_index = 0;
+bang_speed = 1;
 
+range_bang_pos = 5;
+random_pos_x = irandom(range_bang_pos);
+random_pos_y = irandom(range_bang_pos);
+
+
+function cast_power(power_id){
+	power_to_cast = power_id;
+	
+	show_debug_message("power_id")
+	show_debug_message(power_to_cast)
+	
+	if (power_id.type == POWER_TYPES.attack){
+		if (power_id.target_type == "single"){		
+			casting_power = true;
+			state =  BATTLE_STATES.select_enemy;
+			enemy_name_appear_effect = 20;
+			alpha_barra_ini = 1;
+		}
+	}
 }
+
+//function add_textbox_queue(_message){
+//	array_push(textbox_queue, _message);
+//}
+
+////scr_open_textbox_custom(textbox_queue);
+//function run_queue_textbox(){
+
+//}

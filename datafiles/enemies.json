@@ -3,7 +3,7 @@
       {
         "hp": 30,
         "defense_pts": 0,
-        "enemy_name": "Boneco de Neve",
+        "enemy_name": "Boneco de Nevezinho",
         "sprite": "spr_objetoplaceholder_atacavel",
         "sprite_dmg": "spr_objetoplaceholder_atacavel_dmg",
         "sprite_atk": "spr_objetoplaceholder_atacavel_atk",

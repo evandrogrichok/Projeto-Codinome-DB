@@ -1,0 +1,34 @@
+    
+TIPOS DE ATRIBUTOS:
+
+    (*Itens Obrigatórios)
+
+    *"type": chat/decision/battle/battle;
+        quando o valor é "decision", é obrigatória a inclusão dos atributos "options" e "link options".
+    *"text": o texto + efeitos
+	
+    Os Efeitos:
+        <item>, usado quando quiser mencionar o nome do item na textbox;
+        <wave>exemplo</wave>, usado para dar ao texto um efeito de onda;
+        <color>exemplo</color>, usado em conjunto com o atributo "color:", requerindo-o;
+        <shake>exemplo</shake>, usado para dar ao texto um efeito de "tremida";
+
+    caso o tipo definido for "option":
+        *"options": ["texto, em array, que será exibido em cada opção"]
+        *"linkoption": ["ids, em array, de cada uma das opções respectivamente."]     
+		
+    "flip_page": usado para determinar se o usuário pode passar para a proxima página na caixa de texto aberta.
+		padrão = 1;
+    "color": usado para definir uma cor de destaque para o efeito <color>;
+    "location": usado para definir a localização da caixa na tela.
+        0 = baixo, 1 = meio, 2 = topo, 3 = valor exclusivo para caixa principal de batalha;
+        padrão = 0;
+    "font": define a fonte do texto. caso o valor usado nao for encontrado no jogo, a fonte padrão será usada.
+        padrão = "fnt_main"
+    "textbox": usado para especificar um sprite de caixa de texto para ser usado.
+        padrão: "spr_textbox";
+    "speaker": define quem está "falando". 
+        padrão: "noone".
+    "sound": som do efeito de máquina de escrever. 
+        padrão: "snd_text_default".
+

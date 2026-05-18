@@ -1,6 +1,6 @@
 
 function scr_open_textbox(_id, _item_name = "ITEM_NÃO_DEFINIDO" ){	
-    if instance_exists(obj_textboxx)
+    if instance_exists(obj_textbox)
 	return;
 
 	_inst_vars = {
@@ -9,7 +9,7 @@ function scr_open_textbox(_id, _item_name = "ITEM_NÃO_DEFINIDO" ){
 	    item : _item_name
 	};
 	
-	var inst_id = instance_create_depth(0, 0, -99999, obj_textboxx, _inst_vars);
+	var inst_id = instance_create_depth(0, 0, -99999, obj_textbox, _inst_vars);
 	return inst_id;
 }
 
@@ -25,7 +25,7 @@ function scr_open_textbox_custom(_dialog){
 		dialogo : _dialog
 	};
 	
-	var inst_id = instance_create_depth(0, 0, -99999, obj_textboxx, _inst_vars);
+	var inst_id = instance_create_depth(0, 0, -99999, obj_textbox, _inst_vars);
 	return inst_id;
 	
 	
@@ -33,7 +33,7 @@ function scr_open_textbox_custom(_dialog){
 
 
 
-function _msg(_text, _type = "chat", _textbox = spr_textbox, _sound = snd_text_default, _color = c_white, _font = fnt_main, _speaker = noone, _location = 0) constructor {
+function _msg(_text, _type = "chat", _textbox = spr_textbox, _sound = snd_text_default, _color = c_white, _font = fnt_main, _target = noone, _emotion = noone, _location = 0) constructor {
 
     text = _text;
     type = _type;
@@ -41,7 +41,8 @@ function _msg(_text, _type = "chat", _textbox = spr_textbox, _sound = snd_text_d
     sound = _sound;
     color = _color;
     font = _font;
-    speaker = _speaker;
+    target = _target;
+    emotion = _emotion;
     location = _location;
 
 }

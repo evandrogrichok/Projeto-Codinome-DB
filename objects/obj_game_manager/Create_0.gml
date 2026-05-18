@@ -1,6 +1,9 @@
 global.DELTA_TIME = delta_time/16666
 global.LANG = "pt"
 gpu_set_tex_filter(false);
+
+
+
 enum DEPTH {
     BG_FARTHEST   = 300000,
     BG_FAR        = 280000,
@@ -29,22 +32,57 @@ enum DEPTH {
 }
 
 
+global.areas_properties = {
+	GREAT_ENTRANCE : {
+		name_pt: "A Grande Entrada",
+		name_en: "The Great Entrance",
+		ui_primary_colors: [ #28aeff, #28ffa0],
+		ui_secondary_colors: [ #ff2887, #ff7928]
+	}
+}
+
+global.current_area = "GREAT_ENTRANCE";
+
 
 //SETUP INICIAL
 
 setup_objects = [
-	obj_player,
-	obj_camera,
-	obj_game_menu,
-]
+	[obj_player, "player"],
+	[obj_camera, "camera"],
+	[obj_game_menu, "menu"],
+	[obj_game_manager, "manager"],
+];
+
+global.instances = {
+    player: noone,
+    camera: noone,
+    menu: noone,
+    manager: noone
+};
+
 
 
 for (var i = 0; i < array_length(setup_objects); i++){
-	var inst = setup_objects[i]
-	if !instance_exists(inst){
-		instance_create_layer(819, 157, "Instances", inst)
+	var obj = setup_objects[i][0];
+	var name = setup_objects[i][1];
+	show_debug_message("oia o nome: ", name);
+	show_debug_message("oia o obj: ", obj);
+	
+	
+	if !instance_exists(obj){
+		global.instances[$ name] = instance_create_layer(819, 157, "Instances", obj);
+		show_debug_message("eita q nao achei, mas criei ")
+	} else {
+		global.instances[$ name] = instance_find(obj, 0);
+		show_debug_message("eita q achei, é o ", instance_find(obj, 0))
 	}
+	
+	show_debug_message("OBJ: " + string(obj));
+show_debug_message("COUNT: " + string(instance_number(obj)));
+show_debug_message("FIND: " + string(instance_find(obj, 0)));
 }
+
+show_debug_message("coisas", global.instances)
 
 
 //TECLAS
@@ -75,11 +113,11 @@ random_set_seed(current_time);
 
 //level tiers [0] == xp necessário
 
-level_tiers = [
-	[0],
-	[20],
-	[40],
-]
+level_tiers = {
+	level_1: 0,
+	level_2: 20,
+	level_3: 40,
+}
 
 
 
@@ -88,11 +126,17 @@ if !object_exists(obj_game_menu){
 }
 
 
-player_val = obj_player.values;
+//player_val = global.instances.player.values;
 // =============   ITENS ===============
 //TYPE 0 = COMESTIVEL
 //TYPE 1 = EQUIPÁVEL
 //TYPE 2 = ITENS CHAVE
+
+enum ITEM_TYPES {
+	edible,
+	equippable,
+	key
+}
 
 show_debug_message("CRIOU MANAGER");
 global.ITEMS_DATA = {};
@@ -100,7 +144,7 @@ global.ITEMS_DATA = {};
 global.ITEMS_DATA.item_001 = {
 	name : "Banana",
 	sprite : "spr_item_banana",
-	type : 0,
+	type : ITEM_TYPES.edible,
 	hp_restore : 10,
 	info : "Uma banana. Um lanche rápido para a aventura.",
 	properties_description : "Cura 10 de hp."
@@ -108,11 +152,13 @@ global.ITEMS_DATA.item_001 = {
 global.ITEMS_DATA.item_002 = {
 	name : "Banana2",
 	sprite : "spr_item_banana",
-	type : 0,
+	type : ITEM_TYPES.edible,
 	hp_restore : 10,
 	info : "Uma banana. Um lanche rápido para a aventura.",
 	properties_description : "Cura 10 de hp."
 }
+
+
 
 // ============= INVENTARIO =============
 
@@ -172,8 +218,66 @@ add_item(global.ITEMS_DATA.item_001)
 add_item(global.ITEMS_DATA.item_002)
 add_item(global.ITEMS_DATA.item_001)
 add_item(global.ITEMS_DATA.item_002)
-//add_item(global.ITEMS_DATA.item_001)
-//add_item(global.ITEMS_DATA.item_001)
+
+
+enum POWER_TYPES {
+	heal,
+	attack
+}
+
+global.DANCE_POWERS_DATA = {};
+
+global.DANCE_POWERS_DATA.heal_prayer = {
+	name_pt : "Prece de Cura",
+	type: POWER_TYPES.heal,
+	dp_cost : 50,
+	heal_amount : 24,
+	target_type : "single",
+	info_pt : function() {
+        return "Peça ajuda para o universo. Cura " + string(heal_amount) + " de HP";
+    }
+}
+
+global.DANCE_POWERS_DATA.tap_dance = {
+	name_pt: "Sapateado",
+	type: POWER_TYPES.attack,
+	dp_cost : 50,
+	dmg: 65,
+	target_type : "single",
+	info_pt : function() {
+        return "Um golpe poderoso que atordoa o inimigo, causando " + string(self.dmg) + " de dano.";
+    }
+}
+
+
+global.DANCE_POWERS_DATA.waltz_spin = {
+	name_pt : "Giro de Valsa",
+	type: POWER_TYPES.attack,
+	dp_cost : 40,
+	dmg: 20,
+	target_type : "neighbors",
+	info_pt : function() {
+        return "Gire, Gire!.";
+    },
+}
+
+unlocked_powers = [];
+
+
+
+function add_power(power_id){
+	if !array_contains(unlocked_powers, power_id){
+		array_push(unlocked_powers, power_id);
+		return true;	
+	}
+	
+	return false;	
+}
+
+
+ add_power(global.DANCE_POWERS_DATA.tap_dance);
+ add_power(global.DANCE_POWERS_DATA.heal_prayer);
+ add_power(global.DANCE_POWERS_DATA.waltz_spin);
 
 global.GAME_SPRITES = {
 	spr_point_tiny,

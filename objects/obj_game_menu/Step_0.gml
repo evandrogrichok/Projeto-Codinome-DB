@@ -15,7 +15,7 @@ _opt_changer =  (global.RIGHT_KEY) - (global.LEFT_KEY);
 _opt_changer_v =  (global.DOWN_KEY) - (global.UP_KEY);
 
 
-if (menu_key){
+if (menu_key && !instance_exists(obj_battle_manager)){
 	
 	if state == MENU_STATES.closed{
 		state = MENU_STATES.main_menu

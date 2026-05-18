@@ -70,6 +70,38 @@
       
     ],
 
+    
+    "dialogo_combo_01":[
+      {
+        "type": "battle_event",
+        "target": "glint",
+        "location": 3,
+        "emotion": "surprised",
+        "text": "Hã..? O que você fez..? e... por que tá funcionando?"
+      },
+      {
+        "type": "battle_event",
+        "target": "glint",
+        "location": 3,
+        "emotion": "normal",
+        "text": "Bom! Seja lá o que você tá fazendo... continua, Drio!"
+      }
+      
+    ],
+
+        
+    "dialogo_combo_02":[
+      {
+        "type": "battle_event",
+        "target": "glint",
+        "location": 3,
+        "emotion": "happy",
+        "text": "É isso aí, Drio! Mostra pra eles seus passos de dança!"
+      }
+      
+    ],
+    
+
 
 
     "dialogo1": [

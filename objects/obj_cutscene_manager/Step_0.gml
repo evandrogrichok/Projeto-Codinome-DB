@@ -1,62 +1,153 @@
-if ready{
+if (!global.cutscene_active) instance_destroy();
 
-if linha_atual >= ds_grid_height(roteiro){
+if (index >= array_length(cutscene)) {
 	instance_destroy();
-	return;
+	global.cutscene_active = false;
+	exit;
+}
+var cmd = cutscene[index];
+
+
+
+if (waiting)
+{
+    if (current_wait_type == WAITING_TYPES.frames) {
+        if (wait_timer > 0) wait_timer--;
+        else {
+            waiting = false;
+            index++;
+        }
+    }
+
+    if (current_wait_type == WAITING_TYPES.textbox) {
+        if (!instance_exists(obj_textbox)) {
+            waiting = false;
+            index++;
+        }
+    }
+    if (current_wait_type == WAITING_TYPES.page) {
+        if (obj_textbox.page > last_textbox_page) {
+            waiting = false;
+            index++;
+        }
+    }
+
+    if (current_wait_type == WAITING_TYPES.animation) {
+        if (object._cutscene_loops >= cmd.loops) {
+            waiting = false;
+            index++;
+        }
+    }
+	
+    if (current_wait_type == WAITING_TYPES.moving) {
+        if (!object.moving) {
+            waiting = false;
+            index++;
+        }
+    }
+
+    exit;
 }
 
-// --- Leitura e Execução do Comando ---
-
-var _type   = roteiro[# 0, linha_atual];
-var _target = roteiro[# 1, linha_atual];
-var _action = roteiro[# 2, linha_atual];
-var _param1 = roteiro[# 3, linha_atual];
-var _param2 = roteiro[# 4, linha_atual];
-var _param3 = roteiro[# 5, linha_atual];
-
-switch _type{
-	case "CAMERA":
-		if (_action == "move_to"){
-	        var _target_obj = asset_get_index(_target);
-	        var _cam_inst = instance_find(_target_obj, 0);
-				_cam_inst.camera_move_to(_param1, real(_param2), real(_param3));
-		}
-		break;
-		
-	case "DIALOG":
-		if !instance_exists(obj_textbox){
-			create_textbox(_param1);
-		}
-		break;
-		
-	case "WAIT":
-		esperando = true;
-		switch _action{
-			case "time":
-				wait_time = wait_time + 1;
-				if wait_time >= _param1{
-					esperando = false;
-					wait_time = 0;
-				}
-		}
-		break;
-		
-		case "CHARACTER":
-			var _target_obj = asset_get_index(_target);
-			var _target_instance = instance_find(_target_obj,0);
-
-			_target_instance.cutscene_char_move(_action, _param1, real(_param2), real(_param3));			
-		break;
-
-}
 
 
-if (!esperando) {
-    linha_atual++;
-}
-} else {
-	if roteiro != "notdefined.csv"{
-		ready = true;
-		roteiro = load_csv(cutscene_id);
+switch (cmd.type){	
+	case "wait_animation":
+	object = asset_get_index(cmd.obj);
+    object._cutscene_loops = 0;
+    object._cutscene_target_loops = cmd.loops;
+	set_waiting_event(WAITING_TYPES.animation);
+	break;
+	
+	case "wait":
+    wait_timer = cmd.frames;
+	set_waiting_event(WAITING_TYPES.frames);
+	break;
+	
+	case "wait_textbox":
+	set_waiting_event(WAITING_TYPES.textbox);
+	break;
+	
+	case "wait_page":
+	last_textbox_page = obj_textbox.page
+	set_waiting_event(WAITING_TYPES.page);
+	break;
+	
+	case "textbox":
+    scr_open_textbox(cmd.id);
+	break;
+	
+	case "cam_focus":
+    obj_camera.set_focus_position(cmd.x, cmd.y);
+	break;
+
+	case "cam_follow":
+	object = asset_get_index(cmd.target)
+    obj_camera.set_follow_target(object);
+	break;
+
+	case "cam_fixed":
+    obj_camera.set_fixed_camera();
+	break;
+	
+	case "cam_shake":
+    obj_camera.cam_shake(cmd.intensity, cmd.time);
+	break;
+	
+	case "cam_between":
+	var t1 = asset_get_index(cmd.target_1);
+	var t2 = asset_get_index(cmd.target_2);
+    obj_camera.set_between_targets(t1, t2);
+	break;
+	
+	case "play_sound":
+	var _loop = cmd[$ "loop"] ?? false;
+	var _snd = asset_get_index(cmd.sound);
+	_snd = _snd ?? snd_c;
+    audio_play_sound(_snd, 1, _loop);
+	break;
+	
+	case "play_music":
+	obj_music_manager.play_music_cutscene(asset_get_index(cmd.music));
+	break; //a ser construido no OBJ_MUSIC_MANAGER
+	
+	case "walk_instance":
+	object = asset_get_index(cmd.obj);
+	var _mode = cmd[$ "mode"] ?? "add";
+	var _wait = cmd[$ "wait"] ?? true;
+	var _speed = cmd[$ "speed"] ?? 1;
+	
+    with (object) {
+        walk_to(cmd.x, cmd.y, _speed, _mode);
+    }
+	
+	if(_wait){
+		set_waiting_event(WAITING_TYPES.moving);
 	}
+	break;
+	case "teleport_instance":
+	object = asset_get_index(cmd.obj);
+	_mode = cmd[$ "mode"] ?? "add";
+    with (object) {
+        teleport_to(cmd.x, cmd.y, _mode);
+    }
+	break;
+	case "set_sprite":
+	object = asset_get_index(cmd.obj);
+	var sprite = asset_get_index(cmd.sprite);
+    object.sprite_index = sprite;
+	break;
+	
+	case "create_object":
+	object = asset_get_index(cmd.obj);
+    instance_create_depth(cmd.x, cmd.y, cmd.desired_depth, object);
+	break;
+	
+}
+
+
+
+
+if (!waiting) {
+    index++;
 }

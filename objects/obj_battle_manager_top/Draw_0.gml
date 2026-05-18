@@ -4,7 +4,7 @@ if instance_exists(obj_battle_manager){
 
 with(obj_battle_manager){
 	
-var _inst_player = obj_player;
+var _inst_player = inst_player;
 
 
 
@@ -12,8 +12,8 @@ var _inst_player = obj_player;
 //var cam_w = camera_get_view_width(view_camera[0]);
 //var cam_h = camera_get_view_height(view_camera[0]);
 //localizacao do obj cam
-var cam_x = obj_camera.x
-var cam_y = obj_camera.y
+var cam_x = inst_camera.x
+var cam_y = inst_camera.y
 //tamanho dos sprites dos botoes, para calculos de distancia e tudo
 
 //tamanho do hudzinho de vida
@@ -127,15 +127,16 @@ var arrows_alpha = 1;
 				
 
 		
-		draw_sprite(spr_player_hud, 0, player_hud_x, player_hud_y);
-		draw_sprite(spr_player_portrait, myimage_index, player_hud_x + portrait_offset, player_hud_y + portrait_offset);
+		draw_sprite_ext(spr_player_hud, 0, player_hud_x, player_hud_y, 1, 1, 0, c_white, alpha_ui_player);
+		draw_sprite_ext(spr_player_portrait, myimage_index, player_hud_x + portrait_offset, player_hud_y + portrait_offset, 1, 1, 0, c_white, alpha_ui_player);
 				
 				
-		draw_text(player_hud_x + portrait_offset + portrait_width + hud_padding, player_hud_y + portrait_offset + hud_margin_y, "Cael");
-		draw_text_color(player_hud_x - portrait_offset + player_hud_width - hp_x_offset, player_hud_y + portrait_offset + hud_margin_y, "hp:", c_white, c_white, c_white, c_white, medium_alpha);
-		draw_text_color(player_hud_x - portrait_offset + player_hud_width - hp_count_x_offset, player_hud_y + portrait_offset + hud_margin_y, string(obj_player.values.hp), highlight_color, highlight_color, highlight_color, highlight_color, 1);
-				
-		draw_sprite_stretched(spr_healthbar, 0, player_hud_x + portrait_width + portrait_offset + hud_padding + hp_bar_x_correction, player_hud_y + hp_bar_y_offset,(obj_player.values.hp / obj_player.values.max_hp)*hp_bar_size, hp_bar_height)
+		draw_text(player_hud_x + portrait_offset + portrait_width + hud_padding, player_hud_y + portrait_offset + hud_margin_y, "Drio");
+		draw_text_color(player_hud_x - portrait_offset + player_hud_width - hp_x_offset, player_hud_y + portrait_offset + hud_margin_y, "hp:", c_white, c_white, c_white, c_white, clamp(alpha_ui_player, 0, medium_alpha));
+		var color_hp = (area_properties.ui_primary_colors[0])
+		draw_text_color(player_hud_x - portrait_offset + player_hud_width - hp_count_x_offset, player_hud_y + portrait_offset + hud_margin_y, string(inst_player.values.hp),color_hp,color_hp,color_hp,color_hp, 1);
+			color_hp = merge_color(area_properties.ui_primary_colors[0], area_properties.ui_primary_colors[1], alpha_ui_player)	
+		draw_sprite_stretched_ext(spr_dancepoints_bar, 0, player_hud_x + portrait_width + portrait_offset + hud_padding + hp_bar_x_correction, player_hud_y + hp_bar_y_offset,(inst_player.values.hp / inst_player.values.max_hp)*hp_bar_size, hp_bar_height, area_properties.ui_primary_colors[0], 1)
 				
 		draw_set_valign(fa_top);
 		draw_set_font(fnt_main);
@@ -158,21 +159,20 @@ var arrows_alpha = 1;
 
 
 
-if (state == BATTLE_STATES.item_menu || state == BATTLE_STATES.hope_menu || state == BATTLE_STATES.main_menu ){
+if (state == BATTLE_STATES.item_menu || state == BATTLE_STATES.hope_menu || state == BATTLE_STATES.main_menu || state == BATTLE_STATES.power_menu ){
 	
-	
-	
-	
+		
 	for(var i = 0; i < option_count; i++){
 			var option = options[i]
 			draw_sprite_ext(option[1], b_subimage[i], cam_x + _padding - tam_hud/2 - _margin, cam_y + cam_h/2 - height_textbox_battle - arrow_sprite_height - _margin,1,1,0,c_white, alpha_options[i])
 			_padding += 2 + sprite_get_width(option[1]);
 	}
 	
-	
-
-	
 }
+
+
+
+
 
 var alt_focus_points = 6;
 var padding_hud = 5;
@@ -181,13 +181,92 @@ draw_set_font(fnt_tiny);
 var width_texto_dp = string_width("DP");
 var x_base_info = cam_x - cam_w / 2 + _margin;
 var y_base_info = cam_y + cam_h/2 - alt_hud - padding_hud - _margin - height_textbox_battle;
+var color_dp = merge_color(area_properties.ui_primary_colors[0], area_properties.ui_primary_colors[1], 0.5);
+var correction_width = 1;
 
-draw_text( x_base_info, y_base_info - string_height("A")/2, "DP:");
+draw_text_color(x_base_info, y_base_info - string_height("A")/2, "DP:", color_dp, color_dp, color_dp, color_dp, 1);
 
 draw_rectangle_colour(x_base_info + width_texto_dp + padding_hud, y_base_info - alt_focus_points/2, x_base_info + width_texto_dp + padding_hud + tam_hud - width_texto_dp - padding_hud,  y_base_info - alt_focus_points/2 + alt_focus_points, #000F38, #000F38, #000F38, #000F38, false);
-draw_sprite_stretched(spr_hopebar, 0, x_base_info + width_texto_dp + padding_hud, y_base_info - alt_focus_points/2, (focus_points_draw / max_focus_points) * (tam_hud - width_texto_dp - padding_hud), alt_focus_points);
-draw_sprite_stretched(spr_layout_dance_points, 0, x_base_info + width_texto_dp + padding_hud-1, y_base_info - alt_focus_points/2, tam_hud - width_texto_dp - padding_hud+2, alt_focus_points);
+draw_sprite_stretched_ext(spr_dancepoints_bar, 0, x_base_info + width_texto_dp + padding_hud, y_base_info - alt_focus_points/2, (focus_points_draw / max_focus_points) * (tam_hud - width_texto_dp - padding_hud), alt_focus_points, area_properties.ui_primary_colors[1], 1);
+draw_sprite_stretched(spr_layout_dance_points, 0, x_base_info + width_texto_dp + padding_hud-1, y_base_info - alt_focus_points/2, tam_hud - width_texto_dp - padding_hud + correction_width, alt_focus_points);
 
+
+if (state == BATTLE_STATES.power_menu){
+	
+	//power_menu_width = 100;
+	//power_menu_height = 100;
+	
+	var color = highlight_color;
+
+	
+	var _x =  obj_camera.x - power_menu_width/2 + tam_hud/2;
+	var _y =  obj_camera.y - power_menu_height/2 - height_textbox_battle/2 - opt_height/2;
+	var spacing = 3;
+	
+	draw_sprite_stretched(spr_box, 0, _x, _y, power_menu_width, power_menu_height);
+	_x += spacing
+	_y += spacing
+	var padding_height_text = string_height("A");
+	
+	
+	heading_menu_height = 11;
+	draw_sprite_stretched(spr_box, 0, _x, _y, power_menu_width - spacing * 2 , heading_menu_height);
+	
+	draw_text_color(_x + spacing, _y + 1, "Nome", color, color,color, color, 1)
+	var _string_width = string_width("Custo ");
+	draw_text_color(_x  + (power_menu_width - spacing * 2) - _string_width, _y + 1, "Custo", color,color,color,color,1);
+	
+	
+	var inst_mg = get_instance("manager");
+	var powers_array = inst_mg.unlocked_powers
+	
+	
+	description_menu_height = heading_menu_height *3
+	
+	draw_sprite_stretched(spr_box, 0, _x, _y + power_menu_height - spacing * 2 - description_menu_height, power_menu_width - spacing * 2 , description_menu_height);
+	
+	for (var i = 0; i < array_length(powers_array); i++){
+		var alpha = .4;
+		color = c_white;
+		
+		if (i == opt){
+			color = highlight_color;
+			alpha = 1
+			
+			if (focus_points < powers_array[opt].dp_cost){
+				color = c_white;
+				alpha = .4;
+			}
+			
+			
+			draw_sprite_stretched_ext(spr_seta_txt, 0, _x,
+				  _y + spacing/2 + heading_menu_height + padding_height_text * i, power_menu_width - spacing*2, padding_height_text + spacing, c_white, 1);
+		} 
+		
+		//desenhando nome
+		draw_text_color(_x + spacing,
+				  _y + spacing + heading_menu_height + padding_height_text * i,
+				  powers_array[i].name_pt,
+				  color,color,color,color,alpha)
+		
+		//desenhando custo
+		draw_text_color(_x + (power_menu_width - spacing * 2) - _string_width,
+						_y + spacing + heading_menu_height + padding_height_text * i,
+						string( powers_array[i].dp_cost) + " DP",
+						color,color,color,color,alpha)
+						
+		//desenhando desc
+		draw_text_ext_color(_x + spacing,
+				  _y + power_menu_height - spacing - description_menu_height,
+				  powers_array[opt].info_pt(), padding_height_text,
+				  power_menu_width - spacing * 4,
+				  c_white, c_white, c_white, c_white, 1)
+	
+	}
+	
+	
+
+}
 
 //	var range = 10;
 	
@@ -196,7 +275,7 @@ draw_sprite_stretched(spr_layout_dance_points, 0, x_base_info + width_texto_dp +
 //	part_emitter_burst(part_system_hope, part_emitter_hope, 0, 220);
 	
 //	var padd = 0;
-//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "hoepdir: " + string(obj_player.hope_dir), 0.5, 0.5, 0)
+//draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "hoepdir: " + string(inst_player.hope_dir), 0.5, 0.5, 0)
 
 
 draw_sprite_ext(spr_vignette_color, 0, cam_x - cam_w/2, cam_y-cam_h/2, 1, 1, 0, color_vignette_beat, alpha_vignette_beat)

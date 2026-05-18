@@ -13,7 +13,7 @@ function scr_desenhar_player(_color_blend = c_white, _alpha = 1, _rot = 0){
 	} else {
 		x_scale = 1;
 	}
-	draw_sprite_ext(_inst_player.sprite_index, _inst_player.image_index, _inst_player.x, _inst_player.y, x_scale, 1, _rot, _color_blend, _alpha);
+	draw_sprite_ext(_inst_player.sprite_index, _inst_player.image_index, _inst_player.x, _inst_player.y, x_scale * x_scale_blob, 1 * y_scale_blob, _rot, _color_blend, _alpha);
 }
 
 function scr_update_player_blend_color(_blend_r, _blend_g, _blend_b){

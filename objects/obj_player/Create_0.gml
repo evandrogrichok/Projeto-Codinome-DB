@@ -1,10 +1,9 @@
+event_inherited();
+
 enum PLAYER_STATES{
 	normal,
 	hope
 }
-
-mx = 0;
-my = 0;
 
 pdx = 0
 pdy =0
@@ -50,20 +49,19 @@ vel_player = 1.5 // velocidade normal do personagem
 vel_player_default = 1 // velocidade normal do personagem
 facing_y = 1 // direcao que está olhando no eixo y
 facing_x = 0 // direcao que está olhando no eixo x
-moving = false // se está se movendo
 vel_colisao = vel_player + 2 // para checar colisao
 degrees_directon = 0 // direcao para usar em funcoes de colisao
 interact_dir = 0;
 dashing = false;
 
 // --------------------------------------------------------------
-//CONTROLADORES DE CUTSCENE
-cutscene_char = false;
-cutscene_player_y_dest = y;
-cutscene_player_x_dest = x;
-cutscene_y_vel_player = undefined;
-cutscene_x_vel_player = undefined;
-acao = undefined;
+//CONTROLADORES DE CUTSCENE (DESCONTINUADO)
+//cutscene_char = false;
+//cutscene_player_y_dest = y;
+//cutscene_player_x_dest = x;
+//cutscene_y_vel_player = undefined;
+//cutscene_x_vel_player = undefined;
+//acao = undefined;
 
 blink_timer = 0;
 blink_times = 0;
@@ -159,6 +157,15 @@ function cutscene_char_move(_action, _axis, _destination, _speed){
 	}
 }
 
+x_scale_blob = 1;
+y_scale_blob = 1;
+
+function blob_effect(xs = 0.8, ys = 1.5){
+	x_scale_blob = xs;
+	y_scale_blob = ys;
+	
+	
+}
 function coll_dir_indexer(_coll_dir){
 
 	switch (_coll_dir){
@@ -206,7 +213,7 @@ part_type_alpha3(part_type_hope, 1, .8, 0);
 part_type_colour1(part_type_hope, #FFD784)
 
 
-part_emitter_burst(part_sys_hope, part_emitter, part_type_hope, 1000)
+//part_emitter_burst(part_sys_hope, part_emitter, part_type_hope, 1000)
 part_emitter_relative(part_sys_hope, part_emitter, true);
 
 

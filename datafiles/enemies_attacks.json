@@ -6,9 +6,11 @@
         "requirements": ["inimigo1"],
         "type": "time-repeat",
         "repeat_frequency": 20,
-        "duration": 600,
+        "duration": 500,
         "priority": 10
       
       }
 }
   
+
+

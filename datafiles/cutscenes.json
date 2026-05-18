@@ -1,0 +1,46 @@
+{
+    "cutscene_01": [
+        {
+            "type": "wait",
+            "frames": 30
+        },
+        {
+            "type": "walk_instance",
+            "obj": "obj_player",
+            "x": 100,
+            "y": 0
+            
+        },
+        {
+            "type": "play_sound",
+            "sound": "snd_tsiu"
+        },
+        {
+            "type": "wait",
+            "frames": 10
+        },
+        {
+            "type": "textbox",
+            "id": "dialogo_cutscene_01"
+        },
+        {
+            "type": "wait_textbox"
+        },
+        {
+            "type": "wait",
+            "frames": 30
+        },
+        {
+            "type": "walk_instance",
+            "obj": "obj_player",
+            "x": 0,
+            "y": 10
+        },
+        { 
+            "type": "teleport_instance",
+            "obj": "obj_player",
+            "x": 0,
+            "y": 10
+        }
+    ]
+}

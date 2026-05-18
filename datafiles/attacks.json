@@ -1,7 +1,6 @@
 {
     "normal_attack":
       {
-        "arrow_pattern": ["up","left","left", "left"],
         "damage": 40,
         "velocity":70
       }

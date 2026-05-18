@@ -1,16 +1,37 @@
-//criando uma db
-cutscene_id = "notdefined.csv";
-ready = false;
-roteiro = undefined
+enum WAITING_TYPES{
+	frames,
+	textbox,
+	page,
+	animation,
+	moving
+}
 
-oldx = 0;
-//linha que esta lendo
-linha_atual = 0;
 
-//para pausas
-esperando = false;
+var data = load_json_file("cutscenes.json");
+cutscene_id = "cutscene_01";
+cutscene = data[$ cutscene_id];
 
-//para controle
-id_ultima_sequencia = -1;
+index = 0;
+waiting = false;
+wait_timer = 0;
+current_wait_type = undefined;
+object = undefined;
 
-wait_time = 0;
+last_textbox_page = undefined;
+
+global.cutscene_active = true; //se há uma cutscene acontecendo/nao está em estado de espera
+
+function start_cutscene(_data) {
+    cutscene = _data;
+    index = 0;
+    active = true;
+}
+
+function set_waiting_event(_type){
+	waiting = true;
+	current_wait_type = _type;
+}
+function reset_waiting_event(){
+	waiting = false;
+	current_wait_type = undefined;
+}

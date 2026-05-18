@@ -1,0 +1,139 @@
+TIPOS DE ATRIBUTOS:
+(*Itens Obrigatórios)
+
+*"type": determina o tipo de ação que será realizada pelo gerenciador.
+
+
+TYPES:
+
+
+cam_fixed: fixa a câmera na posição atual.
+
+wait_textbox: espera a instância da textbox ser destruída.
+
+wait_page: espera a textbox avançar para a próxima página.
+
+wait: espera um tempo em frames.
+    *necessita de:
+		"frames": número de frames
+
+textbox: para abrir uma textbox.
+    *necessita de: "dialog_id": "nome_dialogo"
+
+///////////////////////////////////////////////
+descontinuado por enquanto
+
+wait_until: espera uma condição ser verdadeira.
+    *necessita de:
+	"condition_type":()
+///////////////////////////////////////////////
+
+wait_animation: espera um sprite ser reproduzido x vezes.
+	*necessita de:
+		"obj": o alvo a ser observado ao aguardar as reproduções;
+		"loops": quantas vezes loopar antes de mover para a proxima linha de roteiro;
+
+
+cam_follow: segue uma instância.
+    *necessita de:
+		"target": objeto a ser seguido
+
+
+cam_focus: foca a câmera em um local definido.
+    *necessita de:
+        "x": posição x
+        "y": posição y
+
+
+cam_between: foca entre duas instâncias dinamicamente.
+    *necessita de:
+        "target_1": "obj_01"
+        "target_2": "obj_02"
+
+
+cam_shake: treme a câmera.
+    *necessita de:
+        "intensity": intensidade do shake
+        "time": duração em frames
+
+walk_instance: move uma instância até uma posição.
+	opcionais:
+		"mode": "add" / "absolute" (default = "add");
+		"wait": true/false (default = true);
+    *necessita de:
+        "obj": objeto
+        "x": posição x
+        "y": posição y
+        "speed": velocidade
+
+teleport_instance: teleporta uma instância.
+    *necessita de:
+        "obj": objeto
+        "x": posição x
+        "y": posição y
+
+
+set_sprite: muda o sprite de um objeto.
+    *necessita de:
+        "obj": objeto
+        "sprite": sprite
+
+
+///////////////////////////////////////////
+ainda nao
+look_at: faz um objeto olhar para outro.
+    *necessita de:
+        "obj": objeto
+        "target": alvo
+/////////////////////////////////////////////
+
+play_sound: toca um som.
+	opcionais:
+		"loop": true/false (default =  "false");
+    *necessita de:
+        "sound": som
+        
+
+////////////////////////////////////
+ainda nao
+stop_sound: para um som.
+    *necessita de:
+        "sound": som
+/////////////////////////////////////
+
+
+
+play_music: toca uma música.
+    *necessita de:
+        "music": música
+
+
+create_object: cria um objeto.
+    *necessita de:
+        "obj": objeto
+        "x": posição x
+        "y": posição y
+	"desired_depth": profundidade (consulte tabela DEPTH)
+
+///////////////////////////////////////////////////
+ainda nao
+destroy_object: destrói um objeto.
+    *necessita de:
+        "obj": objeto
+
+
+
+
+call: executa uma função/script.
+    *necessita de:
+        "func": nome da função
+
+
+set_var: altera uma variável de um objeto.
+    *necessita de:
+        "obj": objeto
+        "var": variável
+        "value": valor
+
+//////////////////////////////////////////////////
+

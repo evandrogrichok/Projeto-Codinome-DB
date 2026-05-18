@@ -3,6 +3,31 @@ fixated_camera = false;
 intensity = 0
 shake_timer = 0
 shaking_camera = false;
+shake_dir = 0;
+shake_change = 0;
+cam_w = camera_get_view_width(view_camera[0]);
+cam_h = camera_get_view_height(view_camera[0]);
+
+
+depth = DEPTH.UI_BASE;
+
+//shaking nao é um estado, é um atributo
+
+enum CAM_STATES {
+    follow_target,     // segue um alvo
+    focus_position,      // foca em ponto/objeto específico (cutscene)
+    between_targets,    // entre dois alvos (diálogo)
+    fixed       // travada
+}
+
+//enum CAM_CONTROLLER {
+//    player,
+//    trigger,
+//    cutscene
+//}
+
+target = obj_player;
+state = CAM_STATES.follow_target;
 
 cam_w =  camera_get_view_width(view_camera[0]);
 cam_h =  camera_get_view_height(view_camera[0]);
@@ -79,8 +104,36 @@ setup_fixated_cam = false;
 x_fixated_camera = 0;
 y_fixated_camera = 0;
 
+function set_focus_position(_x, _y){
+	state = CAM_STATES.focus_position;
+	x_fixated_camera = _x;
+	y_fixated_camera = _y;
+}
+
+
+target1 = 0;
+target2 = 0;
+function set_between_targets(t1, t2){
+	state = CAM_STATES.between_targets;
+	target1 = t1;
+	target2 = t2;
+}
+
+function set_follow_target(t){
+	state = CAM_STATES.follow_target;
+	target = t;
+}
+
+function set_fixed_camera(){
+	state = CAM_STATES.fixed;	
+}
+
+
 
 
 setup_parallax_parameters();
+
+
+
 
 
