@@ -34,7 +34,6 @@ var texture = sprite_get_texture(sprite_index, image_index);
 var t_w = texture_get_texel_width(texture);
 var t_h = texture_get_texel_height(texture);
 
-shader_set_uniform_f(global.sh_upwards_lighting_texel_pointer, t_w, t_h);
 
 
 scr_desenhar_player(global.BLEND_COLOR_PLAYER, global.ALPHA_PLAYER);
@@ -53,6 +52,7 @@ if instance_exists(obj_battle_manager){
 	
 	hope_index = scr_animar_sprite(hope_index, hope_spd, spr_hope);
 	scr_shader_outline(spr_hope_1, hope_index, 255, 255, 255, global.ALPHA_HOPE_BORDER)
+	
 	 if dashing{
 		draw_sprite_ext(spr_hope_1, hope_index, x, y-10, 1 + hope_sprite_scale_add + hope_sprite_scale_fast_increase, 1 + hope_sprite_scale_add*2  + hope_sprite_scale_fast_increase, hope_dir, c_white, 1);
 	}
@@ -73,6 +73,10 @@ if instance_exists(obj_battle_manager){
 	
 	default:
 	scr_shader_outline(sprite_index, image_index, 255, 255, 255, global.ALPHA_PLAYER_BORDER)
+	scr_desenhar_player(global.BLEND_COLOR_PLAYER, global.ALPHA_PLAYER);
+	shader_reset();
+	
+	scr_shader_paint(global.r_paint, global.g_paint, global.b_paint, global.a_paint);
 	scr_desenhar_player(global.BLEND_COLOR_PLAYER, global.ALPHA_PLAYER);
 	shader_reset();
 	break;
@@ -123,6 +127,9 @@ if debug_mode_aa {
 
 }
 
+
 	//draw_text_transformed(x, y-60, "x: " + string(x), 0.3, 0.3, 0)
 	//draw_text_transformed(x, y-65, "y: " + string(y), 0.3, 0.3, 0)
+
+
 

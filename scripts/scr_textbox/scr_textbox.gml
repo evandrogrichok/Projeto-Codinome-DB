@@ -2,10 +2,13 @@
 function scr_open_textbox(_id, _item_name = "ITEM_NÃO_DEFINIDO" ){	
     if instance_exists(obj_textbox)
 	return;
+	
+	if !is_array(_id){
+		_id = [_id]
+	}
 
 	_inst_vars = {
-		custom_message : false,
-	    dialogo_id : _id,
+		dialog_array : _id,
 	    item : _item_name
 	};
 	
@@ -14,22 +17,22 @@ function scr_open_textbox(_id, _item_name = "ITEM_NÃO_DEFINIDO" ){
 }
 
 
-function scr_open_textbox_custom(_dialog){
+//function scr_open_textbox_custom(_dialog){
 	
-	//if instance_exists(obj_textboxx)
-	//return;
-	
-	
-	var _inst_vars = {
-		custom_message : true,
-		dialogo : _dialog
-	};
-	
-	var inst_id = instance_create_depth(0, 0, -99999, obj_textbox, _inst_vars);
-	return inst_id;
+//	//if instance_exists(obj_textboxx)
+//	//return;
 	
 	
-}
+//	var _inst_vars = {
+//		custom_message : true,
+//		dialogo : _dialog
+//	};
+	
+//	var inst_id = instance_create_depth(0, 0, -99999, obj_textbox, _inst_vars);
+//	return inst_id;
+	
+	
+//}
 
 
 

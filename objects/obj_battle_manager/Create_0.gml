@@ -22,6 +22,55 @@ is_undefined(music_data)
 }
 
 
+party[0] = {
+	id : CHARACTERS.drio,
+	name : "Drio",
+	attack_minigame : run_arrow_pattern
+	}
+	
+party[1] = {
+	id : CHARACTERS.glint,
+	name : "Glint",
+	attack_minigame : undefined
+	}
+	
+party[2] = {
+	id : CHARACTERS.avery,
+	name : "Avery",
+	attack_minigame : undefined
+	}
+	
+battle_actions = [];
+current_party_member = 0;
+party_member_number = array_length(party);
+current_action = undefined;
+
+enum CHARACTERS {
+	drio,
+	glint,
+	avery
+}
+
+enum ACTIONS {
+	ATTACK,
+	POWER,
+	ITEM,
+	DEFEND
+	
+}
+
+
+function battle_action(_actor, _action, _target, _item) constructor {
+
+	actor = _actor;
+	action = _action;
+	target = _target;
+	used_item = _item;
+	slected_power = _item;
+
+}
+
+last_used_item = undefined;
 
 
 manager_aux_obj = [obj_battle_manager_bg, obj_battle_manager_top];
@@ -63,8 +112,8 @@ on_beat_messages = {
 
 
 
-textbox_queue = undefined;
-
+textbox_queue = [];
+textbox_index = 0;
 
 
 //inst_player = obj_player;
@@ -73,8 +122,8 @@ spd_fp_draw = 0.25;
 textbox_num = 0;
 
 function add_message_to_queue(new_message){
-	textbox_queue = new_message;
-	textbox_num++;
+	array_push(textbox_queue, new_message);
+	//textbox_num++;
 }
 
 enum BATTLE_STATES{
@@ -93,7 +142,8 @@ enum BATTLE_STATES{
 	transition_main_menu,
 	power_menu,
 	transition_battle_won,
-	attacking_power
+	attacking_power,
+	execute_actions
 }
 
 enum TXT_TYPES{
@@ -233,7 +283,7 @@ show_debug_message(bpm_seconds)
 //time_source_sfx_arrow = time_source_create(time_source_game,  time_source_get_time_remaining(time_source_spb), time_source_units_seconds, function(){audio_play_sound(snd_arrow, 5, false, 2)});
 
 
-mus = audio_play_sound(snd_stardust, 10, true, 0);
+mus = audio_play_sound(snd_stardust, 10, true, .1);
 
 function play_arrow_sfx(correct_input, dist){
 	var song_current_time = audio_sound_get_track_position(mus);
@@ -328,7 +378,7 @@ keys = [
 black_player_col_enemy_turn = 255;
 black_bg_color_alpha = 0;
 
-//futuramente adicionar nesse array o texto em ingles também, que no for vai ser scaneado com uma variavel global de definicao de linguagem
+//IMPLEMENTAR: futuramente adicionar nesse array o texto em ingles também, que no for vai ser scaneado com uma variavel global de definicao de linguagem
 //sempre deixar os parametros de erro como errou!
 enum ARRAY_PARAM_INDEXES{
 	distance,
@@ -702,16 +752,19 @@ function run_command(_opt){
 	switch (_opt){
 		case 0:
 //		state = BATTLE_STATES.arrow_pattern
+		chosen_action = ACTIONS.ATTACK;
 		state = BATTLE_STATES.select_enemy;
 		enemy_name_appear_effect = 20;
 		alpha_barra_ini = 1;
 		
 		break;
 		case 1:
+		chosen_action = ACTIONS.POWER;
 		state = BATTLE_STATES.power_menu;
 		break;
 		
 		case 2:
+			chosen_action = ACTIONS.ITEM;
 			state = BATTLE_STATES.item_menu;
 				for (var i = 0; i < option_count; i++){
 				var alpha = 0.6
@@ -729,34 +782,75 @@ function run_command(_opt){
 	
 }
 
+function create_item_message(_item, _actor){
+		var msg = "<wave>" + string(_actor.name) + " usou " + string(_item.name) + "!</wave>";
+		return msg;
+}
+
+function execute_action(action){
+	
+	switch action.action{
+		case ACTIONS.ATTACK:
+		next_enemy_to_attack = action.target;
+		current_actor = action.actor;
+		script_execute(current_actor.attack_minigame);
+		break;
+		
+		case ACTIONS.ITEM:
+			var msg = create_item_message(action.used_item, action.actor);
+			var textbox_msg = new _msg(msg, "battle_event",,,,,,,3);
+			add_message_to_queue(textbox_msg);
+		break;
+		
+		case ACTIONS.POWER:
+			state = BATTLE_STATES.attacking_power;
+		break;
+	}
+}
+
+//function chose_attack_minigame(actor){
+//	switch actor{
+//	case 0: //drio
+//	//arrow
+//	break;
+//	case 1: //glint
+//	//sing
+//	break;
+//	case 2: //avery
+//	//drums
+//	break;
+	
+//	}
+//}
+
 function add_dance_points(amount){
 	focus_points_amnt_incr = amount;
 	focus_points_dest = clamp(round(focus_points + (focus_points_amnt_incr)), 0, 100);
 	focus_points = focus_points_dest;
 }
 
-function run_arrow_pattern(_attack){
-	switch (_attack){
-		case "normal_attack":
-			var attack_params = variable_struct_get(ataques, _attack)
-			var directions = ["up", "down", "left", "right"];
-			
-			arrow_pat = []
-			
-			for (var i = 0; i < 4; i++){
-				var r = irandom(array_length(directions)-1);
-				array_push(arrow_pat, directions[r]);
-			}
+function run_arrow_pattern(){
 
-			max_dmg = attack_params.damage;
-			vel_setas = attack_params.velocity;
-			arrow_timer = arrow_time;
+		var attack_params = variable_struct_get(ataques, "normal_attack");
+		var directions = ["up", "down", "left", "right"];
 			
-			add_dance_points(10);
+		arrow_pat = []
+			
+		for (var i = 0; i < 4; i++){
+			var r = irandom(array_length(directions)-1);
+			array_push(arrow_pat, directions[r]);
+		}
 
-			load_arrow_distance();
-		break;
-	}
+		max_dmg = attack_params.damage;
+		vel_setas = attack_params.velocity;
+		arrow_timer = arrow_time;
+			
+		add_dance_points(10);
+
+		load_arrow_distance();
+		state = BATTLE_STATES.arrow_pattern;
+
+
 }
 
 
@@ -1234,6 +1328,50 @@ function lower_alpha_enemy_bar(){
 		alpha_ui_player = alpha_ui_player_default;
 		alpha_barra_ini_default = 2.5;
 
+function finish_item_selection(_item){
+		
+		last_used_item = _item;
+		
+		record_action();
+		
+		if (is_party_selection_complete()){
+			fully_close_environmental_textbox();
+		}
+
+		can_select = false;
+}
+
+
+function setup_next_party_member(){
+	
+}
+
+function record_action(){
+	var action = new battle_action(party[current_party_member], chosen_action, opt, last_used_item, power_to_cast);
+	array_push(battle_actions, action);
+		
+	current_party_member++;
+}
+
+function is_party_selection_complete(){
+	
+			if (current_party_member < party_member_number) {
+			    state = BATTLE_STATES.main_menu;
+			    setup_next_party_member();
+				return false;
+			} 
+		current_party_member = 0;
+		current_action = 0;
+		state = BATTLE_STATES.execute_actions;
+		return true;
+}
+
+function fully_close_environmental_textbox(){
+		destroy_environmental_textbox();
+		dest_height_textbox_battle = 0;
+		can_draw_texto_acerto = true;	
+}
+
 function state_select_enemy(accept_key, deny_key, u_keys, d_keys){
 	if alpha_barra_ini != alpha_barra_ini_default{
 		alpha_barra_ini = alpha_barra_ini_default; // numero maior pra permanecer mais tempo 100% visivel
@@ -1242,15 +1380,28 @@ function state_select_enemy(accept_key, deny_key, u_keys, d_keys){
 	select_enemy_controller(accept_key, deny_key, u_keys, d_keys);
 	
 	if accept_key{
-		next_enemy_to_attack = opt;
-		instance_destroy(main_textbox_id);
-		if casting_power{
-			state = BATTLE_STATES.attacking_power;
-			focus_points -= power_to_cast.dp_cost;
-		} else {
-			run_arrow_pattern("normal_attack");
-			state = BATTLE_STATES.arrow_pattern;
-		}
+		
+
+		
+			record_action();
+					
+			if (is_party_selection_complete()){
+				fully_close_environmental_textbox();
+			}
+							
+		//mas se aceitar e nao tiver mais quem fazer o que, roda isso abaixo:
+		
+		//next_enemy_to_attack = opt; //vai mudar isso
+		//dest_height_textbox_battle = 0;
+		//can_draw_texto_acerto = true
+		//destroy_environmental_textbox();
+		//if casting_power{
+		//	state = BATTLE_STATES.attacking_power;
+		//	focus_points -= power_to_cast.dp_cost;
+		//} else {
+		//	run_arrow_pattern("normal_attack");
+		//	state = BATTLE_STATES.arrow_pattern;
+		//}
 	}
 		
 	if deny_key{
@@ -1332,7 +1483,7 @@ function state_main_menu(opt_changer, l_keys, r_keys, accept_key, deny_key){
 	b_subimage[opt] = 1;
 
 	//ENVIAR OPCAO		
-	if accept_key{
+	if accept_key && can_select{
 	run_command(opt)
 	opt = 0;
 	}
@@ -1345,13 +1496,16 @@ power_to_cast = undefined;
 count_tap_dance = 0;
 bang_index = 0;
 bang_speed = 1;
+hp_index = 0;
+hp_speed = 1;
 
 range_bang_pos = 5;
-random_pos_x = irandom(range_bang_pos);
-random_pos_y = irandom(range_bang_pos);
+random_pos_x = irandom_range(-range_bang_pos, range_bang_pos);
+random_pos_y = irandom_range(-range_bang_pos, range_bang_pos);
 
 
 function cast_power(power_id){
+	casting_power = true;
 	power_to_cast = power_id;
 	
 	show_debug_message("power_id")
@@ -1359,10 +1513,23 @@ function cast_power(power_id){
 	
 	if (power_id.type == POWER_TYPES.attack){
 		if (power_id.target_type == "single"){		
-			casting_power = true;
+			
 			state =  BATTLE_STATES.select_enemy;
 			enemy_name_appear_effect = 20;
 			alpha_barra_ini = 1;
+		}
+	}
+	
+	if (power_id.type == POWER_TYPES.heal){
+		if (power_id.target_type == "single"){
+			destroy_environmental_textbox();
+			focus_points -= power_to_cast.dp_cost
+			state =  BATTLE_STATES.attacking_power;
+			scr_player_paint_color(255, 255, 255, 5);
+			inst_player.blob_effect(0.9, 1.1);
+			audio_play_sound(snd_hp_recover, 1, false, .8)
+			get_instance("player").values.hp += clamp(global.DANCE_POWERS_DATA.heal_prayer.heal_amount, 0, get_instance("player").values.max_hp - get_instance("player").values.hp);
+			
 		}
 	}
 }

@@ -3,12 +3,19 @@
   "%Name":"obj_glint",
   "eventList":[
     {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
+    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":3,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
   ],
   "managed":true,
   "name":"obj_glint",
   "overriddenProperties":[
     {"$GMOverriddenProperty":"v1","%Name":"","name":"","objectId":{"name":"obj_character","path":"objects/obj_character/obj_character.yy",},"propertyId":{"name":"name","path":"objects/obj_character/obj_character.yy",},"resourceType":"GMOverriddenProperty","resourceVersion":"2.0","value":"\"glint\"",},
     {"$GMOverriddenProperty":"v1","%Name":"","name":"","objectId":{"name":"obj_character","path":"objects/obj_character/obj_character.yy",},"propertyId":{"name":"voice_sound","path":"objects/obj_character/obj_character.yy",},"resource":{"name":"snd_glint","path":"sounds/snd_glint/snd_glint.yy",},"resourceType":"GMOverriddenProperty","resourceVersion":"2.0","value":"snd_glint",},
+    {"$GMOverriddenProperty":"v1","%Name":"","name":"","objectId":{"name":"obj_character","path":"objects/obj_character/obj_character.yy",},"propertyId":{"name":"sprite_idle_w","path":"objects/obj_character/obj_character.yy",},"resource":{"name":"spr_glint_idle_w","path":"sprites/spr_glint_idle_w/spr_glint_idle_w.yy",},"resourceType":"GMOverriddenProperty","resourceVersion":"2.0","value":"spr_glint_idle_w",},
+    {"$GMOverriddenProperty":"v1","%Name":"","name":"","objectId":{"name":"obj_character","path":"objects/obj_character/obj_character.yy",},"propertyId":{"name":"sprite_idle_s","path":"objects/obj_character/obj_character.yy",},"resource":{"name":"spr_glint_idle_s","path":"sprites/spr_glint_idle_s/spr_glint_idle_s.yy",},"resourceType":"GMOverriddenProperty","resourceVersion":"2.0","value":"spr_glint_idle_s",},
+    {"$GMOverriddenProperty":"v1","%Name":"","name":"","objectId":{"name":"obj_character","path":"objects/obj_character/obj_character.yy",},"propertyId":{"name":"sprite_idle_h","path":"objects/obj_character/obj_character.yy",},"resource":{"name":"spr_glint_idle_h","path":"sprites/spr_glint_idle_h/spr_glint_idle_h.yy",},"resourceType":"GMOverriddenProperty","resourceVersion":"2.0","value":"spr_glint_idle_h",},
+    {"$GMOverriddenProperty":"v1","%Name":"","name":"","objectId":{"name":"obj_character","path":"objects/obj_character/obj_character.yy",},"propertyId":{"name":"sprite_w","path":"objects/obj_character/obj_character.yy",},"resource":{"name":"spr_glint_w","path":"sprites/spr_glint_w/spr_glint_w.yy",},"resourceType":"GMOverriddenProperty","resourceVersion":"2.0","value":"spr_glint_w",},
+    {"$GMOverriddenProperty":"v1","%Name":"","name":"","objectId":{"name":"obj_character","path":"objects/obj_character/obj_character.yy",},"propertyId":{"name":"sprite_s","path":"objects/obj_character/obj_character.yy",},"resource":{"name":"spr_glint_s","path":"sprites/spr_glint_s/spr_glint_s.yy",},"resourceType":"GMOverriddenProperty","resourceVersion":"2.0","value":"spr_glint_s",},
+    {"$GMOverriddenProperty":"v1","%Name":"","name":"","objectId":{"name":"obj_character","path":"objects/obj_character/obj_character.yy",},"propertyId":{"name":"sprite_h","path":"objects/obj_character/obj_character.yy",},"resource":{"name":"spr_glint_h","path":"sprites/spr_glint_h/spr_glint_h.yy",},"resourceType":"GMOverriddenProperty","resourceVersion":"2.0","value":"spr_glint_h",},
   ],
   "parent":{
     "name":"Objetos",
@@ -35,7 +42,10 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":null,
+  "spriteId":{
+    "name":"spr_glint_idle_s",
+    "path":"sprites/spr_glint_idle_s/spr_glint_idle_s.yy",
+  },
   "spriteMaskId":null,
   "visible":true,
 }

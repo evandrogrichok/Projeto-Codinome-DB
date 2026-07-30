@@ -9,8 +9,8 @@
   "name":"obj_cutscene_opener",
   "overriddenProperties":[],
   "parent":{
-    "name":"Objetos",
-    "path":"folders/Objetos.yy",
+    "name":"OBJETOS MECANICA",
+    "path":"folders/Objetos/OBJETOS MECANICA.yy",
   },
   "parentObjectId":null,
   "persistent":false,

@@ -9,8 +9,8 @@
   "name":"obj_camera_fixed_location",
   "overriddenProperties":[],
   "parent":{
-    "name":"Objetos",
-    "path":"folders/Objetos.yy",
+    "name":"OBJETOS MECANICA",
+    "path":"folders/Objetos/OBJETOS MECANICA.yy",
   },
   "parentObjectId":null,
   "persistent":false,

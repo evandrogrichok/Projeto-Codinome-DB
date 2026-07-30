@@ -1,19 +1,59 @@
-depth = DEPTH.UI_BASE;
+depth = DEPTH.UI_TOP;
 
-if (custom_message == false){
-var data = load_json_file("dialogos.json")
-dialogo = variable_struct_get(data, dialogo_id); 
+//if (custom_message == false){
+data = load_json_file("dialogos.json")
+//dialogo = variable_struct_get(data, dialogo_id); 
 
-show_debug_message(dialogo)
-show_debug_message("dialolg")
+//if dialogo == undefined {
+//	show_error("DIÁLOGO NAO ENCONTRADO/NÃO FORMATADO CORRETAMENTE. VERIFIQUE SE O USO DE NEW _MSG FUNCITION ESTÁ CORRETO OU SE O ID EXISTE NO ARQUIVO DE DIÁLOGOS.", true);
+//}
 
-if dialogo == undefined {
-	show_error("DIÁLOGO NAO ENCONTRADO/NÃO FORMATADO CORRETAMENTE. VERIFIQUE SE O USO DE NEW _MSG FUNCITION ESTÁ CORRETO OU SE O ID EXISTE NO ARQUIVO DE DIÁLOGOS.", true);
+
+//show_debug_message(dialogo)
+//}
+
+
+function resolve_dialog(dialogs){
+	var resolved = []
+	
+	for (var i = 0; i < array_length(dialogs); i++){
+		
+		
+		var dialog = dialogs[i];
+		show_debug_message(dialog);
+		if is_string(dialog){
+			var retrieved_dialog = variable_struct_get(data, dialog); 
+			show_debug_message(retrieved_dialog);
+			if (retrieved_dialog == undefined) {
+				    show_error("Diálogo '" + dialog + "' não encontrado.", true);
+			}
+			
+			if (is_array(retrieved_dialog)){
+				show_debug_message("vo concatena")
+				show_debug_message(resolved)
+				
+			     resolved = array_concat(resolved, retrieved_dialog);
+				show_debug_message("concatenei")
+				show_debug_message(resolved) 
+			} else {
+			    array_push(resolved, retrieved_dialog);
+			}
+
+
+			
+		} else
+		if is_struct(dialog){
+			array_push(resolved, dialog);
+		} else {
+			show_error("DIÁLOGO NAO ENCONTRADO/NÃO FORMATADO CORRETAMENTE. VERIFIQUE SE O USO DE NEW _MSG FUNCITION ESTÁ CORRETO OU SE O ID EXISTE NO ARQUIVO DE DIÁLOGOS.", true);
+		}
+	}
+	
+	return resolved;
 }
 
+dialogo = resolve_dialog(dialog_array);
 
-show_debug_message(dialogo)
-}
 
 
 options = [""];
@@ -129,6 +169,7 @@ colors = ds_map_create();
 colors[? "c_red"] = c_red;
 colors[? "c_yellow"] = c_yellow;
 colors[? "c_blue"] = c_blue;
+colors[? "c_purple"] = c_fuchsia;
 colors[? "c_black"] = c_black;
 colors[? "c_white"] = c_white;
 colors[? "c_yellow_main"] = #FFD44C;
@@ -213,12 +254,17 @@ function setup_page_variables(){
 			break;
 			
 			case "sound":
+				
 			
 				if (current_target != noone) {
 				        // Se o filho não mudou nada, 'value' será o som do pai (snd_default).
 				        // Se o filho mudou, 'value' será o som novo (ex: snd_glint).
 				        value = current_target.voice_sound;
 				    } 
+					
+					if (is_string(value)) {
+				        value = asset_get_index(value);
+				    }
 
 				    // Checagem de segurança: Se o valor for inválido ou não existir no objeto
 				    if (is_undefined(value) || value == -1) {
@@ -229,7 +275,7 @@ function setup_page_variables(){
 				    if (is_string(value)) {
 				        value = asset_get_index(value);
 				    }
-
+				
 				current_sound = value;
 				
 			break;

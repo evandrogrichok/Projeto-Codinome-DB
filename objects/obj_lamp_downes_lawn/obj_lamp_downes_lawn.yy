@@ -12,10 +12,7 @@
     "name":"OUTROS",
     "path":"folders/Objetos/QUINTAL DOWNES/OUTROS.yy",
   },
-  "parentObjectId":{
-    "name":"obj_static_depth_solid",
-    "path":"objects/obj_static_depth_solid/obj_static_depth_solid.yy",
-  },
+  "parentObjectId":null,
   "persistent":false,
   "physicsAngularDamping":0.1,
   "physicsDensity":0.5,

@@ -1,9 +1,16 @@
-
+depth = DEPTH.ENTITY_BASE
 // TEM que redefinir para cada personagem //
 my_portraits = {
 };
 
+
 ////////////////////////////////////////////
+
+target = undefined
+line_position = 0;
+distance = 10
+distance = 10
+
 
 mx = 0;
 my = 0;
@@ -22,7 +29,7 @@ enum MOVE_TYPES{
 }
 
 move_type = undefined;
-
+img_scale= 1;
 
 function walk_to(_x, _y, _spd, _mode){
     if (_mode == "add") {
@@ -42,14 +49,14 @@ function walk_to(_x, _y, _spd, _mode){
     mx = lengthdir_x(1, _dir);
     my = lengthdir_y(1, _dir);
 
-
+	
     if (abs(mx) >= abs(my)) {
 
         sprite_index = sprite_h;
         ultima_direcao = "h";
         
 
-        if (mx != 0) image_xscale = sign(mx); 
+        if (mx != 0) img_scale = sign(mx); 
         
     } else {
 
@@ -139,3 +146,5 @@ function step_move_to(){
 	y = lerp(y, target_y, lerp_speed_default);
 }
 
+index_spr = 0;
+spd_spr = 1;

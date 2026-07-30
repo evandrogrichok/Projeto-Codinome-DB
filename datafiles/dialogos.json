@@ -100,6 +100,37 @@
       }
       
     ],
+
+        "aniver_ana":[
+      {
+        "type": "chat",
+        "target": "glint",
+        "emotion": "blink",
+        "text": "E aí, Drio! Como você tá, pequeno?"
+      },
+      {
+        "type": "chat",
+        "target": "glint",
+        "emotion": "surprised",
+        "text": "O quê? É aniversário de uma grande amiga sua?"
+      },
+      {
+        "type": "chat",
+        "target": "glint",
+        "emotion": "happy",
+        "text": "<color>Ana</color>... Nossa, esse é um nome <wave>lindo</wave> mesmo! É poético, até!",
+        "color":"c_purple"
+      },
+      {
+        "type": "chat",
+        "target": "glint",
+        "emotion": "surprised",
+        "text": "Hã? Você tem um desenho dela aí com você? <wave>Deixa eu ver!</wave>"
+      }
+      
+    ],
+
+    
     
 
 
@@ -112,7 +143,7 @@
         "sound": "snd_text_def123ault",
         "color": "c_red", 
         "font": "fnt_main",
-        "speaker": "spr_naoexiwsto",
+        "speaker": "glint",
         "location": 0
 
       },

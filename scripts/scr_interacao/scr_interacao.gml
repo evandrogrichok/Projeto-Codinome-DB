@@ -30,6 +30,11 @@ interact_params = [
 	if (_detected_instance != noone){
 		_detected_instance.ativarinteracao()
 	}
+	_detected_instance = scr_identificar_obj(obj_glint, interact_params);
+	
+	if (_detected_instance != noone){
+		_detected_instance.ativarinteracao()
+	}
 
 }
 

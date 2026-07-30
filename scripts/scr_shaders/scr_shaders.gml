@@ -19,3 +19,15 @@ function scr_shader_outline(_sprite_index, _image_index, _color_R, _color_G, _co
 		shader_set_uniform_f(global.sh_outline_color_pointer, _color_R/255, _color_G/255, _color_B/255, _alpha);
 
 }
+function scr_shader_paint(_color_R, _color_G, _color_B, _alpha){
+    shader_set(sh_paint);
+
+    shader_set_uniform_f(
+        global.sh_paint_color_pointer,
+        _color_R / 255,
+        _color_G / 255,
+        _color_B / 255,
+        _alpha
+    );
+}
+

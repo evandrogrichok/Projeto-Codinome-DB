@@ -22,6 +22,25 @@ function scr_update_player_blend_color(_blend_r, _blend_g, _blend_b){
 	global.BLEND_COLOR_PLAYER_B = _blend_b;
 }
 
+function scr_update_player_blend_color_lerp(_blend_r, _blend_g, _blend_b, _speed = 0.1)
+{
+	global.BLEND_COLOR_PLAYER_R = lerp(global.BLEND_COLOR_PLAYER_R, _blend_r, _speed);
+	global.BLEND_COLOR_PLAYER_G = lerp(global.BLEND_COLOR_PLAYER_G, _blend_g, _speed);
+	global.BLEND_COLOR_PLAYER_B = lerp(global.BLEND_COLOR_PLAYER_B, _blend_b, _speed);
+}
 function scr_player_dmg(_amount, _cooldown_time, _cam_shake_intensity, _cam_shake_time){
 	obj_player.values.take_dmg(_amount, _cooldown_time, _cam_shake_intensity, _cam_shake_time);
+}
+
+function scr_lerp_player_paint_color(_r, _g, _b, _a, _speed){
+    global.r_paint = lerp(global.r_paint, _r, _speed);
+    global.g_paint = lerp(global.g_paint, _g, _speed);
+    global.b_paint = lerp(global.b_paint, _b, _speed);
+    global.a_paint = lerp(global.a_paint, _a, _speed);
+}
+function scr_player_paint_color(_r, _g, _b, _a){
+    global.r_paint = _r;
+    global.g_paint = _g;
+    global.b_paint = _b;
+    global.a_paint = _a;
 }

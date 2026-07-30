@@ -32,6 +32,8 @@ enum DEPTH {
 }
 
 
+
+
 global.areas_properties = {
 	GREAT_ENTRANCE : {
 		name_pt: "A Grande Entrada",
@@ -51,13 +53,15 @@ setup_objects = [
 	[obj_camera, "camera"],
 	[obj_game_menu, "menu"],
 	[obj_game_manager, "manager"],
+	[obj_graphics_manager, "graphics"],
 ];
 
 global.instances = {
     player: noone,
     camera: noone,
     menu: noone,
-    manager: noone
+    manager: noone,
+    graphics: noone
 };
 
 

@@ -5,6 +5,7 @@ enum PLAYER_STATES{
 	hope
 }
 
+
 pdx = 0
 pdy =0
 
@@ -101,7 +102,7 @@ values = {
 	}
 }
 
-
+walk_history = [];
 
 
 hope_dir = 0;
@@ -143,19 +144,19 @@ sin_t = 0;
 // --------------------------------------------------------------
 //FUNÇÕES DIVERSAS
 
-function cutscene_char_move(_action, _axis, _destination, _speed){
-	acao = _action;
-	cutscene_char = true;
+//function cutscene_char_move(_action, _axis, _destination, _speed){
+//	acao = _action;
+//	cutscene_char = true;
 	
-	if _axis == "x"{
-		cutscene_player_x_dest += _destination;
-		cutscene_x_vel_player = _speed;
-	} else
-	if _axis == "y"{
-		cutscene_player_y_dest += _destination;
-		cutscene_y_vel_player = _speed;
-	}
-}
+//	if _axis == "x"{
+//		cutscene_player_x_dest += _destination;
+//		cutscene_x_vel_player = _speed;
+//	} else
+//	if _axis == "y"{
+//		cutscene_player_y_dest += _destination;
+//		cutscene_y_vel_player = _speed;
+//	}
+//}
 
 x_scale_blob = 1;
 y_scale_blob = 1;
@@ -180,18 +181,26 @@ function coll_dir_indexer(_coll_dir){
 	}
 }
 
-function move_player_towards_point(_x, _y, _spd){
-	x = round(lerp(x, _x, _spd));
-	y = round(lerp(y, _y, _spd));
+//function move_player_towards_point(_x, _y, _spd){
+//	x = round(lerp(x, _x, _spd));
+//	y = round(lerp(y, _y, _spd));
 	
-}
+//}
 
 
 global.sh_outline_texel_pointer = shader_get_uniform(sh_outline, "v_Texel");
 global.sh_outline_color_pointer = shader_get_uniform(sh_outline, "v_Color");
 
+global.sh_paint_texel_pointer = shader_get_uniform(sh_paint, "v_Texel");
+global.sh_paint_color_pointer = shader_get_uniform(sh_paint, "v_Color");
+
 global.sh_upwards_lighting_texel_pointer = shader_get_uniform(sh_upwards_lightning, "texelSize");
 global.sh_upwards_lighting_color_blend_pointer = shader_get_uniform(sh_upwards_lightning, "colorBlend");
+
+global.r_paint = 255;
+global.g_paint = 255;
+global.b_paint = 255;
+global.a_paint = 0;
 
 
 if !(layer_exists("FX_BATTLE")){

@@ -9,3 +9,12 @@ sniff: spr_glint_sniff,
 surprised: spr_glint_surprised,
 cry: spr_glint_cry
 }
+
+function ativarinteracao(){
+
+}
+
+
+target = get_instance("player")
+line_position = 1;
+distance = 10

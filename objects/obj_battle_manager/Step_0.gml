@@ -7,6 +7,8 @@ audio_play_sound(snd_something_started_to_change, 5, true);
 inst_player.mask_index = inst_player.sprite_index;
 }
 
+
+
 var l_keys = global.LEFT_KEY
 var r_keys = global.RIGHT_KEY;
 var u_keys = global.UP_KEY;
@@ -270,14 +272,29 @@ switch (state){
 	state_select_enemy(accept_key, deny_key, u_keys, d_keys);
 	break;
 	
+	case (BATTLE_STATES.execute_actions):
+	
+	//aqui ele vai passar para cada coiso os parametros necessários, eles vao passar pelo ciclo natural deles e vão voltar pra cá
+	//se terminou, eles vao pro turno inimigo
+	
+	if (current_action < array_length(battle_actions)){
+		execute_action(battle_actions[current_action]);
+		current_action ++; 
+	} else {
+		state = BATTLE_STATES.textbox_event;
+		show_debug_message("queue")
+		show_debug_message(textbox_queue)
+		id_textbox_queue = scr_open_textbox(textbox_queue);
+	}
+	
+	
+	
+	break;
+	
 	case (BATTLE_STATES.arrow_pattern):
-
 	
-	dest_height_textbox_battle = 0;
 	alpha_vignette = lerp(alpha_vignette, alpha_vignette_high, 0.1);
-	
 	dist_seta_alvo = point_distance(arrow_target_x, cam_y, closest_arrow_x, closest_arrow_y);	
-	can_draw_texto_acerto = true
 	
 	var quant_setas = array_length(arrow_pat);
 	var dist_alvo = dist_seta_alvo;
@@ -373,13 +390,14 @@ switch (state){
 			
 			inst_player.sprite_index = spr_player_idle_battle;
 			
-			if (textbox_queue != undefined){
-				show_debug_message(textbox_queue)
-				id_textbox_queue = scr_open_textbox(textbox_queue);
-			}
-			state = BATTLE_STATES.textbox_event;
+			//if (textbox_queue != undefined){
+			//	show_debug_message(textbox_queue)
+			//	//id_textbox_queue = scr_open_textbox(textbox_queue[textbox_index]);
+			//}
 			
-			dest_height_textbox_battle = default_height_textbox_battle;
+			state = BATTLE_STATES.execute_actions;
+			//dest_height_textbox_battle = default_height_textbox_battle;
+			//mudança
 			
 			//ATUALIZANDO ARRAY DE INIMIGOS VIVOS
 		
@@ -425,10 +443,24 @@ switch (state){
 					count_tap_dance = 0;
 					
 					dmg = power_to_cast.dmg
+					last_index = 0;
 		
 					if !(textbox_num >= array_length(encounter_dialogue)){
 					add_message_to_queue(encounter_dialogue[textbox_num]);
 					}
+				}
+			}
+			if (power_to_cast == global.DANCE_POWERS_DATA.heal_prayer){
+				last_index = hp_index
+				hp_index = scr_animar_sprite(hp_index, hp_speed, spr_hp_recover);
+				scr_lerp_player_paint_color(87, 255, 167, 0, .1);
+				
+				if (hp_index < last_index){
+					scr_player_paint_color(255, 255, 255, 0);
+					casting_power = false;
+					
+					state_transition(BATTLE_STATES.transition_enemy_turn)
+					
 				}
 			}
 			
@@ -474,10 +506,13 @@ switch (state){
 			inst_player.facing_x = 1;
 			fade_in_alpha = 0;
 			sin_t = 0;
+			
+			
 		} else {
 			caixa_valores.default_box.caixa_posicao_x = inst_camera.x - 30;
 			caixa_valores.default_box.caixa_posicao_y = inst_camera.y + 10;
 			mostrar_limites_de_movimentacao = true;
+			
 		}
 		
 	break;
@@ -485,7 +520,7 @@ switch (state){
 	case BATTLE_STATES.transition_battle_won:
 		if wait_time_over(){
 			state = BATTLE_STATES.battle_won;
-			scr_open_textbox_custom([new _msg("<wave> Você venceu!</wave> Você ganhou <wave>" + string(run_xp(inst_player)) + "</wave> XP e <wave>" + string(run_gold(inst_player)) + "</wave> gold!", "battle_event","spr_textbox_battle",,,,,,3)])
+			scr_open_textbox([new _msg("<wave> Você venceu!</wave> Você ganhou <wave>" + string(run_xp(inst_player)) + "</wave> XP e <wave>" + string(run_gold(inst_player)) + "</wave> gold!", "battle_event","spr_textbox_battle",,,,,,3)])
 			
 		} else {
 			inst_player.sprite_index = spr_player_finish;
@@ -493,6 +528,8 @@ switch (state){
 	break;
 	
 	case BATTLE_STATES.textbox_event:
+	
+		
 	
 		if !instance_exists(id_textbox_queue){
 			textbox_queue = undefined;
@@ -508,6 +545,12 @@ switch (state){
 				dest_height_textbox_battle = default_height_textbox_battle;
 				inst_player.sprite_index = spr_player_finish;
 			}
+		} else {
+		
+			if dest_height_textbox_battle != default_height_textbox_battle{
+				dest_height_textbox_battle = default_height_textbox_battle
+			}
+		
 		}
 	break;
 	case BATTLE_STATES.enemy_turn:
@@ -576,4 +619,5 @@ switch (state){
 	break;
 	
 }
+can_select = true;
 can_run_attack_script = false;

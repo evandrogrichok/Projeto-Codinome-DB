@@ -7,6 +7,14 @@
         {
             "type": "walk_instance",
             "obj": "obj_player",
+            "wait": false,
+            "x": 100,
+            "y": 0
+            
+        },
+        {
+            "type": "walk_instance",
+            "obj": "obj_glint",
             "x": 100,
             "y": 0
             
@@ -21,7 +29,7 @@
         },
         {
             "type": "textbox",
-            "id": "dialogo_cutscene_01"
+            "id": "aniver_ana"
         },
         {
             "type": "wait_textbox"
@@ -41,6 +49,23 @@
             "obj": "obj_player",
             "x": 0,
             "y": 10
+        }
+    ],
+    "aniver_ana": [
+        {
+            "type": "textbox",
+            "id": "aniver_ana"
+        },
+        {
+            "type": "wait_textbox"
+        },
+        {
+            "type": "wait",
+            "frames": 10
+        },
+        {
+            "type": "wait",
+            "frames": 10
         }
     ]
 }

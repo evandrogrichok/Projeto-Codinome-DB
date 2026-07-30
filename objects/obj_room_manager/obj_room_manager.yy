@@ -12,8 +12,8 @@
   "name":"obj_room_manager",
   "overriddenProperties":[],
   "parent":{
-    "name":"Objetos",
-    "path":"folders/Objetos.yy",
+    "name":"OBJETOS MECANICA",
+    "path":"folders/Objetos/OBJETOS MECANICA.yy",
   },
   "parentObjectId":null,
   "persistent":true,

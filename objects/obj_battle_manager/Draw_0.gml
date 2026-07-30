@@ -59,6 +59,8 @@ draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, index_dmg, 0.5, 
 padd++;
 draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, index_dmg, 0.5, 0.5, 0)
 padd++;
+draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "who's turn: " + string(party[current_party_member].id), 0.5, 0.5, 0)
+padd++;
 //draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "Z- ação/dash X- cancelar C/esc- menu", 0.5, 0.5, 0)
 //padd++;
 //draw_text_transformed(cam_x - cam_w/2, cam_y -cam_h/2 + 5*padd, "f10- andar por aí :D", 0.5, 0.5, 0)
@@ -354,11 +356,14 @@ if (state == BATTLE_STATES.attacking_power){
 
 	
 	if (power_to_cast == global.DANCE_POWERS_DATA.tap_dance){
-		draw_sprite(spr_bang, bang_index, x_inimigo[opt] - sprite_get_width(enemies_data[opt].sprite_ini)/2 + random_pos_x, y_inimigo[opt]+ random_pos_y - sprite_get_height(enemies_data[opt].sprite_ini)/2);
+		draw_sprite(spr_bang, bang_index, x_inimigo[opt] + random_pos_x, y_inimigo[opt]+ random_pos_y - sprite_get_height(enemies_data[opt].sprite_ini)/2);
+	}
+	if (power_to_cast == global.DANCE_POWERS_DATA.heal_prayer){
+		draw_sprite(spr_hp_recover, hp_index, player_initial_position[0], player_initial_position[1] - sprite_get_height(spr_player_h)/2);
+		
 	}
 }
 //local_seta_mais_proxima = (spawn_setas + (sprite_get_width(spr_seta_up) + padding_between_arrows) * arrow_to_draw_from)-(sprite_get_width(spr_seta_up)/2)
 
-
-
+show_debug_message(global.r_paint);
 

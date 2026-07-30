@@ -135,9 +135,11 @@ while(state_has_changed){
 				confirming_usage();
 				
 			break;
-			case ITEM_SUBSTATES.executing:
-				obj_battle_manager.go_to_wait_time_state(BATTLE_STATES.enemy_turn);
-				obj_battle_manager.toggle_textbox(TEXTBOX_PROPERTIES.is_created, false);
+			case ITEM_SUBSTATES.executing:	
+				var item = inst_gm.inventory[selected_item];
+				obj_battle_manager.finish_item_selection(item);
+						
+				
 				state = MENU_STATES.closed;
 						
 				executing_usage()

@@ -9,8 +9,8 @@
   "name":"obj_battle_manager_top",
   "overriddenProperties":[],
   "parent":{
-    "name":"Objetos",
-    "path":"folders/Objetos.yy",
+    "name":"OBJETOS MECANICA",
+    "path":"folders/Objetos/OBJETOS MECANICA.yy",
   },
   "parentObjectId":null,
   "persistent":false,
