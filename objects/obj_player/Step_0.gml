@@ -4,18 +4,6 @@ if (instance_exists(obj_cutscene_manager)){
 	is_cutscene = global.cutscene_active
 }
 
-//if mouse_check_button(mb_left){
-//global.DEBUG_PLAYER_DRAG = true;
-//x =  mouse_x - pdx; 
-//y =  mouse_y - pdy;
-
-
-//} else {
-//global.DEBUG_PLAYER_DRAG = false;
-//pdx = mouse_x - x
-//pdy = mouse_y - y
-//}
-
 if (x_scale_blob != 1){
 	x_scale_blob = lerp(x_scale_blob, 1, 0.2);
 }
@@ -34,115 +22,28 @@ if instance_exists(obj_battle_manager){
     depth = DEPTH.ENTITY_BASE -y;
 }
 
-//if keyboard_check_pressed(ord("Y")){
-//debug_mode_aa = !debug_mode_aa
-//}
 
 tecla_confirmar = keyboard_check_pressed(vk_enter) || keyboard_check_pressed(ord("Z"));
 
 
-//if object_exists(obj_batalhaturno_manager){
-	
-//	var inst = obj_batalhaturno_manager;
-	
-	
-//	switch (inst.state){
-//		case BATTLE_STATES.enemy_turn:
-		
-//		break;
-//	}
-	
-	
-
-	
-//}
-
-
-
-
-
-
-
-
-
-
-
-
-
-// sistema para identificar objeto interativo ou atacavel:
 if tecla_confirmar{
 	scr_interact();
 }
 
 
-//if processo_atacar && (image_index > 4 && image_index < 8) && inst_atacar != noone{
-//scr_attack(self, inst_atacar, values.attack_dmg);
-
-//processo_atacar = false;
-//inst_atacar = noone;
-//}
-
-
-
-
-
-
-
-
 if global.can_move >= 0 && !is_cutscene{
 	
-
-	//scr_checagem_interacao();
 	moving = false;
 	
-	if global.ACCEPT_KEY{
-		if (dash_timer <= 0) && state == PLAYER_STATES.hope{
-			var dash_time = 20;
-			var per_step_dist = 3
+	if (dash_timer <= 0 && state == PLAYER_STATES.hope && global.ACCEPT_KEY){
+		setup_hope_dash(20, 3);
+		emmit_hope_particles_dash();
 			
-			dashing = true;
-			dash_timer = 20;
-			
-			dash_x = lengthdir_x(per_step_dist, degrees_directon)
-			dash_y = lengthdir_y(per_step_dist, degrees_directon)
-			dash_x_coll = lengthdir_x(per_step_dist + 2, degrees_directon)
-			dash_y_coll = lengthdir_y(per_step_dist + 2, degrees_directon)
-			
-			hope_sprite_scale_add = -1
-			hope_sprite_scale_fast_increase = 1.5;
-			values.cooldown = 5
-			
-			part_emitter_region(part_sys_hope, part_emitter, x-2, x+2, (y-10)-2, (y-10)+2, ps_shape_rectangle, ps_distr_linear);
-			part_type_speed(part_type_hope, .2, 1.5, 0, 0);
-			part_type_direction(part_type_hope, degrees_directon -20 -180, degrees_directon +20 - 180, 0, 0);
-			part_emitter_relative(part_sys_hope, part_emitter, false);
-			part_emitter_burst(part_sys_hope, part_emitter, part_type_hope, 10)
-			
-			if (instance_exists(obj_battle_manager)){
-				with (obj_battle_manager){
-					
-					
-				if (check_if_on_beat()){
-				add_dance_points(5);
-				
-				
-				var texts = variable_struct_get(on_beat_messages, global.LANG);
-				var random_num = irandom(array_length(texts) - 1);
-				var text = texts[random_num];
-				
-				setup_text_draw(text, TXT_TYPES.on_beat, c_white)
-				}
-				
-				
-				
-				
-								
-				}
-				
-			}
-
+		with (obj_battle_manager){
+			if (check_if_on_beat()){on_beat_feedback()}				
 		}
 	}
+
 
 	mx = 0;
 	my = 0;
@@ -262,85 +163,29 @@ if !moving{
 
 if instance_exists(obj_battle_manager){
 	
-	switch(obj_battle_manager.state){
+switch(obj_battle_manager.state){
 		
 	case BATTLE_STATES.enemy_turn:
-	sin_t += 0.05;
-	mask_index = spr_player_hope_hit
-	
 	state = PLAYER_STATES.hope;
-	
-	if global.UP_KEY or global.LEFT_KEY or global.DOWN_KEY or global.RIGHT_KEY{
-		hope_sprite_scale_add = -.2
-		hope_sprite_scale_fast_increase = .5;
+	sin_t += 0.05;
+	mask_index = spr_hope;
 
-		
-	} 
 	if global.UP_KEY_HOLD or global.LEFT_KEY_HOLD or global.DOWN_KEY_HOLD or global.RIGHT_KEY_HOLD{
-		
-		part_emitter_relative(part_sys_hope, part_emitter, true);
-		part_emitter_burst(part_sys_hope, part_emitter, part_type_hope, 1000)
-		part_type_speed(part_type_hope, .2, .5, 0, 0);
-		part_emitter_region(part_sys_hope, part_emitter, x-2, x+2, (y-10)-2, (y-10)+2, ps_shape_rectangle, ps_distr_linear);
-		part_type_direction(part_type_hope, degrees_directon -10 -180, degrees_directon +10-180, 0, 0);
+		emmit_hope_particles()
 	} 
 	
-	if hope_sprite_scale_add != 0 {
-		hope_sprite_scale_add = lerp(hope_sprite_scale_add, 0, 0.2);
-	}
-	
-	if hope_sprite_scale_fast_increase != 0 {
-		hope_sprite_scale_fast_increase = lerp(hope_sprite_scale_fast_increase, 0, 0.2);
-	}
-	
-
-
-
-	
-	
-	var diff = angle_difference(degrees_directon, hope_dir)
-	 
-	hope_dir += diff * 0.2
-	var inst_manager = obj_battle_manager;
-	var caixas_valores = inst_manager.caixa_valores
-	var caixa_atual_valores = caixas_valores.default_box
-	var largura_caixa = caixa_atual_valores.caixa_tamanho 
-	var altura_caixa = caixa_atual_valores.caixa_altura
-	var x_caixa = caixa_atual_valores.caixa_posicao_x
-	var y_caixa = caixa_atual_valores.caixa_posicao_y
-	var w_bbox_p = sprite_get_bbox_right(sprite_index)  - sprite_get_bbox_left(sprite_index);
-	var h_bbox_p = sprite_get_bbox_bottom(sprite_index) -  sprite_get_bbox_top(sprite_index);
-		
-	x = clamp(x, x_caixa - largura_caixa/2 + w_bbox_p, x_caixa + largura_caixa/2 - w_bbox_p)
-	y = clamp(y, y_caixa - altura_caixa/2 + h_bbox_p, y_caixa + altura_caixa/2 - h_bbox_p)
-	
-
-	
+	blob_control();
+	blob_dir_controller(0.2);
+	battle_border_clamper();
 	break;
 	default:
 	state = PLAYER_STATES.normal;
 	break;
-	}
-	
-	
+}
 } else {
 	state = PLAYER_STATES.normal;
 }
-
 }
-
-
-//if knockback_timer > 0 {
-//	if knockback_vel > 0{
-//		knockback_vel -= 0.05
-//	}
-
-//	x =  x + lengthdir_x(knockback_vel, relative_direction)
-//	y =  y + lengthdir_y(knockback_vel, relative_direction)
-
-//	knockback_timer -= .5
-//}
-
 
 if values.cooldown > 0 {
 	values.sin_t_flash_dmg += 0.8
@@ -351,19 +196,6 @@ if values.cooldown > 0 {
 } else {
 
 }
-
-//if fog_timer > 0 {
-//	fog_timer -= 0.1
-//}
-
-
-//if shake_level > 0 {
-//	shake_level -= 0.1
-//}
-
-	
-
-
 
 
 if dash_timer > 0{

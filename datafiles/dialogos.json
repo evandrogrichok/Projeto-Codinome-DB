@@ -101,7 +101,8 @@
       
     ],
 
-        "aniver_ana":[
+        
+    "aniver_ana":[
       {
         "type": "chat",
         "target": "glint",

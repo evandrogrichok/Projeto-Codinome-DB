@@ -3,7 +3,7 @@ draw_set_valign(fa_top);
 draw_set_halign(fa_left);
 var portrait_x_offset = 0;
 
-//draw_text(obj_player.x, obj_player.y, string(textbox_heigth))
+//draw_text(obj_player.x, obj_player.y, string(textbox_height))
 
 
 if !runned_every_page{
@@ -24,9 +24,9 @@ var tecla_confirmar = keyboard_check_pressed(vk_enter) || keyboard_check_pressed
 
 
 
-if textbox_heigth != textbox_heigth_lim[page]{
+if textbox_height != textbox_heigth_lim[page]{
 	var spd_lerp = .2;
-	textbox_heigth = lerp(textbox_heigth, textbox_heigth_lim[page], spd_lerp)
+	textbox_height = lerp(textbox_height, textbox_heigth_lim[page], spd_lerp)
 }
 
 if !interpreter_setted_up{
@@ -117,7 +117,7 @@ var y_options = y_textbox + top_offset + option_offset;
 var x_text = padding_x_text + x_textbox + x_padding + padding_btwn_emotion_txtbox/2;
 var y_text = y_textbox + padding_y_text;
 var c_textbox = asset_get_index(current_textbox)
-draw_sprite_stretched_ext(asset_get_index(current_textbox), 0, x_textbox + x_padding, y_textbox + top_offset, textbox_width, textbox_heigth, c_white, 1);
+draw_sprite_stretched_ext(asset_get_index(current_textbox), 0, x_textbox + x_padding, y_textbox + top_offset, textbox_width, textbox_height, c_white, 1);
 
 if (current_type == "decision"){
 	

@@ -287,6 +287,10 @@ global.GAME_SPRITES = {
 	spr_point_tiny,
 	spr_point_big,
 	spr_point_breakable,
-	spr_lamp_downes_lawn_halo
+	spr_lamp_downes_lawn_halo,
+	spr_arrow_shine_down,
+	spr_arrow_shine_left,
+	spr_arrow_shine_right,
+	spr_arrow_shine_up,
 }
 

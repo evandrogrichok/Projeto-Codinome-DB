@@ -1,7 +1,7 @@
 {
     "combo1":
       {
-        "enemies": ["inimigo1","inimigo1","inimigo1"],
+        "enemies": ["inimigo1","inimigo1"],
         "environmental_sentences_ids": ["BATTLE_test_001", "BATTLE_test_002", "BATTLE_test_003", "BATTLE_test_004"],
         "encounter_dialogue": ["dialogo_combo_01", "dialogo_combo_02"],
         "encounter_win": ["dialogo_cutscene_01", "dialogo_cutscene_01"]

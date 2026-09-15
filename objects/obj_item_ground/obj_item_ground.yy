@@ -10,7 +10,7 @@
   "overriddenProperties":[],
   "parent":{
     "name":"OBJETOS INTERATIVOS",
-    "path":"folders/Objetos/OBJETOS INTERATIVOS.yy",
+    "path":"folders/Linhas do tempo/Objetos/OBJETOS INTERATIVOS.yy",
   },
   "parentObjectId":{
     "name":"obj_interativo",

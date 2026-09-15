@@ -7,7 +7,7 @@
   "overriddenProperties":[],
   "parent":{
     "name":"ARVORES",
-    "path":"folders/Objetos/QUINTAL DOWNES/ARVORES.yy",
+    "path":"folders/Linhas do tempo/Objetos/QUINTAL DOWNES/ARVORES.yy",
   },
   "parentObjectId":{
     "name":"obj_static_depth_opacity_camera_solid",

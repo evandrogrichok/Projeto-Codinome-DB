@@ -20,7 +20,7 @@
   ],
   "parent":{
     "name":"Objetos",
-    "path":"folders/Objetos.yy",
+    "path":"folders/Linhas do tempo/Objetos.yy",
   },
   "parentObjectId":{
     "name":"obj_character",

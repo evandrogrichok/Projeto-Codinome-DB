@@ -7,7 +7,7 @@
   "overriddenProperties":[],
   "parent":{
     "name":"OUTROS",
-    "path":"folders/Objetos/QUINTAL DOWNES/OUTROS.yy",
+    "path":"folders/Linhas do tempo/Objetos/QUINTAL DOWNES/OUTROS.yy",
   },
   "parentObjectId":{
     "name":"obj_static_depth_solid",

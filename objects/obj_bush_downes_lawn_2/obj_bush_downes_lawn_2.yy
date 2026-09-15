@@ -7,7 +7,7 @@
   "overriddenProperties":[],
   "parent":{
     "name":"ARBUSTOS",
-    "path":"folders/Objetos/QUINTAL DOWNES/ARBUSTOS.yy",
+    "path":"folders/Linhas do tempo/Objetos/QUINTAL DOWNES/ARBUSTOS.yy",
   },
   "parentObjectId":{
     "name":"obj_static_depth_solid",

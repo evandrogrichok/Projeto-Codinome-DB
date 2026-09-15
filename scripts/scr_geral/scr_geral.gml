@@ -98,6 +98,17 @@ function draw_angled_text(string_to_draw, x_pos, y_pos, max_width, c1, c2, c3, c
 	}
 }
 
+/// @param {String} name Nome da instancia (player, camera, menu, manager, graphics.)
 function get_instance(name){
 	return global.instances[$ name];
+}
+
+function lerp_snap(value, target, spd){
+	var result = lerp(value, target, spd);
+	
+	if abs(result - target) < 0.01{
+		return target;
+	}
+	
+	return result;
 }

@@ -26,41 +26,76 @@ var increase_target_size = 0;
 //desenhando setas
 
 var arrow_x_distance = 0; 
-var arrows_alpha = 1;
+//var arrows_alpha = 1;
 
 	
 		if (state == BATTLE_STATES.arrow_pattern){
 				var quant_setas = array_length(arrow_pat)
 				var start = arrow_to_draw_from
+				
 	
 				for (var i = 0; i < quant_setas; i++){
 		
-		
+
 					// se o i for igual ao arrow to draw from dai ele atribui o cloosest
-		
+				
+				
+				
 	
 				if arrow_to_draw_from <= i{
 					var current_song_time = audio_sound_get_track_position(mus); // pega a posição atual da musica
 					var diff = (individual_arrow_time[i] - current_song_time); // no array de tempos das setas, subtrai o tempo atual da musica pegando a diferença
-					var dist = diff * vel_setas; // a distancia é calculada multiplicada pela velocidade das setas 
+					var dist = diff * vel_setas; // a distancia é calculada multiplicada pela velocidade das setas
+					var arrow_pop_effect_mult = 3;
+										
+					show_debug_message(dist)
+					
+
+					if i == arrow_to_draw_from && blink_arrow_effect_timer > 0 && dist < arrow_max_distance{
+						scr_shader_paint(255, 255, 255, 1);		
+					}
+					
+
+					var spd_effect_multiplier = 10;
+					var spd_effect = arrow_speed_effect[i] * spd_effect_multiplier;
+					
+					var arrow_stretch = arrow_stretch_effect[i]
+					var arrow_stretch_transform = 2;
+					var final_stretch_effect = arrow_stretch * arrow_stretch_transform;
+					
+
 		
 					switch arrow_pat[i]{
 		
 						case "right":
-							draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, (cam_x) + dist, cam_y, 1, 1, 0, c_white, arrows_alpha);
+						
+							draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, (cam_x) + dist + spd_effect, cam_y, 1 + final_stretch_effect, 1, 0, c_white, arrows_alpha[i]);
+							
+							if arrow_shine_effect[i] == false{
+									draw_sprite_ext(asset_get_index($"spr_arrow_shine_{arrow_pat[i]}"), arrow_shine_index[i], (cam_x) + dist + spd_effect, cam_y, 1 + final_stretch_effect, 1, 0, c_white, arrows_alpha[i]);
+								}
 								if arrow_to_draw_from == i{
 									determine_closest_arrow_xy_pos(cam_x, cam_y, dist, 0);
 								}
 						break;
 						case "left":
-							draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, (cam_x) - dist, cam_y, 1, 1, 0, c_white, arrows_alpha);
-								if arrow_to_draw_from == i{
+							draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, (cam_x) - dist - spd_effect, cam_y, 1 + final_stretch_effect, 1, 0, c_white, arrows_alpha[i]);
+							if arrow_shine_effect[i] == false{
+								draw_sprite_ext(asset_get_index($"spr_arrow_shine_{arrow_pat[i]}"), arrow_shine_index[i], (cam_x) - dist - spd_effect, cam_y, 1 + final_stretch_effect, 1, 0, c_white, arrows_alpha[i]);
+							}
+							
+							if arrow_to_draw_from == i{
 									determine_closest_arrow_xy_pos(cam_x, cam_y, -dist, 0);
 								}
 						break;
 			
 						case "up":
-							draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, cam_x, cam_y - dist, 1, 1, 0, c_white, arrows_alpha);
+							draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, cam_x, cam_y - dist - spd_effect, 1, 1+ final_stretch_effect, 0, c_white, arrows_alpha[i]);
+								
+															if arrow_shine_effect[i] == false{
+								draw_sprite_ext(asset_get_index($"spr_arrow_shine_{arrow_pat[i]}"), arrow_shine_index[i], cam_x, cam_y - dist - spd_effect, 1, 1+ final_stretch_effect, 0, c_white, arrows_alpha[i]);
+							}
+								
 								if arrow_to_draw_from == i{
 									determine_closest_arrow_xy_pos(cam_x, cam_y, 0, -dist);
 								}
@@ -68,20 +103,26 @@ var arrows_alpha = 1;
 						break;
 			
 						case "down":
-							draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, cam_x, cam_y + dist, 1, 1, 0, c_white, arrows_alpha);
+							draw_sprite_ext(asset_get_index($"spr_seta_{arrow_pat[i]}"), 0, cam_x, cam_y + dist + spd_effect, 1, 1+ final_stretch_effect, 0, c_white, arrows_alpha[i]);
+							
+																						if arrow_shine_effect[i] == false{
+								draw_sprite_ext(asset_get_index($"spr_arrow_shine_{arrow_pat[i]}"), arrow_shine_index[i], cam_x, cam_y + dist + spd_effect, 1, 1+ final_stretch_effect, 0, c_white, arrows_alpha[i]);
+							}
+							
 							if arrow_to_draw_from == i{
 									determine_closest_arrow_xy_pos(cam_x, cam_y, 0, +dist);
 							}
 						break;
 			
 					}
-		
-					arrows_alpha -= 1/quant_setas;
+					shader_reset();		
+					//arrows_alpha -= 1/quant_setas;
 					}
 					//arrow_x_distance += sprite_get_width(spr_seta_up) + padding_between_arrows;	
 					//individual_arrow_distance[i] -= vel_setas * global.DELTA_TIME;	
 
 				}
+				
 				var current_song_time = audio_sound_get_track_position(mus);
 				var diff = individual_arrow_time[arrow_to_draw_from] - current_song_time; // a diferenca do tempo da seta menos o tempo atual
 				local_seta_mais_proxima = diff * vel_setas;
@@ -90,7 +131,7 @@ var arrows_alpha = 1;
 	
 	
 		var _padding = 0
-		var _margin = 5
+		var _margin = 2
 	
 		var portrait_x = (cam_x - cam_w/2 + _margin) + 3
 		var portrait_y = (cam_y + cam_h/2 - sprite_player_hud_height - 5) + 3
@@ -174,21 +215,21 @@ if (state == BATTLE_STATES.item_menu || state == BATTLE_STATES.hope_menu || stat
 
 
 
-var alt_focus_points = 6;
-var padding_hud = 5;
+
 var alt_hud = sprite_get_height(spr_player_hud);
 draw_set_font(fnt_tiny);
 var width_texto_dp = string_width("DP");
 var x_base_info = cam_x - cam_w / 2 + _margin;
-var y_base_info = cam_y + cam_h/2 - alt_hud - padding_hud - _margin - height_textbox_battle;
+var y_base_info = cam_y - cam_h/2 + _margin;
 var color_dp = merge_color(area_properties.ui_primary_colors[0], area_properties.ui_primary_colors[1], 0.5);
 var correction_width = 1;
+var correction_text = 1;
 
-draw_text_color(x_base_info, y_base_info - string_height("A")/2, "DP:", color_dp, color_dp, color_dp, color_dp, 1);
+draw_text_color(x_base_info, y_base_info - correction_text*2, "DP:", color_dp, color_dp, color_dp, color_dp, 1);
 
-draw_rectangle_colour(x_base_info + width_texto_dp + padding_hud, y_base_info - alt_focus_points/2, x_base_info + width_texto_dp + padding_hud + tam_hud - width_texto_dp - padding_hud,  y_base_info - alt_focus_points/2 + alt_focus_points, #000F38, #000F38, #000F38, #000F38, false);
-draw_sprite_stretched_ext(spr_dancepoints_bar, 0, x_base_info + width_texto_dp + padding_hud, y_base_info - alt_focus_points/2, (focus_points_draw / max_focus_points) * (tam_hud - width_texto_dp - padding_hud), alt_focus_points, area_properties.ui_primary_colors[1], 1);
-draw_sprite_stretched(spr_layout_dance_points, 0, x_base_info + width_texto_dp + padding_hud-1, y_base_info - alt_focus_points/2, tam_hud - width_texto_dp - padding_hud + correction_width, alt_focus_points);
+draw_rectangle_colour(x_base_info + width_texto_dp + padding_hud, y_base_info, x_base_info + width_texto_dp + padding_hud + tam_hud - width_texto_dp - padding_hud,  y_base_info + height_focus_points_hud, #000F38, #000F38, #000F38, #000F38, false);
+draw_sprite_stretched_ext(spr_dancepoints_bar, 0, x_base_info + width_texto_dp + padding_hud, y_base_info, (focus_points_draw / max_focus_points) * (tam_hud - width_texto_dp - padding_hud), height_focus_points_hud, area_properties.ui_primary_colors[1], 1);
+draw_sprite_stretched(spr_layout_dance_points, 0, x_base_info + width_texto_dp + padding_hud-1, y_base_info, tam_hud - width_texto_dp - padding_hud + correction_width, height_focus_points_hud);
 
 
 if (state == BATTLE_STATES.power_menu){

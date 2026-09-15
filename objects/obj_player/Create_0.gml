@@ -119,11 +119,29 @@ hope_dir_dest = 0;
 //inst_atacar = noone;
 //shake_level = 0;
 
+hope_scale_x = 1;
+hope_scale_y = 1;
 
 
-hope_sprite_scale_add = 0
+hope_scale_target_x = 1;
+hope_scale_target_y = 1;
 
-hope_sprite_scale_fast_increase = 0
+hope_blob_state = 0;
+// 0 = normal
+// 1 = comprimindo
+// 2 = expandindo
+// 3 = voltando
+
+enum BLOB_STATES{
+	normal,
+	squash,
+	overshoot,
+	normalizing,
+	squash_walk
+}
+
+//hope_sprite_scale_add = 0
+//hope_sprite_scale_fast_increase = 0
 
 global.BLEND_COLOR_PLAYER_R = 255;
 global.BLEND_COLOR_PLAYER_G = 255;
@@ -238,4 +256,143 @@ function draw_hope_light_fx(alpha_bright, alpha_dark, color){
 	draw_set_alpha(1);
 	gpu_set_blendmode(bm_normal)
 	
+}
+
+
+function emmit_hope_particles(){
+	part_emitter_relative(part_sys_hope, part_emitter, true);
+	part_emitter_burst(part_sys_hope, part_emitter, part_type_hope, 1000)
+	part_type_speed(part_type_hope, .2, .5, 0, 0);
+	part_emitter_region(part_sys_hope, part_emitter, x-2, x+2, (y-10)-2, (y-10)+2, ps_shape_rectangle, ps_distr_linear);
+	part_type_direction(part_type_hope, degrees_directon -10 -180, degrees_directon +10-180, 0, 0);
+}
+function emmit_hope_particles_dash(){
+	part_emitter_region(part_sys_hope, part_emitter, x-2, x+2, (y-10)-2, (y-10)+2, ps_shape_rectangle, ps_distr_linear);
+	part_type_speed(part_type_hope, .2, 1.5, 0, 0);
+	part_type_direction(part_type_hope, degrees_directon -20 -180, degrees_directon +20 - 180, 0, 0);
+	part_emitter_relative(part_sys_hope, part_emitter, false);
+	part_emitter_burst(part_sys_hope, part_emitter, part_type_hope, 10)
+}
+
+	function blob_control(){
+	if global.UP_KEY or global.LEFT_KEY or global.DOWN_KEY or global.RIGHT_KEY{
+	    hope_blob_state = BLOB_STATES.squash_walk;
+
+	    hope_scale_target_x = 1.1;
+	    hope_scale_target_y = 0.9;
+	}
+
+
+	switch (hope_blob_state){
+
+	    case BLOB_STATES.normal:
+	        hope_scale_target_x = 1;
+	        hope_scale_target_y = 1;
+	    break;
+
+
+	    case BLOB_STATES.squash:
+	        // squash
+	        hope_scale_x = lerp(hope_scale_x, hope_scale_target_x, 0.45);
+	        hope_scale_y = lerp(hope_scale_y, hope_scale_target_y, 0.45);
+
+	        if (
+	            abs(hope_scale_x - hope_scale_target_x) < 0.02 &&
+	            abs(hope_scale_y - hope_scale_target_y) < 0.02
+	        ){
+	            hope_blob_state = BLOB_STATES.overshoot;
+
+	            hope_scale_target_x = 1.1;
+	            hope_scale_target_y = 0.8;
+	        }
+	    break;
+
+
+	    case BLOB_STATES.squash_walk:
+	        // squash_walk
+	        hope_scale_x = lerp(hope_scale_x, hope_scale_target_x, 0.45);
+	        hope_scale_y = lerp(hope_scale_y, hope_scale_target_y, 0.45);
+
+	        if (
+	            abs(hope_scale_x - hope_scale_target_x) < 0.02 &&
+	            abs(hope_scale_y - hope_scale_target_y) < 0.02 &&
+	            !moving
+	        ){
+	            hope_blob_state = BLOB_STATES.squash;
+
+	            hope_scale_target_x = 0.85;
+	            hope_scale_target_y = 1.15;
+	        }
+	    break;
+
+
+	    case BLOB_STATES.overshoot:
+	        // overshoot
+	        hope_scale_x = lerp(hope_scale_x, hope_scale_target_x, 0.35);
+	        hope_scale_y = lerp(hope_scale_y, hope_scale_target_y, 0.35);
+
+	        if (
+	            abs(hope_scale_x - hope_scale_target_x) < 0.02 &&
+	            abs(hope_scale_y - hope_scale_target_y) < 0.02 &&
+	            !moving
+	        ){
+	            hope_blob_state = BLOB_STATES.normalizing;
+
+	            hope_scale_target_x = 1;
+	            hope_scale_target_y = 1;
+	        }
+	    break;
+
+
+	    case BLOB_STATES.normalizing:
+	        // volta ao normal
+	        hope_scale_x = lerp(hope_scale_x, 1, 0.25);
+	        hope_scale_y = lerp(hope_scale_y, 1, 0.25);
+
+	        if (
+	            abs(hope_scale_x - 1) < 0.01 &&
+	            abs(hope_scale_y - 1) < 0.01
+	        ){
+	            hope_scale_x = 1;
+	            hope_scale_y = 1;
+
+	            hope_blob_state = BLOB_STATES.normal;
+	        }
+	    break;
+	}
+}
+
+function blob_dir_controller(_spd){
+	var diff = angle_difference(degrees_directon, hope_dir);
+	hope_dir += diff * _spd
+}
+
+function battle_border_clamper(){
+	var inst_manager = obj_battle_manager;
+	var caixas_valores = inst_manager.caixa_valores
+	var caixa_atual_valores = caixas_valores.default_box
+	var largura_caixa = caixa_atual_valores.caixa_tamanho 
+	var altura_caixa = caixa_atual_valores.caixa_altura
+	var x_caixa = caixa_atual_valores.caixa_posicao_x
+	var y_caixa = caixa_atual_valores.caixa_posicao_y
+	var w_bbox_p = sprite_get_bbox_right(sprite_index)  - sprite_get_bbox_left(sprite_index);
+	var h_bbox_p = sprite_get_bbox_bottom(sprite_index) -  sprite_get_bbox_top(sprite_index);
+		
+	x = clamp(x, x_caixa - largura_caixa/2 + w_bbox_p, x_caixa + largura_caixa/2 - w_bbox_p)
+	y = clamp(y, y_caixa - altura_caixa/2 + h_bbox_p, y_caixa + altura_caixa/2 - h_bbox_p)
+}
+
+
+
+function setup_hope_dash(dash_time, per_step_distance){
+			
+			dashing = true;
+			dash_timer = 20;
+			
+			dash_x = lengthdir_x(per_step_distance, degrees_directon)
+			dash_y = lengthdir_y(per_step_distance, degrees_directon)
+			dash_x_coll = lengthdir_x(per_step_distance + 2, degrees_directon)
+			dash_y_coll = lengthdir_y(per_step_distance + 2, degrees_directon)
+			
+			values.cooldown = 5
 }

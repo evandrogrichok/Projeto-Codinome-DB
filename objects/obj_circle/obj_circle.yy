@@ -11,7 +11,7 @@
   "overriddenProperties":[],
   "parent":{
     "name":"PROJÉTEIS (Bullet Hell)",
-    "path":"folders/Objetos/PROJÉTEIS (Bullet Hell).yy",
+    "path":"folders/Linhas do tempo/Objetos/PROJÉTEIS (Bullet Hell).yy",
   },
   "parentObjectId":null,
   "persistent":false,

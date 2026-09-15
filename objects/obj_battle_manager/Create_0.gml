@@ -21,6 +21,21 @@ is_undefined(music_data)
     show_debug_message("Erro crítico: Falha ao carregar arquivos de dados!");
 }
 
+arrow_max_distance =  camera_get_view_height(view_camera[0])/2 - sprite_get_width(spr_seta_down); 
+arrows_alpha = [];
+arrow_speed_effect = [];
+arrow_stretch_effect = [];
+arrow_shine_effect = [];
+arrow_shine_index = [];
+arrow_shine_speed = .5;
+arrow_sprite_transform = 0;
+increase_target_size = 1;
+blink_arrow_effect_time = 5;
+blink_arrow_effect_timer = 0;
+
+
+
+
 
 party[0] = {
 	id : CHARACTERS.drio,
@@ -28,17 +43,17 @@ party[0] = {
 	attack_minigame : run_arrow_pattern
 	}
 	
-party[1] = {
-	id : CHARACTERS.glint,
-	name : "Glint",
-	attack_minigame : undefined
-	}
+//party[1] = {
+//	id : CHARACTERS.glint,
+//	name : "Glint",
+//	attack_minigame : run_arrow_pattern
+//	}
 	
-party[2] = {
-	id : CHARACTERS.avery,
-	name : "Avery",
-	attack_minigame : undefined
-	}
+//party[2] = {
+//	id : CHARACTERS.avery,
+//	name : "Avery",
+//	attack_minigame : run_arrow_pattern
+//	}
 	
 battle_actions = [];
 current_party_member = 0;
@@ -60,7 +75,7 @@ enum ACTIONS {
 }
 
 
-function battle_action(_actor, _action, _target, _item) constructor {
+function battle_action(_actor, _action, _target, _item, _power) constructor {
 
 	actor = _actor;
 	action = _action;
@@ -69,6 +84,34 @@ function battle_action(_actor, _action, _target, _item) constructor {
 	slected_power = _item;
 
 }
+
+function sort_battle_actions(_actions)
+{
+    var sorted = [];
+    
+    var order = [
+        ACTIONS.DEFEND,
+        ACTIONS.ATTACK,
+        ACTIONS.POWER,
+        ACTIONS.ITEM
+    ];
+    
+    for (var i = 0; i < array_length(order); i++)
+    {
+        var action_type = order[i];
+        
+        for (var j = 0; j < array_length(_actions); j++)
+        {
+            if (_actions[j].action == action_type)
+            {
+                array_push(sorted, _actions[j]);
+            }
+        }
+    }
+    
+    return sorted;
+}
+
 
 last_used_item = undefined;
 
@@ -123,7 +166,6 @@ textbox_num = 0;
 
 function add_message_to_queue(new_message){
 	array_push(textbox_queue, new_message);
-	//textbox_num++;
 }
 
 enum BATTLE_STATES{
@@ -283,7 +325,7 @@ show_debug_message(bpm_seconds)
 //time_source_sfx_arrow = time_source_create(time_source_game,  time_source_get_time_remaining(time_source_spb), time_source_units_seconds, function(){audio_play_sound(snd_arrow, 5, false, 2)});
 
 
-mus = audio_play_sound(snd_stardust, 10, true, .1);
+mus = audio_play_sound(snd_stardust, 10, true, .0);
 
 function play_arrow_sfx(correct_input, dist){
 	var song_current_time = audio_sound_get_track_position(mus);
@@ -400,7 +442,7 @@ param_acertar = [
 ]
 
 x_lim_setas = -(cam_h/2 - 20);
-default_height_textbox_battle = 46;
+default_height_textbox_battle = 50;
 dest_height_textbox_battle = default_height_textbox_battle;
 height_textbox_battle = default_height_textbox_battle;
 arrow_pat = []; // armazena no padrão de setas correto.
@@ -647,8 +689,15 @@ max_alpha = 1;
 
 // player mini hud
 
+
+
+height_focus_points_hud = 6;
+padding_hud = 5;
+
 player_hud_height = sprite_get_height(spr_player_hud_inventory);
+full_hud_height = sprite_get_height(spr_player_hud_inventory) + height_focus_points_hud + padding_hud;
 player_hud_width = sprite_get_width(spr_player_hud_inventory);
+
 portrait_width = sprite_get_width(spr_player_portrait);
 
 
@@ -833,12 +882,20 @@ function run_arrow_pattern(){
 
 		var attack_params = variable_struct_get(ataques, "normal_attack");
 		var directions = ["up", "down", "left", "right"];
-			
+		
+		arrow_number = 4;
+		arrows_alpha = array_create(arrow_number, 0);
+		arrow_speed_effect = array_create(arrow_number, 1);
+		arrow_stretch_effect = array_create(arrow_number, 1);
+		arrow_shine_index = array_create(arrow_number, 0);
+		arrow_shine_effect = array_create(arrow_number, false);
 		arrow_pat = []
+		
 			
-		for (var i = 0; i < 4; i++){
+		for (var i = 0; i < arrow_number; i++){
 			var r = irandom(array_length(directions)-1);
 			array_push(arrow_pat, directions[r]);
+
 		}
 
 		max_dmg = attack_params.damage;
@@ -1000,34 +1057,41 @@ var range_text = 5
 	alpha_txt_to_draw = 1
 }
 
-function text_enemy_damage(){
-	index_dmg = 0;
-	dmg_char_timer = 0;
-	range_text = 8;
-	alpha_txt_to_draw = 1
-		
-	can_lower_dmg_txt_alpha = false;
-		
-	text_initial_x_position = x_inimigo[opt] + range_text;
-	text_final_x_position = x_inimigo[opt] - range_text;
-		
-	hue_attack_text =  [default_attack_text_hsv[0][0], default_attack_text_hsv[1][0]];
-	sat_attack_text =  [default_attack_text_hsv[0][1], default_attack_text_hsv[1][1]];
-	val_attack_text =  [default_attack_text_hsv[0][2], default_attack_text_hsv[1][2]];
-		
-	can_lower_dmg_txt_alpha = false;
-	blink_dmg = [true, true];
+function text_enemy_damage()
+{
+    index_dmg = 0;
+    dmg_char_timer = 0;
 
-	dmg_alpha_timer = 0;
-	dmg_blink_timer = [0, 0];
-		
-	rot_range = 10
-	rot_text_dest = choose(rot_range, -rot_range)
-	rot_text =  0;
-		
-	size_text = size_text_default
-		
-	scale_pop_effect = array_create(string_length(text_to_draw[0]), - size_text);
+    range_text = 8;
+    alpha_txt_to_draw = 1;
+
+    can_lower_dmg_txt_alpha = false;
+
+    text_initial_x_position = x_inimigo[opt] + range_text;
+    text_final_x_position = x_inimigo[opt] - range_text;
+
+    hue_attack_text = [
+        default_attack_text_hsv[0][0],
+        default_attack_text_hsv[1][0]
+    ];
+
+    sat_attack_text = [
+        default_attack_text_hsv[0][1],
+        default_attack_text_hsv[1][1]
+    ];
+
+    val_attack_text = [
+        default_attack_text_hsv[0][2],
+        default_attack_text_hsv[1][2]
+    ];
+
+    dmg_alpha_timer = 0;
+
+    var char_count = string_length(text_to_draw[0]);
+
+    blink_dmg = array_create(char_count, true);
+    dmg_blink_timer = array_create(char_count, 0);
+    scale_pop_effect = array_create(char_count, -size_text);
 }
 
 function text_on_beat(){
@@ -1073,7 +1137,7 @@ function draw_arrow_feedback(dist_alvo){
 	last_closest_arrow_y = closest_arrow_y;
 	
 	arrow_feedback_draw = [arrow_pat[arrow_to_draw_from], dist_alvo]
-	alpha_feedback = 1
+	alpha_feedback = 2
 }
 
 
@@ -1132,14 +1196,30 @@ function search_for_param_accuracy(dist_alvo, is_missed_arrow = false){
 	}
 }
 
-function reset_arrow_pattern_vars(arrow_count){
-	array_delete(player_arrow_pat,0,arrow_count);
-	spawn_setas = inst_camera.x +80;
-	arrow_to_draw_from = 0;
+function is_attacks_left(init_index){
+	var action_number = array_length(battle_actions);
 
+	
+	for (var i = init_index; i < action_number; i++){
+		var action = battle_actions[i];
+		var type = action.action
+		
+		if type == ACTIONS.ATTACK{
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+function reset_arrow_pattern_vars(){
+    player_arrow_pat = [];
+    spawn_setas = inst_camera.x + 80;
+    arrow_to_draw_from = 0;
 }
 
 max_distance_arrow = 100;
+
 
 function calculate_damage(arrow_count){
 	var base_dmg = max_dmg;
@@ -1272,26 +1352,41 @@ function if_enemy_is_defeated(i){
 
 }
 
-function define_enemy_position(i, cam_x, cam_y){
-	if enemy_count == 1{ // se houver 1 só, fica centralizado,
-		x_inimigo[i] = cam_x + cam_w/3
-		y_inimigo[i] = cam_y - height_textbox_battle/2;
-	} else { //senão, ele faz calculos
-		var x_padding = 0
-		if (i%2 != 0 && enemy_count>2){
-			x_padding = 20;
-		}
-		x_inimigo[i] = cam_x + cam_w/3 + x_padding;
-		var padding = 10;
-		var first_sprite_height = sprite_get_height(enemies_data[0].sprite_ini)
-		var available_y_space = cam_h - height_textbox_battle - first_sprite_height;
-		
-		var y_distance = ( available_y_space/enemy_count)*i;
-		
-		y_inimigo[i] =	(cam_y - cam_h/2) + available_y_space/(enemy_count+2) + y_distance + first_sprite_height - opt_height;
+available_space_y = cam_h - height_textbox_battle;
 
+function define_enemy_position(i, cam_x, cam_y){
+	
+	var base_x = cam_x + cam_w / 3;
+	var top_y = cam_y - cam_h / 2;
+
+	switch (enemy_count){
+		case 1:
+			x_inimigo[i] = base_x;
+			y_inimigo[i] = top_y + available_space_y / 2;
+		break;
+
+		case 2:
+			var x_offset = (i == 1) ? 10 : 0;
+
+			x_inimigo[i] = base_x + x_offset;
+			y_inimigo[i] = top_y + available_space_y / 3 * (i + 1);
+		break;
+
+		case 3:
+			var x_offset = (i == 1) ? 20 : 0;
+
+			x_inimigo[i] = base_x + x_offset;
+			y_inimigo[i] = top_y + available_space_y / 4 * (i + 1);
+		break;
 	}
 }
+
+
+lane_height = cam_h /(enemy_count+1);
+	
+
+
+
 	
 		padding_hp_bar_and_enemy = 30;
 		
@@ -1362,6 +1457,7 @@ function is_party_selection_complete(){
 			} 
 		current_party_member = 0;
 		current_action = 0;
+		battle_actions = sort_battle_actions(battle_actions);
 		state = BATTLE_STATES.execute_actions;
 		return true;
 }
@@ -1370,6 +1466,16 @@ function fully_close_environmental_textbox(){
 		destroy_environmental_textbox();
 		dest_height_textbox_battle = 0;
 		can_draw_texto_acerto = true;	
+}
+
+function on_beat_feedback(){
+	add_dance_points(5);
+				
+	var texts = variable_struct_get(on_beat_messages, global.LANG);
+	var random_num = irandom(array_length(texts) - 1);
+	var text = texts[random_num];
+				
+	setup_text_draw(text, TXT_TYPES.on_beat, c_white)
 }
 
 function state_select_enemy(accept_key, deny_key, u_keys, d_keys){
@@ -1406,6 +1512,7 @@ function state_select_enemy(accept_key, deny_key, u_keys, d_keys){
 		
 	if deny_key{
 		focus_points -= focus_points_amnt_incr
+		opt = 0;
 		state = BATTLE_STATES.main_menu;
 	}
 }
@@ -1542,3 +1649,101 @@ function cast_power(power_id){
 //function run_queue_textbox(){
 
 //}
+
+/// @function update_battle_text_transform()
+/// @description Atualiza a rotação e escala do texto.
+function update_battle_text_transform(){
+	rot_text = lerp_snap(rot_text, rot_text_dest, 0.2);
+	size_text = lerp_snap(size_text, size_text_big, 0.2);
+}
+
+
+/// @function update_battle_text_position()
+/// @description Move o texto em direção à sua posição final.
+function update_battle_text_position(){
+	text_initial_x_position = lerp_snap(
+		text_initial_x_position,
+		text_final_x_position,
+		0.1
+	);
+}
+
+
+/// @function update_damage_characters()
+/// @description Revela os caracteres do dano e aplica o efeito de pop.
+function update_damage_characters(){
+	if index_dmg >= string_length(text_to_draw[0]){
+		return;
+	}
+
+	dmg_char_timer++;
+
+	if dmg_char_timer >= dmg_char_delay{
+		dmg_char_timer = 0;
+		index_dmg++;
+
+		scale_pop_effect[index_dmg - 1] = -size_text;
+	}
+}
+
+
+/// @function update_damage_char_effects()
+/// @description Atualiza o pop e blink individual dos caracteres do dano.
+function update_damage_char_effects(){
+	var dmg_count = min(index_dmg, array_length(scale_pop_effect));
+
+	for (var i = 0; i < dmg_count; i++){
+		if scale_pop_effect[i] != 0{
+			scale_pop_effect[i] = lerp_snap(
+				scale_pop_effect[i],
+				0,
+				0.5
+			);
+		}
+
+		if blink_dmg[i]{
+			dmg_blink_timer[i]++;
+
+			if dmg_blink_timer[i] >= dmg_blink_delay{
+				blink_dmg[i] = false;
+			}
+		}
+	}
+
+	sat_attack_text[0] = dest_attack_text_hsv[0][1];
+	sat_attack_text[1] = dest_attack_text_hsv[1][1];
+}
+
+
+/// @function update_damage_text_alpha()
+/// @description Controla o delay e o fade-out do texto de dano.
+function update_damage_text_alpha(){
+	if !can_lower_dmg_txt_alpha{
+		dmg_alpha_timer++;
+
+		if dmg_alpha_timer >= dmg_alpha_delay{
+			can_lower_dmg_txt_alpha = true;
+		}
+
+		return;
+	}
+
+	alpha_txt_to_draw = max(0, alpha_txt_to_draw - 0.1);
+}
+
+
+/// @function update_damage_text_color()
+/// @description Atualiza a transição de cor do texto de dano.
+function update_damage_text_color(){
+	hue_attack_text[0] = lerp_snap(
+		hue_attack_text[0],
+		dest_attack_text_hsv[0][0],
+		0.1
+	);
+
+	hue_attack_text[1] = lerp_snap(
+		hue_attack_text[1],
+		dest_attack_text_hsv[1][0],
+		0.2
+	);
+}

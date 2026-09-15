@@ -65,16 +65,16 @@ for (var p = 0; p < array_length(dialogo); p++){
 		option_link_id = array_create(array_length(options), 0)
 		array_copy(option_link_id, 0, dialogo[p].linkoption, 0, array_length(dialogo[p].linkoption))
 	}
-	if p == 4{
-	show_debug_message(option_link_id)
-	}
+	//if p == 4{
+	//show_debug_message(option_link_id)
+	//}
 }
 
 if dialogo[0].type != "battle"
 scr_can_move_tweaker(-1);
 
 textbox_width = 220 //largura
-textbox_heigth = 60 //altura
+textbox_height = 60 //altura
 textbox_heigth_lim = array_create(array_length(dialogo), 0); //altura
 runned_once = false;
 padding_btwn_emotion_txtbox = 5;
@@ -111,25 +111,31 @@ current_type = current_page.type;
 
 //CONFIGURAÇÃO INICIAL DE TAMANHO DE CAIXA DE DIÁLOGO
 function determine_textbox_size_by_type(){
-	if (current_type == "battle" || current_type == "battle_event") {
-    if (current_emotion != "noone") {
-        textbox_width = 260
-    } else {
+	switch (current_type){
+		case "battle":
+		case "battle_event":
+			textbox_width = 316;
+			textbox_height = 48;
 
-        textbox_width = 310; 
-    }
-    textbox_heigth = 49;
-	} else if (current_type == "decision") {
-	    textbox_width = 220; // O seu padrão
-	    textbox_heigth = 80;
-	} else {
-	    // Chat normal
-	    textbox_width = 220;
-	    textbox_heigth = 60;
-	   
+			if current_emotion != "noone"{
+				textbox_width -= portraitbox_size;
+			}
+		break;
+
+		case "decision":
+			textbox_width = 220;
+			textbox_height = 80;
+		break;
+
+		default:
+			textbox_width = 220;
+			textbox_height = 60;
+		break;
 	}
-	textbox_heigth_lim[page] = textbox_heigth;
+
+	textbox_heigth_lim[page] = textbox_height;
 }
+
 
 determine_textbox_size_by_type();
 
@@ -212,7 +218,7 @@ function setup_page_variables(){
 	
 	if current_type == "battle"{
 		padding_x_text = 0;
-		padding_y_text = textbox_heigth/3;
+		padding_y_text = textbox_height/3;
 	}
 
 	
@@ -467,7 +473,7 @@ function next_page(){
 		runned_every_page = false;
 }
 
-portraitbox_size = textbox_heigth;
+portraitbox_size = textbox_height;
 
 show_debug_message("abab")
 show_debug_message(portraitbox_size)

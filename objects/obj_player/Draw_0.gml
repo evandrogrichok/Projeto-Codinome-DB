@@ -51,17 +51,17 @@ if instance_exists(obj_battle_manager){
 	draw_hope_light_fx(0.08, 0.03, c_white);
 	
 	hope_index = scr_animar_sprite(hope_index, hope_spd, spr_hope);
-	scr_shader_outline(spr_hope_1, hope_index, 255, 255, 255, global.ALPHA_HOPE_BORDER)
+	scr_shader_outline(spr_hope_white, hope_index, 255, 255, 255, global.ALPHA_HOPE_BORDER)
 	
 	 if dashing{
-		draw_sprite_ext(spr_hope_1, hope_index, x, y-10, 1 + hope_sprite_scale_add + hope_sprite_scale_fast_increase, 1 + hope_sprite_scale_add*2  + hope_sprite_scale_fast_increase, hope_dir, c_white, 1);
+		draw_sprite_ext(spr_hope_white, hope_index, x, y-10, hope_scale_x, hope_scale_y, hope_dir, c_white, 1);
 	}
 	else if values.cooldown>0 && dash_timer <= 0{
-		draw_sprite_ext(spr_hope, hope_index, x, y-10, 1 + hope_sprite_scale_add + hope_sprite_scale_fast_increase, 1 + hope_sprite_scale_add*2  + hope_sprite_scale_fast_increase, hope_dir, c_white, 1);
-		draw_sprite_ext(spr_hope_1, hope_index, x, y-10, 1 + hope_sprite_scale_add + hope_sprite_scale_fast_increase, 1 + hope_sprite_scale_add*2  + hope_sprite_scale_fast_increase, hope_dir, c_white, round(sin(values.sin_t_flash_dmg)));
+		draw_sprite_ext(spr_hope, hope_index, x, y-10, hope_scale_x, hope_scale_y, hope_dir, c_white, 1);
+		draw_sprite_ext(spr_hope_white, hope_index, x, y-10, hope_scale_x, hope_scale_y, hope_dir, c_white, round(sin(values.sin_t_flash_dmg)));
 	
 	} else {
-		draw_sprite_ext(spr_hope, hope_index, x, y-10, 1 + hope_sprite_scale_add + hope_sprite_scale_fast_increase, 1 + hope_sprite_scale_add*2  + hope_sprite_scale_fast_increase, hope_dir, c_white, 1);
+		draw_sprite_ext(spr_hope, hope_index, x, y-10, hope_scale_x, hope_scale_y, hope_dir, c_white, 1);
 		
 	}
 	

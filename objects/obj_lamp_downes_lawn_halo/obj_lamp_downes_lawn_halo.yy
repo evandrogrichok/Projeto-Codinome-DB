@@ -9,7 +9,7 @@
   "overriddenProperties":[],
   "parent":{
     "name":"OUTROS",
-    "path":"folders/Objetos/QUINTAL DOWNES/OUTROS.yy",
+    "path":"folders/Linhas do tempo/Objetos/QUINTAL DOWNES/OUTROS.yy",
   },
   "parentObjectId":null,
   "persistent":false,

@@ -11,7 +11,7 @@
   "overriddenProperties":[],
   "parent":{
     "name":"OBJETOS PAI",
-    "path":"folders/Objetos/OBJETOS PAI.yy",
+    "path":"folders/Linhas do tempo/Objetos/OBJETOS PAI.yy",
   },
   "parentObjectId":null,
   "persistent":false,

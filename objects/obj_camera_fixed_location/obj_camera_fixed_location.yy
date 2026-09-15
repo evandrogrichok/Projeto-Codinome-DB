@@ -10,7 +10,7 @@
   "overriddenProperties":[],
   "parent":{
     "name":"OBJETOS MECANICA",
-    "path":"folders/Objetos/OBJETOS MECANICA.yy",
+    "path":"folders/Linhas do tempo/Objetos/OBJETOS MECANICA.yy",
   },
   "parentObjectId":null,
   "persistent":false,
