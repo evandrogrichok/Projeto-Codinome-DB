@@ -19,12 +19,8 @@ This repository contains the uncompressed source project of the game.
 </p>
 
 <p align="center">
-  <kbd><img src="./screenshots/screenshot-battle.jpg" width="400"></kbd>
-  <kbd><img src="./screenshots/screenshot-battle-ui.jpg" width="400"></kbd>
-</p>
-
-<p align="center">
   <kbd><img src="./screenshots/screenshot-battle-rhythm.jpg" width="400"></kbd>
+  <kbd><img src="./screenshots/screenshot-battle-ui.jpg" width="400"></kbd>
 </p>
 
 ## 🎮 Features
