@@ -8,12 +8,19 @@ This repository contains the uncompressed source project of the game.
 
 ## 📸 Screenshots
 
-| Gameplay | Battle |
-|:---:|:---:|
-| ![Entrance](./screenshots/screenshot-entrance.jpg) | ![Battle](./screenshots/screenshot-battle.jpg) |
-| ![First Section](./screenshots/screenshot-first-section.jpg) | ![Garden](./screenshots/screenshot-garden.jpg) |
-| ![Garden and Moon](./screenshots/screenshot-garden-and-moon.jpg) | ![Battle UI](./screenshots/screenshot-battle-ui.jpg) |
-| ![Rhythm Battle](./screenshots/screenshot-battle-rhythm.jpg) | |
+![Entrance](./screenshots/screenshot-entrance.jpg)
+
+![First Section](./screenshots/screenshot-first-section.jpg)
+
+![Garden and Moon](./screenshots/screenshot-garden-and-moon.jpg)
+
+![Garden](./screenshots/screenshot-garden.jpg)
+
+![Battle](./screenshots/screenshot-battle.jpg)
+
+![Battle UI](./screenshots/screenshot-battle-ui.jpg)
+
+![Rhythm Battle](./screenshots/screenshot-battle-rhythm.jpg)
 
 
 ## 🎮 Features
