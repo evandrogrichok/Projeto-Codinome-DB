@@ -7,38 +7,37 @@ The game explores themes of hope, loss, growth, and the struggles of broken peop
 This repository contains the uncompressed source project of the game.
 
 ## 📸 Screenshots
-## 📸 Screenshots
 
 <p align="center">
   <kbd>
-    <img src="./screenshots/screenshot-entrance.jpg" width="420">
+    <img src="./screenshots/screenshot-entrance.jpg" width="620">
   </kbd>
   <kbd>
-    <img src="./screenshots/screenshot-first-section.jpg" width="420">
+    <img src="./screenshots/screenshot-first-section.jpg" width="620">
   </kbd>
 </p>
 
 <p align="center">
   <kbd>
-    <img src="./screenshots/screenshot-garden.jpg" width="420">
+    <img src="./screenshots/screenshot-garden.jpg" width="620">
   </kbd>
   <kbd>
-    <img src="./screenshots/screenshot-garden-and-moon.jpg" width="420">
-  </kbd>
-</p>
-
-<p align="center">
-  <kbd>
-    <img src="./screenshots/screenshot-battle.jpg" width="420">
-  </kbd>
-  <kbd>
-    <img src="./screenshots/screenshot-battle-ui.jpg" width="420">
+    <img src="./screenshots/screenshot-garden-and-moon.jpg" width="620">
   </kbd>
 </p>
 
 <p align="center">
   <kbd>
-    <img src="./screenshots/screenshot-battle-rhythm.jpg" width="420">
+    <img src="./screenshots/screenshot-battle.jpg" width="620">
+  </kbd>
+  <kbd>
+    <img src="./screenshots/screenshot-battle-ui.jpg" width="620">
+  </kbd>
+</p>
+
+<p align="center">
+  <kbd>
+    <img src="./screenshots/screenshot-battle-rhythm.jpg" width="620">
   </kbd>
 </p>
 
