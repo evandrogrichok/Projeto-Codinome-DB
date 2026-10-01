@@ -9,36 +9,22 @@ This repository contains the uncompressed source project of the game.
 ## 📸 Screenshots
 
 <p align="center">
-  <kbd>
-    <img src="./screenshots/screenshot-entrance.jpg" width="620">
-  </kbd>
-  <kbd>
-    <img src="./screenshots/screenshot-first-section.jpg" width="620">
-  </kbd>
+  <kbd><img src="./screenshots/screenshot-entrance.jpg" width="400"></kbd>
+  <kbd><img src="./screenshots/screenshot-first-section.jpg" width="400"></kbd>
 </p>
 
 <p align="center">
-  <kbd>
-    <img src="./screenshots/screenshot-garden.jpg" width="620">
-  </kbd>
-  <kbd>
-    <img src="./screenshots/screenshot-garden-and-moon.jpg" width="620">
-  </kbd>
+  <kbd><img src="./screenshots/screenshot-garden.jpg" width="400"></kbd>
+  <kbd><img src="./screenshots/screenshot-garden-and-moon.jpg" width="400"></kbd>
 </p>
 
 <p align="center">
-  <kbd>
-    <img src="./screenshots/screenshot-battle.jpg" width="620">
-  </kbd>
-  <kbd>
-    <img src="./screenshots/screenshot-battle-ui.jpg" width="620">
-  </kbd>
+  <kbd><img src="./screenshots/screenshot-battle.jpg" width="400"></kbd>
+  <kbd><img src="./screenshots/screenshot-battle-ui.jpg" width="400"></kbd>
 </p>
 
 <p align="center">
-  <kbd>
-    <img src="./screenshots/screenshot-battle-rhythm.jpg" width="620">
-  </kbd>
+  <kbd><img src="./screenshots/screenshot-battle-rhythm.jpg" width="400"></kbd>
 </p>
 
 ## 🎮 Features
