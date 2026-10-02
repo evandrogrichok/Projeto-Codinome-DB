@@ -144,7 +144,3 @@ Shards of Sorrow started as a personal project and gradually grew into a much la
 A major part of the project's development was learning through experimentation: systems were built, replaced, expanded, and refactored as my programming knowledge evolved.
 
 Because of that, the codebase contains both older implementations and more recent approaches. The project represents not only the game itself, but also a significant part of my growth as a programmer and Game Developer.
-
----
-
-**Created by [Evandro Grichok](https://github.com/evandrogrichok)**
